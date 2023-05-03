@@ -19,14 +19,14 @@ public class Test implements Serializable {
     @Column(name = "content")
     private String content;
 
-    @JoinColumn(name="autor",referencedColumnName = "autor")
+    @JoinColumn(name="author",referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Professor autor;
+    private Professor author;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "test")
     private Collection<QuestionTest> questionTestCollection;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "test")
     private Collection<Exam> examCollection;
 
 

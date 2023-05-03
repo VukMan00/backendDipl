@@ -4,9 +4,11 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.Embeddable;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Embeddable
 @Data
-public class QuestionTestPK {
+public class QuestionTestPK implements Serializable {
 
     @Basic(optional = false)
     private Integer questionId;

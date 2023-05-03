@@ -2,7 +2,6 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import rs.ac.bg.fon.pracenjepolaganja.entity.enums.Gender;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -27,8 +26,6 @@ public class Student implements Serializable {
     @Column(name = "index")
     private String index;
 
-    @Column(name = "gender")
-    private Gender gender;
 
     @Column(name = "birth")
     @Temporal(TemporalType.DATE)

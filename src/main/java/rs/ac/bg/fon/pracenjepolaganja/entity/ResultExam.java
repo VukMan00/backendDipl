@@ -20,7 +20,7 @@ public class ResultExam implements Serializable {
     @Column(name="grade")
     private Integer grade;
 
-    @JoinColumn(name = "examId", referencedColumnName = "examId", insertable = false, updatable = false)
+    @JoinColumn(name = "examId", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Exam exam;
 

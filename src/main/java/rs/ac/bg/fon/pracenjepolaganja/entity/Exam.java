@@ -26,7 +26,7 @@ public class Exam implements Serializable {
     @Column(name="amphitheater")
     private String amphitheater;
 
-    @JoinColumn(name="testId",referencedColumnName = "testId")
+    @JoinColumn(name="testId",referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Test test;
 

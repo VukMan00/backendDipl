@@ -2,8 +2,6 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import rs.ac.bg.fon.pracenjepolaganja.entity.enums.Gender;
-import rs.ac.bg.fon.pracenjepolaganja.entity.enums.Rank;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -24,16 +22,10 @@ public class Professor implements Serializable {
     @Column(name = "lastname")
     private String lastname;
 
-    @Column(name="rank")
-    private Rank rank;
-
-    @Column(name = "gender")
-    private Gender gender;
-
     @Column(name = "email")
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professor")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private Collection<Test> tests;
 
 }

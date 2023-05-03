@@ -20,7 +20,7 @@ public class Answer implements Serializable {
     @Column(name="solution")
     private boolean solution;
 
-    @JoinColumn(name="questionId",referencedColumnName = "questionId")
+    @JoinColumn(name="questionId",insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Question question;
 
@@ -32,5 +32,11 @@ public class Answer implements Serializable {
 
     public Answer(int id,int questionId){
         this.answerPK = new AnswerPK(id,questionId);
+    }
+
+    public Answer(AnswerPK answerPK, String content, boolean solution) {
+        this.answerPK = answerPK;
+        this.content = content;
+        this.solution = solution;
     }
 }
