@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ServiceInterface<T> {
     List<T> findAll();
-    T findById(Integer id);
+    T findById(Object id);
     T save(T t);
     void deleteById(Integer id);
 }

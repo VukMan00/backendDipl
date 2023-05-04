@@ -1,6 +1,16 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import lombok.Data;
+
 import java.util.Date;
 
-public record StudentDTO(Integer id, String name, String lastname, String index, Date birth, String email) {
+@Data
+public class StudentDTO{
+
+    private Integer id;
+    private String name;
+    private String lastname;
+    private String index;
+    private Date birth;
+    private String email;
 }

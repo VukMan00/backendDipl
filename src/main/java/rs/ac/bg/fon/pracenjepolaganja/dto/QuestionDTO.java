@@ -1,4 +1,10 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
-public record QuestionDTO(Integer id, String content) {
+import lombok.Data;
+
+@Data
+public class QuestionDTO{
+
+    private Integer id;
+    private String content;
 }

@@ -1,18 +1,25 @@
 package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class StudentServiceImpl implements ServiceInterface<Student> {
+public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     private StudentRepository studentRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository){
@@ -20,30 +27,33 @@ public class StudentServiceImpl implements ServiceInterface<Student> {
     }
 
     @Override
-    public List<Student> findAll() {
-        return studentRepository.findAll();
+    public List<StudentDTO> findAll() {
+        return studentRepository.findAll().stream().map(student->modelMapper.map(student, StudentDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Student findById(Integer id) {
-        Optional<Student> student = studentRepository.findById(id);
-
+    public StudentDTO findById(Object id) {
+        Optional<Student> student = studentRepository.findById((Integer) id);
         Student theStudent = null;
+        StudentDTO studentDTO = null;
         if(student.isPresent()){
             theStudent = student.get();
+            studentDTO = modelMapper.map(theStudent,StudentDTO.class);
         }
         else{
-            throw new RuntimeException("Did not find Student with id - " + id);
+            throw new RuntimeException("Did not find Student with id - " + (Integer)id);
         }
-        return theStudent;
+        return studentDTO;
     }
 
     @Override
-    public Student save(Student student) {
-        if(student==null){
+    public StudentDTO save(StudentDTO studentDTO) {
+        if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        return studentRepository.save(student);
+        Student student = studentRepository.save(modelMapper.map(studentDTO,Student.class));
+        return modelMapper.map(student,StudentDTO.class);
     }
 
     @Override

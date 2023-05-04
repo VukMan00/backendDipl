@@ -1,6 +1,16 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import lombok.Data;
+
 import java.util.Date;
 
-public record ExamDTO(Integer id, String name, Date date,String amphitheater, TestDTO testDTO) {
+@Data
+public class ExamDTO{
+
+    private Integer id;
+    private String name;
+    private Date date;
+    private String amphitheater;
+    private TestDTO test;
+
 }

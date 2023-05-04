@@ -2,7 +2,10 @@ package rs.ac.bg.fon.pracenjepolaganja.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.bg.fon.pracenjepolaganja.dto.ExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
@@ -20,22 +23,23 @@ public class ExamController {
     }
 
     @GetMapping
-    public List<Exam> findAll(){
+    public List<ExamDTO> findAll(){
         return examService.findAll();
     }
 
     @GetMapping("{id}")
-    public Exam findById(@PathVariable Integer id){
-        return (Exam) examService.findById(id);
+    public ResponseEntity<ExamDTO> findById(@PathVariable Integer id){
+        return ResponseEntity.ok().body((ExamDTO)examService.findById(id));
     }
 
     @PostMapping
-    public Exam save(@RequestBody Exam exam){
-        return (Exam) examService.save(exam);
+    public ResponseEntity<ExamDTO> save(@RequestBody Exam exam){
+        return new ResponseEntity<ExamDTO>((ExamDTO)examService.save(exam), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
-    public void deleteById(@PathVariable Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable Integer id){
         examService.deleteById(id);
+        return new ResponseEntity<String>("Deleted",HttpStatus.OK);
     }
 }

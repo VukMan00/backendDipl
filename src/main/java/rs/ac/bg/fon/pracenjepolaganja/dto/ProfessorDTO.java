@@ -1,5 +1,13 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
-public record ProfessorDTO(Integer id,String name,String lastname,String email) {
+import lombok.Data;
+
+@Data
+public class ProfessorDTO {
+
+    private Integer id;
+    private String name;
+    private String lastname;
+    private String email;
 
 }
