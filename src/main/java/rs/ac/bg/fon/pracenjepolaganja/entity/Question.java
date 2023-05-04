@@ -1,5 +1,7 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +25,7 @@ public class Question implements Serializable {
     private Collection<Answer> answers;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
+    @JsonIgnore
     private Collection<QuestionTest> questionTestsCollection;
 }
 

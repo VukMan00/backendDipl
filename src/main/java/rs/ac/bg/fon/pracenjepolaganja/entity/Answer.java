@@ -1,5 +1,7 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
@@ -22,6 +24,7 @@ public class Answer implements Serializable {
 
     @JoinColumn(name="questionId",insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Question question;
 
     public Answer(){}

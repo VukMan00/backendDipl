@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;

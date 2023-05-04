@@ -1,5 +1,7 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,6 +28,7 @@ public class Professor implements Serializable {
     private String email;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    @JsonIgnore
     private Collection<Test> tests;
 
 }
