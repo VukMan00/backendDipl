@@ -1,13 +1,12 @@
 package rs.ac.bg.fon.pracenjepolaganja.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
-import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
+import rs.ac.bg.fon.pracenjepolaganja.service.impl.StudentServiceImpl;
 
 import java.util.List;
 
@@ -15,10 +14,10 @@ import java.util.List;
 @RequestMapping("/students")
 public class StudentController {
 
-    private ServiceInterface studentService;
+    private StudentServiceImpl studentService;
 
     @Autowired
-    public StudentController(@Qualifier("studentServiceImpl") ServiceInterface studentService){
+    public StudentController(StudentServiceImpl studentService){
         this.studentService = studentService;
     }
 
@@ -29,17 +28,22 @@ public class StudentController {
 
     @GetMapping("{id}")
     public ResponseEntity<StudentDTO> findById(@PathVariable Integer id){
-        return ResponseEntity.ok().body((StudentDTO) studentService.findById(id));
+        return ResponseEntity.ok().body(studentService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<StudentDTO> save(@RequestBody StudentDTO studentDTO){
-        return new ResponseEntity<StudentDTO>((StudentDTO)studentService.save(studentDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(studentService.save(studentDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id){
         studentService.deleteById(id);
-        return new ResponseEntity<String>("Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/exams")
+    public List<ResultExamDTO> getResults(@PathVariable Integer id){
+        return studentService.getResults(id);
     }
 }
