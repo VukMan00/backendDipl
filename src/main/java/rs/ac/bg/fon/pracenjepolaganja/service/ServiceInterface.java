@@ -1,5 +1,7 @@
 package rs.ac.bg.fon.pracenjepolaganja.service;
 
+import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
+
 import java.util.List;
 
 public interface ServiceInterface<T> {

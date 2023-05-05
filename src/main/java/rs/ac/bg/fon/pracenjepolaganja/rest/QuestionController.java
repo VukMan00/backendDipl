@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
+import rs.ac.bg.fon.pracenjepolaganja.service.impl.AnswerServiceImpl;
 
 import java.util.List;
 
@@ -16,9 +18,12 @@ public class QuestionController {
 
     private ServiceInterface questionService;
 
+    private AnswerServiceImpl answerService;
+
     @Autowired
-    public QuestionController(@Qualifier("questionServiceImpl") ServiceInterface questionService){
+    public QuestionController(@Qualifier("questionServiceImpl") ServiceInterface questionService, AnswerServiceImpl answerService){
         this.questionService = questionService;
+        this.answerService = answerService;
     }
 
     @GetMapping
@@ -40,5 +45,10 @@ public class QuestionController {
     public ResponseEntity<String> deleteById(@PathVariable Integer id){
         questionService.deleteById(id);
         return new ResponseEntity<String>("Deleted",HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/answers")
+    public List<AnswerDTO> getAnswers(@PathVariable("id")Integer id){
+        return answerService.getAnswers(id);
     }
 }

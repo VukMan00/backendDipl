@@ -4,10 +4,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
+import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,12 +22,15 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
 
     private QuestionRepository questionRepository;
 
+    private QuestionTestRepository questionTestRepository;
+
     @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository){
+    public QuestionServiceImpl(QuestionRepository questionRepository,QuestionTestRepository questionTestRepository){
         this.questionRepository = questionRepository;
+        this.questionTestRepository = questionTestRepository;
     }
 
     @Override
@@ -60,5 +68,21 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
             throw new IllegalArgumentException("Id starts from zero");
         }
         questionRepository.deleteById(id);
+    }
+
+    public List<QuestionTestDTO> getQuestions(Integer testId) {
+        List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
+        List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
+
+        for(QuestionTest questionTest:questionTests){
+            QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
+            TestDTO testDTO = modelMapper.map(questionTest.getTest(),TestDTO.class);
+            QuestionTestDTO questionTestDTO = modelMapper.map(questionTest,QuestionTestDTO.class);
+
+            questionTestDTO.setQuestion(questionDTO);
+            questionTestDTO.setTest(testDTO);
+            questionTestDTOs.add(questionTestDTO);
+        }
+        return questionTestDTOs;
     }
 }
