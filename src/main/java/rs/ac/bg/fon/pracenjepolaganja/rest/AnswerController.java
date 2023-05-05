@@ -34,8 +34,8 @@ public class AnswerController {
     }
 
     @PostMapping
-    public ResponseEntity<AnswerDTO> save(@RequestBody Answer answer){
-        return new ResponseEntity<AnswerDTO>((AnswerDTO) answerService.save(answer), HttpStatus.CREATED);
+    public ResponseEntity<AnswerDTO> save(@RequestBody AnswerDTO answerDTO){
+        return new ResponseEntity<AnswerDTO>((AnswerDTO) answerService.save(answerDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")

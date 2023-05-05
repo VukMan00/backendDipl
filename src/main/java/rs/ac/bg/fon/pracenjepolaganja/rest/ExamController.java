@@ -33,8 +33,8 @@ public class ExamController {
     }
 
     @PostMapping
-    public ResponseEntity<ExamDTO> save(@RequestBody Exam exam){
-        return new ResponseEntity<ExamDTO>((ExamDTO)examService.save(exam), HttpStatus.CREATED);
+    public ResponseEntity<ExamDTO> save(@RequestBody ExamDTO examDTO){
+        return new ResponseEntity<ExamDTO>((ExamDTO)examService.save(examDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")

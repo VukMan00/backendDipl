@@ -65,8 +65,9 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         if(answerDTO==null){
             throw new NullPointerException("Answer can't be null");
         }
-        Answer answer = modelMapper.map(answerDTO,Answer.class);
-        return modelMapper.map(answerRepository.save(answer),AnswerDTO.class);
+
+        Answer answer = answerRepository.save(modelMapper.map(answerDTO,Answer.class));
+        return modelMapper.map(answer,AnswerDTO.class);
     }
 
     @Override
@@ -77,5 +78,10 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         AnswerPK answerPK = new AnswerPK();
         answerPK.setId(id);
         answerRepository.deleteById(answerPK);
+    }
+
+    public List<AnswerDTO> getAnswers(Integer id) {
+        return answerRepository.findByQuestionId(id).stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
+                .collect(Collectors.toList());
     }
 }
