@@ -2,7 +2,9 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
 
 import java.io.Serializable;
@@ -10,6 +12,8 @@ import java.io.Serializable;
 @Entity
 @Table(name="resultexam")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResultExam implements Serializable {
 
     @EmbeddedId

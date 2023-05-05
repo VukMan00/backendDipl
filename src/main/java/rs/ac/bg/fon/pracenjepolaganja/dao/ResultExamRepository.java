@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ResultExamRepository extends JpaRepository<ResultExam, ResultExamPK> {
-
     List<ResultExam> findByExamId(Integer examId);
+    List<ResultExam> findByStudentId(Integer studentId);
 }

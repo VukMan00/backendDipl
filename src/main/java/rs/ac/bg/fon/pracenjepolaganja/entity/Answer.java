@@ -3,7 +3,9 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
 
 import java.io.Serializable;
@@ -11,6 +13,8 @@ import java.io.Serializable;
 @Entity
 @Table(name="answer")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Answer implements Serializable {
 
     @EmbeddedId
@@ -26,8 +30,6 @@ public class Answer implements Serializable {
     @ManyToOne(optional = false)
     @JsonIgnore
     private Question question;
-
-    public Answer(){}
 
     public Answer(AnswerPK answerPK){
         this.answerPK = answerPK;

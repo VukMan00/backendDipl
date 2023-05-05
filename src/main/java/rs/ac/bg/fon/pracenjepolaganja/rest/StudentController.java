@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
+import rs.ac.bg.fon.pracenjepolaganja.service.impl.ExamServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.StudentServiceImpl;
 
 import java.util.List;
@@ -16,9 +18,12 @@ public class StudentController {
 
     private StudentServiceImpl studentService;
 
+    private ExamServiceImpl examService;
+
     @Autowired
-    public StudentController(StudentServiceImpl studentService){
+    public StudentController(StudentServiceImpl studentService, ExamServiceImpl examService){
         this.studentService = studentService;
+        this.examService = examService;
     }
 
     @GetMapping
@@ -43,7 +48,23 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/exams")
-    public List<ResultExamDTO> getResults(@PathVariable Integer id){
-        return studentService.getResults(id);
+    public List<ResultExamDTO> getExams(@PathVariable Integer id){
+        return studentService.getExams(id);
+    }
+
+    @PostMapping("/results")
+    public ResponseEntity<ResultExamDTO> saveResultExam(@RequestBody ResultExamDTO resultExamDTO){
+        return new ResponseEntity<>(examService.saveResultExam(resultExamDTO),HttpStatus.CREATED);
+    }
+
+    @PutMapping("/results")
+    public ResponseEntity<ResultExamDTO> updateResultExam(@RequestBody ResultExamDTO resultExamDTO){
+        return new ResponseEntity<>(examService.saveResultExam(resultExamDTO),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{studentId}/exams/{examId}")
+    public ResponseEntity<String> deleteResultExam(@PathVariable("studentId") Integer studentId, @PathVariable("examId") Integer examId){
+        examService.deleteResultExam(studentId,examId);
+        return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
 }

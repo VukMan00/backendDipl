@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ProfessorDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.ProfessorServiceImpl;
+import rs.ac.bg.fon.pracenjepolaganja.service.impl.TestServiceImpl;
 
 import java.util.List;
 
@@ -15,9 +18,12 @@ public class ProfessorController {
 
     private ProfessorServiceImpl professorService;
 
+    private TestServiceImpl testService;
+
     @Autowired
-    public ProfessorController(ProfessorServiceImpl professorService){
+    public ProfessorController(ProfessorServiceImpl professorService, TestServiceImpl testService){
         this.professorService = professorService;
+        this.testService = testService;
     }
 
     @GetMapping
@@ -35,9 +41,19 @@ public class ProfessorController {
         return new ResponseEntity<>(professorService.save(professorDTO), HttpStatus.CREATED);
     }
 
+    @PutMapping
+    public ResponseEntity<ProfessorDTO> update(@RequestBody ProfessorDTO professorDTO){
+        return new ResponseEntity<>(professorService.save(professorDTO), HttpStatus.OK);
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id){
         professorService.deleteById(id);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/tests")
+    public List<TestDTO> getTests(@PathVariable("id") Integer id){
+        return testService.getTests(id);
     }
 }

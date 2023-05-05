@@ -48,6 +48,22 @@ public class TestController {
 
     @GetMapping("/{id}/questions")
     public List<QuestionTestDTO> getQuestions(@PathVariable("id") Integer id){
-        return questionService.getQuestions(id);
+        return testService.getQuestions(id);
+    }
+
+    @PostMapping("/questions")
+    public ResponseEntity<QuestionTestDTO> saveQuestionTest(@RequestBody QuestionTestDTO questionTestDTO){
+        return new ResponseEntity<>(testService.saveQuestionTest(questionTestDTO),HttpStatus.CREATED);
+    }
+
+    @PutMapping("/questions")
+    public ResponseEntity<QuestionTestDTO> updateQuestionTest(@RequestBody QuestionTestDTO questionTestDTO){
+        return new ResponseEntity<>(testService.saveQuestionTest(questionTestDTO),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{testId}/questions/{questionId}")
+    public ResponseEntity<String> deleteQuestionTest(@PathVariable("testId") Integer testId, @PathVariable("questionId") Integer questionId){
+        testService.deleteQuestionTest(testId,questionId);
+        return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
 }

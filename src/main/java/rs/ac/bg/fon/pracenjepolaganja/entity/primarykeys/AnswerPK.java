@@ -1,12 +1,16 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Embeddable
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnswerPK implements Serializable {
 
     @Basic(optional = false)
@@ -14,13 +18,4 @@ public class AnswerPK implements Serializable {
 
     @Basic(optional = false)
     private Integer questionId;
-
-    public AnswerPK(){
-
-    }
-
-    public AnswerPK(int id,int questionId){
-        this.id = id;
-        this.questionId = questionId;
-    }
 }

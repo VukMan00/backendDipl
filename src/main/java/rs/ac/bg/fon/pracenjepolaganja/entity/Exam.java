@@ -3,7 +3,9 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -12,6 +14,8 @@ import java.util.Date;
 @Entity
 @Table(name="exam")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Exam implements Serializable {
 
     @Id

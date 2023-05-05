@@ -36,6 +36,11 @@ public class AnswerController {
         return new ResponseEntity<>(answerService.save(answerDTO), HttpStatus.CREATED);
     }
 
+    @PutMapping
+    public ResponseEntity<AnswerDTO> update(@RequestBody AnswerDTO answerDTO){
+        return new ResponseEntity<>(answerService.save(answerDTO), HttpStatus.OK);
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id){
         answerService.deleteById(id);

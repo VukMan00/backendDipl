@@ -70,7 +70,7 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         questionRepository.deleteById(id);
     }
 
-    public List<QuestionTestDTO> getQuestions(Integer testId) {
+    public List<QuestionTestDTO> getTests(Integer testId) {
         List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
 

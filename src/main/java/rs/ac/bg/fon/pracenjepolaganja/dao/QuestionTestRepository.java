@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface QuestionTestRepository extends JpaRepository<QuestionTest, QuestionTestPK> {
     List<QuestionTest> findByTestId(Integer testId);
+    List<QuestionTest> findByQuestionId(Integer questionId);
 }

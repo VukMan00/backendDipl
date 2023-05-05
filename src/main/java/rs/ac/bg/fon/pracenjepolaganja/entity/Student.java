@@ -2,7 +2,9 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -11,6 +13,8 @@ import java.util.Date;
 @Entity
 @Table(name = "student")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Student implements Serializable {
 
     @Id

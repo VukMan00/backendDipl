@@ -3,9 +3,11 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
@@ -69,8 +71,8 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         studentRepository.deleteById(id);
     }
 
-    public List<ResultExamDTO> getResults(Integer id) {
-        List<ResultExam> resultsExam = resultExamRepository.findByExamId(id);
+    public List<ResultExamDTO> getExams(Integer id) {
+        List<ResultExam> resultsExam = resultExamRepository.findByStudentId(id);
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
 
         for(ResultExam resultExam:resultsExam){
