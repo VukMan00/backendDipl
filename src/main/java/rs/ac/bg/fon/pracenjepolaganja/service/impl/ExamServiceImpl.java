@@ -49,9 +49,6 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
 
     @Override
     public ExamDTO findById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         Optional<Exam> exam = examRepository.findById((Integer) id);
         ExamDTO examDTO;
         if(exam.isPresent()){
@@ -72,15 +69,12 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         if(examDTO==null){
             throw new NullPointerException("Exam can't be null");
         }
-        Exam exam = modelMapper.map(examDTO,Exam.class);
-        return modelMapper.map(examRepository.save(exam),ExamDTO.class);
+        Exam exam = examRepository.save(modelMapper.map(examDTO,Exam.class));
+        return modelMapper.map(exam,ExamDTO.class);
     }
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!examRepository.findById((Integer) id).isPresent()){
             throw new NotFoundException("Did not find Exam with id: " + id);
         }
@@ -88,9 +82,6 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     }
 
     public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
-        if(id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         List<ResultExam> resultsExam = resultExamRepository.findByExamId(id);
         if(resultsExam.isEmpty()){
             throw new NotFoundException("Did not find ResultExam with examId: " + id);
@@ -112,7 +103,6 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         return resultsExamDTO;
     }
 
-
     public ResultExamDTO saveResultExam(ResultExamDTO resultExamDTO) {
         if(resultExamDTO == null){
             throw new NullPointerException("ResultExam can't be null");
@@ -122,9 +112,6 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     }
 
     public void deleteResultExam(Integer studentId, Integer examId) throws NotFoundException {
-        if(examId<0 || studentId<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!resultExamRepository.findById(new ResultExamPK(examId,studentId)).isPresent()){
             throw new NotFoundException("Did not find ResultExam with id: " + new ResultExamPK(examId,studentId));
         }

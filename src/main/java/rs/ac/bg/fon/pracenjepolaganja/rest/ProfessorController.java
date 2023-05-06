@@ -1,12 +1,12 @@
 package rs.ac.bg.fon.pracenjepolaganja.rest;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ProfessorDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.ProfessorServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.TestServiceImpl;
@@ -38,12 +38,12 @@ public class ProfessorController {
     }
 
     @PostMapping
-    public ResponseEntity<ProfessorDTO> save(@RequestBody ProfessorDTO professorDTO){
+    public ResponseEntity<ProfessorDTO> save(@Valid @RequestBody ProfessorDTO professorDTO){
         return new ResponseEntity<>(professorService.save(professorDTO), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<ProfessorDTO> update(@RequestBody ProfessorDTO professorDTO){
+    public ResponseEntity<ProfessorDTO> update(@Valid @RequestBody ProfessorDTO professorDTO){
         return new ResponseEntity<>(professorService.save(professorDTO), HttpStatus.OK);
     }
 

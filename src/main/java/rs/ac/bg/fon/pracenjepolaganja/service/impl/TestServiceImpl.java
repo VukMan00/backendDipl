@@ -48,9 +48,6 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
 
     @Override
     public TestDTO findById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         Optional<Test> test = testRepository.findById((Integer) id);
         TestDTO testDTO;
         if(test.isPresent()){
@@ -75,9 +72,6 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!testRepository.findById((Integer)id).isPresent()){
             throw new NotFoundException("Did not find Test with id: " + id);
         }
@@ -85,9 +79,6 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     public List<TestDTO> getTests(Integer professorId) throws NotFoundException {
-        if(professorId<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         List<TestDTO> tests = testRepository.findByAuthor(professorId).stream().map(test->modelMapper.map(test,TestDTO.class))
                 .collect(Collectors.toList());
         if(tests.isEmpty()){
@@ -105,9 +96,6 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     public void deleteQuestionTest(Integer testId, Integer questionId) throws NotFoundException {
-        if(testId<0 || questionId<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!questionTestRepository.findById(new QuestionTestPK(questionId,testId)).isPresent()){
             throw new NotFoundException("Did not find QuestionTest with id: " + new QuestionTestPK(questionId,testId));
         }
@@ -115,9 +103,6 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     public List<QuestionTestDTO> getQuestions(Integer questionId) throws NotFoundException {
-        if(questionId<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         List<QuestionTest> questionTests = questionTestRepository.findByQuestionId(questionId);
         if(questionTests.isEmpty()){
             throw new NotFoundException("Did not find QuestionsTest with questionId: " + questionId);

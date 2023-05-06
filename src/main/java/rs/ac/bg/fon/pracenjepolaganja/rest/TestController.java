@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.rest;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class TestController {
     }
 
     @PostMapping
-    public ResponseEntity<TestDTO> save(@RequestBody TestDTO testDTO){
+    public ResponseEntity<TestDTO> save(@Valid @RequestBody TestDTO testDTO){
         return new ResponseEntity<>(testService.save(testDTO), HttpStatus.CREATED);
     }
 
@@ -53,12 +54,12 @@ public class TestController {
     }
 
     @PostMapping("/questions")
-    public ResponseEntity<QuestionTestDTO> saveQuestionTest(@RequestBody QuestionTestDTO questionTestDTO){
+    public ResponseEntity<QuestionTestDTO> saveQuestionTest(@Valid @RequestBody QuestionTestDTO questionTestDTO){
         return new ResponseEntity<>(testService.saveQuestionTest(questionTestDTO),HttpStatus.CREATED);
     }
 
     @PutMapping("/questions")
-    public ResponseEntity<QuestionTestDTO> updateQuestionTest(@RequestBody QuestionTestDTO questionTestDTO){
+    public ResponseEntity<QuestionTestDTO> updateQuestionTest(@Valid @RequestBody QuestionTestDTO questionTestDTO){
         return new ResponseEntity<>(testService.saveQuestionTest(questionTestDTO),HttpStatus.OK);
     }
 

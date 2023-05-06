@@ -34,9 +34,6 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
 
     @Override
     public ProfessorDTO findById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         Optional<Professor> professor = professorRepository.findById((Integer) id);
         ProfessorDTO professorDTO;
         if(professor.isPresent()){
@@ -59,9 +56,6 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!professorRepository.findById((Integer)id).isPresent()){
             throw new NotFoundException("Did not find Professor with id: " + id);
         }

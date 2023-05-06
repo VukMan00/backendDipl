@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.rest;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +29,17 @@ public class AnswerController {
     }
 
     @GetMapping("/{answerId}/question/{questionId}")
-    public ResponseEntity<AnswerDTO> findById(@PathVariable("answerId") Integer answerId,@PathVariable("questionId") Integer questionId) throws NotFoundException {
+    public ResponseEntity<AnswerDTO> findById(@PathVariable("answerId") Integer answerId, @PathVariable("questionId") Integer questionId) throws NotFoundException {
         return ResponseEntity.ok().body(answerService.findById(new AnswerPK(answerId,questionId)));
     }
 
     @PostMapping
-    public ResponseEntity<AnswerDTO> save(@RequestBody AnswerDTO answerDTO){
+    public ResponseEntity<AnswerDTO> save(@Valid @RequestBody AnswerDTO answerDTO){
         return new ResponseEntity<>(answerService.save(answerDTO), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<AnswerDTO> update(@RequestBody AnswerDTO answerDTO){
+    public ResponseEntity<AnswerDTO> update(@Valid @RequestBody AnswerDTO answerDTO){
         return new ResponseEntity<>(answerService.save(answerDTO), HttpStatus.OK);
     }
 

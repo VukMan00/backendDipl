@@ -42,9 +42,6 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
 
     @Override
     public QuestionDTO findById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         Optional<Question> question = questionRepository.findById((Integer) id);
         QuestionDTO questionDTO;
         if(question.isPresent()){
@@ -67,9 +64,6 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!questionRepository.findById((Integer)id).isPresent()){
             throw new NotFoundException("Did not find Question with id: " + id);
         }
@@ -77,9 +71,6 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     }
 
     public List<QuestionTestDTO> getTests(Integer testId) throws NotFoundException {
-        if(testId<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
         if(questionTests.isEmpty()){
             throw new NotFoundException("Did not find QuestionTest with testId: " + testId);

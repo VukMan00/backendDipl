@@ -1,12 +1,12 @@
 package rs.ac.bg.fon.pracenjepolaganja.rest;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.ExamServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.StudentServiceImpl;
@@ -38,7 +38,7 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentDTO> save(@RequestBody StudentDTO studentDTO){
+    public ResponseEntity<StudentDTO> save(@Valid @RequestBody StudentDTO studentDTO){
         return new ResponseEntity<>(studentService.save(studentDTO), HttpStatus.CREATED);
     }
 
@@ -54,12 +54,12 @@ public class StudentController {
     }
 
     @PostMapping("/results")
-    public ResponseEntity<ResultExamDTO> saveResultExam(@RequestBody ResultExamDTO resultExamDTO){
+    public ResponseEntity<ResultExamDTO> saveResultExam(@Valid @RequestBody ResultExamDTO resultExamDTO){
         return new ResponseEntity<>(examService.saveResultExam(resultExamDTO),HttpStatus.CREATED);
     }
 
     @PutMapping("/results")
-    public ResponseEntity<ResultExamDTO> updateResultExam(@RequestBody ResultExamDTO resultExamDTO){
+    public ResponseEntity<ResultExamDTO> updateResultExam(@Valid @RequestBody ResultExamDTO resultExamDTO){
         return new ResponseEntity<>(examService.saveResultExam(resultExamDTO),HttpStatus.OK);
     }
 

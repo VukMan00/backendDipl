@@ -45,9 +45,6 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     @Override
     public AnswerDTO findById(Object id) throws NotFoundException {
         AnswerPK answerPK = (AnswerPK)id;
-        if(answerPK.getAnswerId()<0 || answerPK.getQuestionId()<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         Optional<Answer> answer = answerRepository.findById(answerPK);
         AnswerDTO answerDTO;
         if(answer.isPresent()){
@@ -73,9 +70,6 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     @Override
     public void deleteById(Object id) throws NotFoundException {
         AnswerPK answerPK = (AnswerPK) id;
-        if(answerPK.getAnswerId()<0 || answerPK.getQuestionId()<0) {
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!answerRepository.findById(answerPK).isPresent()){
             throw new NotFoundException("Did not find Answer with id: "+ answerPK);
         }

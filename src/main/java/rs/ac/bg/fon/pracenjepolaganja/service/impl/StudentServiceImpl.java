@@ -40,9 +40,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     @Override
     public StudentDTO findById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         Optional<Student> student = studentRepository.findById((Integer) id);
         StudentDTO studentDTO;
         if(student.isPresent()){
@@ -65,9 +62,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if((Integer)id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         if(!studentRepository.findById((Integer)id).isPresent()){
             throw new NotFoundException("Did not find Test with id: " + id);
         }
@@ -75,9 +69,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     }
 
     public List<ResultExamDTO> getExams(Integer id) throws NotFoundException {
-        if(id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(id);
         if(resultsExam.isEmpty()){
             throw new NotFoundException("Did not find ResultExam with studentId: " +id);
@@ -95,7 +86,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
             resultsExamDTO.add(resultExamDTO);
         }
-
         return resultsExamDTO;
     }
 }
