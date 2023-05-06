@@ -10,6 +10,7 @@ import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
@@ -40,17 +41,19 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     }
 
     @Override
-    public QuestionDTO findById(Object id) {
+    public QuestionDTO findById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         Optional<Question> question = questionRepository.findById((Integer) id);
-        Question theQuestion = null;
-
+        QuestionDTO questionDTO;
         if(question.isPresent()){
-            theQuestion = question.get();
+            questionDTO = modelMapper.map(question.get(),QuestionDTO.class);
         }
         else {
-            throw new RuntimeException("Did not find Question with id - " + (Integer)id);
+            throw new NotFoundException("Did not find Question with id: " + id);
         }
-        return modelMapper.map(theQuestion,QuestionDTO.class);
+        return questionDTO;
     }
 
     @Override
@@ -63,17 +66,26 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     }
 
     @Override
-    public void deleteById(Integer id) {
-        if(id<0){
+    public void deleteById(Object id) throws NotFoundException {
+        if((Integer)id<0){
             throw new IllegalArgumentException("Id starts from zero");
         }
-        questionRepository.deleteById(id);
+        if(!questionRepository.findById((Integer)id).isPresent()){
+            throw new NotFoundException("Did not find Question with id: " + id);
+        }
+        questionRepository.deleteById((Integer)id);
     }
 
-    public List<QuestionTestDTO> getTests(Integer testId) {
+    public List<QuestionTestDTO> getTests(Integer testId) throws NotFoundException {
+        if(testId<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
-        List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
+        if(questionTests.isEmpty()){
+            throw new NotFoundException("Did not find QuestionTest with testId: " + testId);
+        }
 
+        List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for(QuestionTest questionTest:questionTests){
             QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
             TestDTO testDTO = modelMapper.map(questionTest.getTest(),TestDTO.class);

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.AnswerServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.QuestionServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.TestServiceImpl;
@@ -36,7 +37,7 @@ public class QuestionController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<QuestionDTO> findById(@PathVariable Integer id){
+    public ResponseEntity<QuestionDTO> findById(@PathVariable Integer id) throws NotFoundException {
         return ResponseEntity.ok().body(questionService.findById(id));
     }
 
@@ -46,18 +47,18 @@ public class QuestionController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         questionService.deleteById(id);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
 
     @GetMapping("/{id}/answers")
-    public List<AnswerDTO> getAnswers(@PathVariable("id")Integer id){
+    public List<AnswerDTO> getAnswers(@PathVariable("id")Integer id) throws NotFoundException {
         return answerService.getAnswers(id);
     }
 
     @GetMapping("/{id}/tests")
-    public List<QuestionTestDTO> getTests(@PathVariable("id")Integer id){
+    public List<QuestionTestDTO> getTests(@PathVariable("id")Integer id) throws NotFoundException {
         return questionService.getTests(id);
     }
 
@@ -72,7 +73,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{questionId}/tests/{testId}")
-    public ResponseEntity<String> deleteQuestionTest(@PathVariable("questionId") Integer questionId, @PathVariable("testId") Integer testId){
+    public ResponseEntity<String> deleteQuestionTest(@PathVariable("questionId") Integer questionId, @PathVariable("testId") Integer testId) throws NotFoundException {
         testService.deleteQuestionTest(testId,questionId);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }

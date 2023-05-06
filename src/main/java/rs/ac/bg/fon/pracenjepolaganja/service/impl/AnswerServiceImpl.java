@@ -7,8 +7,8 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.AnswerRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
@@ -43,20 +43,21 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     }
 
     @Override
-    public AnswerDTO findById(Object answerPK) {
-        Optional<Answer> answer = answerRepository.findById((AnswerPK) answerPK);
-
-        Answer theAnswer = null;
-        QuestionDTO questionDTO = null;
+    public AnswerDTO findById(Object id) throws NotFoundException {
+        AnswerPK answerPK = (AnswerPK)id;
+        if(answerPK.getAnswerId()<0 || answerPK.getQuestionId()<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
+        Optional<Answer> answer = answerRepository.findById(answerPK);
+        AnswerDTO answerDTO;
         if(answer.isPresent()){
-            theAnswer = answer.get();
-            questionDTO = modelMapper.map(theAnswer.getQuestion(), QuestionDTO.class);
+            QuestionDTO questionDTO = modelMapper.map(answer.get().getQuestion(), QuestionDTO.class);
+            answerDTO = modelMapper.map(answer.get(),AnswerDTO.class);
+            answerDTO.setQuestion(questionDTO);
         }
         else{
-            throw new RuntimeException("Did not find Answer with id" + (AnswerPK)answerPK);
+            throw new NotFoundException("Did not find Answer with id: " + answerPK);
         }
-        AnswerDTO answerDTO = modelMapper.map(theAnswer,AnswerDTO.class);
-        answerDTO.setQuestion(questionDTO);
         return answerDTO;
     }
 
@@ -65,23 +66,32 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         if(answerDTO==null){
             throw new NullPointerException("Answer can't be null");
         }
-
         Answer answer = answerRepository.save(modelMapper.map(answerDTO,Answer.class));
         return modelMapper.map(answer,AnswerDTO.class);
     }
 
     @Override
-    public void deleteById(Integer id) {
-        if(id<0){
+    public void deleteById(Object id) throws NotFoundException {
+        AnswerPK answerPK = (AnswerPK) id;
+        if(answerPK.getAnswerId()<0 || answerPK.getQuestionId()<0) {
             throw new IllegalArgumentException("Id starts from zero");
         }
-        AnswerPK answerPK = new AnswerPK();
-        answerPK.setId(id);
+        if(!answerRepository.findById(answerPK).isPresent()){
+            throw new NotFoundException("Did not find Answer with id: "+ answerPK);
+        }
         answerRepository.deleteById(answerPK);
     }
 
-    public List<AnswerDTO> getAnswers(Integer id) {
-        return answerRepository.findByQuestionId(id).stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
+    public List<AnswerDTO> getAnswers(Integer id) throws NotFoundException {
+        if(id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
+        List<AnswerDTO> answers = answerRepository.findByQuestionId(id).stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
                 .collect(Collectors.toList());
+        if(answers.isEmpty()){
+            throw new NotFoundException("Didn't find answers for Question with id: " + id);
+        }
+
+        return answers;
     }
 }

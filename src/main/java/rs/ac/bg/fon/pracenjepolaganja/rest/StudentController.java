@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.ExamServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.StudentServiceImpl;
 
@@ -32,7 +33,7 @@ public class StudentController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<StudentDTO> findById(@PathVariable Integer id){
+    public ResponseEntity<StudentDTO> findById(@PathVariable Integer id) throws NotFoundException {
         return ResponseEntity.ok().body(studentService.findById(id));
     }
 
@@ -42,13 +43,13 @@ public class StudentController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         studentService.deleteById(id);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
 
     @GetMapping("/{id}/exams")
-    public List<ResultExamDTO> getExams(@PathVariable Integer id){
+    public List<ResultExamDTO> getExams(@PathVariable Integer id) throws NotFoundException {
         return studentService.getExams(id);
     }
 
@@ -63,7 +64,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/{studentId}/exams/{examId}")
-    public ResponseEntity<String> deleteResultExam(@PathVariable("studentId") Integer studentId, @PathVariable("examId") Integer examId){
+    public ResponseEntity<String> deleteResultExam(@PathVariable("studentId") Integer studentId, @PathVariable("examId") Integer examId) throws NotFoundException {
         examService.deleteResultExam(studentId,examId);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }

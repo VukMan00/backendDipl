@@ -3,13 +3,12 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
@@ -40,16 +39,17 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     }
 
     @Override
-    public StudentDTO findById(Object id) {
+    public StudentDTO findById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         Optional<Student> student = studentRepository.findById((Integer) id);
-        Student theStudent = null;
-        StudentDTO studentDTO = null;
+        StudentDTO studentDTO;
         if(student.isPresent()){
-            theStudent = student.get();
-            studentDTO = modelMapper.map(theStudent,StudentDTO.class);
+            studentDTO = modelMapper.map(student.get(),StudentDTO.class);
         }
         else{
-            throw new RuntimeException("Did not find Student with id - " + (Integer)id);
+            throw new NotFoundException("Did not find Student with id: " + id);
         }
         return studentDTO;
     }
@@ -64,17 +64,25 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
+        if(!studentRepository.findById((Integer)id).isPresent()){
+            throw new NotFoundException("Did not find Test with id: " + id);
+        }
+        studentRepository.deleteById((Integer)id);
+    }
+
+    public List<ResultExamDTO> getExams(Integer id) throws NotFoundException {
         if(id<0){
             throw new IllegalArgumentException("Id starts from zero");
         }
-        studentRepository.deleteById(id);
-    }
-
-    public List<ResultExamDTO> getExams(Integer id) {
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(id);
+        if(resultsExam.isEmpty()){
+            throw new NotFoundException("Did not find ResultExam with studentId: " +id);
+        }
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
-
         for(ResultExam resultExam:resultsExam){
             StudentDTO studentDTO = modelMapper.map(resultExam.getStudent(),StudentDTO.class);
             ExamDTO examDTO = modelMapper.map(resultExam.getExam(),ExamDTO.class);

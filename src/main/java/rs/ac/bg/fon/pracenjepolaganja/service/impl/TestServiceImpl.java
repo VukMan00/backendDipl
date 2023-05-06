@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Professor;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
-import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
@@ -49,19 +47,19 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     @Override
-    public TestDTO findById(Object id) {
+    public TestDTO findById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         Optional<Test> test = testRepository.findById((Integer) id);
-
-        Test theTest = null;
-        TestDTO testDTO = null;
+        TestDTO testDTO;
         if(test.isPresent()){
-            theTest = test.get();
-            ProfessorDTO professorDTO = modelMapper.map(theTest.getAuthor(),ProfessorDTO.class);
-            testDTO = modelMapper.map(theTest,TestDTO.class);
+            ProfessorDTO professorDTO = modelMapper.map(test.get().getAuthor(),ProfessorDTO.class);
+            testDTO = modelMapper.map(test.get(),TestDTO.class);
             testDTO.setProfessor(professorDTO);
         }
         else{
-            throw new RuntimeException("Did not find Test with id - " + (Integer)id);
+            throw new NotFoundException("Did not find Test with id: " + id);
         }
         return testDTO;
     }
@@ -76,16 +74,26 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     @Override
-    public void deleteById(Integer id) {
-        if(id<0){
+    public void deleteById(Object id) throws NotFoundException {
+        if((Integer)id<0){
             throw new IllegalArgumentException("Id starts from zero");
         }
-        testRepository.deleteById(id);
+        if(!testRepository.findById((Integer)id).isPresent()){
+            throw new NotFoundException("Did not find Test with id: " + id);
+        }
+        testRepository.deleteById((Integer)id);
     }
 
-    public List<TestDTO> getTests(Integer professorId) {
-        return testRepository.findByAuthor(professorId).stream().map(test->modelMapper.map(test,TestDTO.class))
+    public List<TestDTO> getTests(Integer professorId) throws NotFoundException {
+        if(professorId<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
+        List<TestDTO> tests = testRepository.findByAuthor(professorId).stream().map(test->modelMapper.map(test,TestDTO.class))
                 .collect(Collectors.toList());
+        if(tests.isEmpty()){
+            throw new NotFoundException("Did not find Tests with professorId: " + professorId);
+        }
+        return tests;
     }
 
     public QuestionTestDTO saveQuestionTest(QuestionTestDTO questionTestDTO) {
@@ -96,17 +104,25 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         return modelMapper.map(questionTest,QuestionTestDTO.class);
     }
 
-    public void deleteQuestionTest(Integer testId, Integer questionId) {
+    public void deleteQuestionTest(Integer testId, Integer questionId) throws NotFoundException {
         if(testId<0 || questionId<0){
             throw new IllegalArgumentException("Id starts from zero");
+        }
+        if(!questionTestRepository.findById(new QuestionTestPK(questionId,testId)).isPresent()){
+            throw new NotFoundException("Did not find QuestionTest with id: " + new QuestionTestPK(questionId,testId));
         }
         questionTestRepository.deleteById(new QuestionTestPK(questionId,testId));
     }
 
-    public List<QuestionTestDTO> getQuestions(Integer questionId) {
+    public List<QuestionTestDTO> getQuestions(Integer questionId) throws NotFoundException {
+        if(questionId<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         List<QuestionTest> questionTests = questionTestRepository.findByQuestionId(questionId);
+        if(questionTests.isEmpty()){
+            throw new NotFoundException("Did not find QuestionsTest with questionId: " + questionId);
+        }
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
-
         for(QuestionTest questionTest:questionTests){
             QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
             TestDTO testDTO = modelMapper.map(questionTest.getTest(),TestDTO.class);

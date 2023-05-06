@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class AnswerPK implements Serializable {
 
     @Basic(optional = false)
-    private Integer id;
+    private Integer answerId;
 
     @Basic(optional = false)
     private Integer questionId;

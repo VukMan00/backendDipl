@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.QuestionServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.TestServiceImpl;
 
@@ -31,7 +32,7 @@ public class TestController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<TestDTO> findById(@PathVariable Integer id){
+    public ResponseEntity<TestDTO> findById(@PathVariable Integer id) throws NotFoundException {
         return ResponseEntity.ok().body(testService.findById(id));
     }
 
@@ -41,13 +42,13 @@ public class TestController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         testService.deleteById(id);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
 
     @GetMapping("/{id}/questions")
-    public List<QuestionTestDTO> getQuestions(@PathVariable("id") Integer id){
+    public List<QuestionTestDTO> getQuestions(@PathVariable("id") Integer id) throws NotFoundException {
         return testService.getQuestions(id);
     }
 
@@ -62,7 +63,7 @@ public class TestController {
     }
 
     @DeleteMapping("/{testId}/questions/{questionId}")
-    public ResponseEntity<String> deleteQuestionTest(@PathVariable("testId") Integer testId, @PathVariable("questionId") Integer questionId){
+    public ResponseEntity<String> deleteQuestionTest(@PathVariable("testId") Integer testId, @PathVariable("questionId") Integer questionId) throws NotFoundException {
         testService.deleteQuestionTest(testId,questionId);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }

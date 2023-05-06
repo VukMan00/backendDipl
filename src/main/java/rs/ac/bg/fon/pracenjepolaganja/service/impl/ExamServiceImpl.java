@@ -8,8 +8,8 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
@@ -39,6 +39,8 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         for(Exam exam:exams){
             TestDTO testDTO = modelMapper.map(exam.getTest(),TestDTO.class);
             ExamDTO examDTO = modelMapper.map(exam,ExamDTO.class);
+            ProfessorDTO professorDTO = modelMapper.map(exam.getTest().getAuthor(),ProfessorDTO.class);
+            testDTO.setProfessor(professorDTO);
             examDTO.setTest(testDTO);
             examsDTO.add(examDTO);
         }
@@ -46,21 +48,22 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     }
 
     @Override
-    public ExamDTO findById(Object id) {
+    public ExamDTO findById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         Optional<Exam> exam = examRepository.findById((Integer) id);
-
-        TestDTO testDTO = null;
-        Exam theExam = null;
+        ExamDTO examDTO;
         if(exam.isPresent()){
-            theExam = exam.get();
-            testDTO = modelMapper.map(theExam.getTest(),TestDTO.class);
+            TestDTO testDTO = modelMapper.map(exam.get().getTest(),TestDTO.class);
+            examDTO = modelMapper.map(exam.get(),ExamDTO.class);
+            ProfessorDTO professorDTO = modelMapper.map(exam.get().getTest().getAuthor(),ProfessorDTO.class);
+            testDTO.setProfessor(professorDTO);
+            examDTO.setTest(testDTO);
         }
         else{
-            throw new RuntimeException("Did not find Exam with id - " + (Integer)id);
+            throw new NotFoundException("Did not find Exam with id: " + id);
         }
-
-        ExamDTO examDTO = modelMapper.map(theExam,ExamDTO.class);
-        examDTO.setTest(testDTO);
         return examDTO;
     }
 
@@ -74,17 +77,25 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
+        if(!examRepository.findById((Integer) id).isPresent()){
+            throw new NotFoundException("Did not find Exam with id: " + id);
+        }
+        examRepository.deleteById((Integer) id);
+    }
+
+    public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         if(id<0){
             throw new IllegalArgumentException("Id starts from zero");
         }
-        examRepository.deleteById(id);
-    }
-
-    public List<ResultExamDTO> getResults(Integer id) {
         List<ResultExam> resultsExam = resultExamRepository.findByExamId(id);
+        if(resultsExam.isEmpty()){
+            throw new NotFoundException("Did not find ResultExam with examId: " + id);
+        }
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
-
         for(ResultExam resultExam:resultsExam){
             StudentDTO studentDTO = modelMapper.map(resultExam.getStudent(),StudentDTO.class);
             ExamDTO examDTO = modelMapper.map(resultExam.getExam(),ExamDTO.class);
@@ -110,9 +121,12 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         return modelMapper.map(resultExam,ResultExamDTO.class);
     }
 
-    public void deleteResultExam(Integer studentId, Integer examId) {
+    public void deleteResultExam(Integer studentId, Integer examId) throws NotFoundException {
         if(examId<0 || studentId<0){
             throw new IllegalArgumentException("Id starts from zero");
+        }
+        if(!resultExamRepository.findById(new ResultExamPK(examId,studentId)).isPresent()){
+            throw new NotFoundException("Did not find ResultExam with id: " + new ResultExamPK(examId,studentId));
         }
         resultExamRepository.deleteById(new ResultExamPK(examId,studentId));
     }

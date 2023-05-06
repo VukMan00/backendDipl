@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ProfessorDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Professor;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.List;
@@ -32,16 +33,17 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
     }
 
     @Override
-    public ProfessorDTO findById(Object id) {
+    public ProfessorDTO findById(Object id) throws NotFoundException {
+        if((Integer)id<0){
+            throw new IllegalArgumentException("Id starts from zero");
+        }
         Optional<Professor> professor = professorRepository.findById((Integer) id);
-        Professor theProfessor = null;
-        ProfessorDTO professorDTO = null;
+        ProfessorDTO professorDTO;
         if(professor.isPresent()){
-            theProfessor = professor.get();
-            professorDTO = modelMapper.map(theProfessor,ProfessorDTO.class);
+            professorDTO = modelMapper.map(professor.get(),ProfessorDTO.class);
         }
         else{
-            throw new RuntimeException("Did not find professor with id - " + (Integer)id);
+            throw new NotFoundException("Did not find professor with id: " + id);
         }
         return professorDTO;
     }
@@ -56,10 +58,13 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
     }
 
     @Override
-    public void deleteById(Integer id) {
-        if(id<0){
+    public void deleteById(Object id) throws NotFoundException {
+        if((Integer)id<0){
             throw new IllegalArgumentException("Id starts from zero");
         }
-        professorRepository.deleteById(id);
+        if(!professorRepository.findById((Integer)id).isPresent()){
+            throw new NotFoundException("Did not find Professor with id: " + id);
+        }
+        professorRepository.deleteById((Integer)id);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ProfessorDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.ProfessorServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.TestServiceImpl;
 
@@ -32,7 +33,7 @@ public class ProfessorController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ProfessorDTO> findById(@PathVariable Integer id){
+    public ResponseEntity<ProfessorDTO> findById(@PathVariable Integer id) throws NotFoundException {
         return ResponseEntity.ok().body(professorService.findById(id));
     }
 
@@ -47,13 +48,13 @@ public class ProfessorController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         professorService.deleteById(id);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
 
     @GetMapping("/{id}/tests")
-    public List<TestDTO> getTests(@PathVariable("id") Integer id){
+    public List<TestDTO> getTests(@PathVariable("id") Integer id) throws NotFoundException {
         return testService.getTests(id);
     }
 }
