@@ -18,7 +18,7 @@ public class ExamDTO{
     private String name;
 
     @NotNull(message = "Date is mandatory")
-    @FutureOrPresent(message = "Date of exam must be at current time or in the future")
+    @FutureOrPresent(message = "Date of exam must be at current date or in the future")
     private Date date;
 
     @NotBlank(message = "Amphitheater is mandatory")

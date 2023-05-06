@@ -9,15 +9,28 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * Represent complex primary key of association class ResultExam.
+ *
+ * @author Vuk Manojlovic
+ */
 @Embeddable
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResultExamPK implements Serializable {
 
+    /**
+     * Primary key of entity ResultExam and
+     * foreign key that reference to exam.
+     */
     @Basic(optional = false)
     private Integer examId;
 
+    /**
+     * Primary key of entity ResultExam and
+     * foreign key that reference to student.
+     */
     @Basic(optional = false)
     private Integer studentId;
 }
