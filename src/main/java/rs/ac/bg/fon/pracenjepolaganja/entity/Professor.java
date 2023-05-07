@@ -47,6 +47,7 @@ public class Professor implements Serializable {
 
     /**
      * Faculty email of professor.
+     * Email must be in valid form.
      */
     @Column(name = "email")
     private String email;

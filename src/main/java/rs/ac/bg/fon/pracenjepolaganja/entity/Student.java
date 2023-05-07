@@ -64,6 +64,7 @@ public class Student implements Serializable {
 
     /**
      * Faculty email of student.
+     * Email must be in valid form.
      */
     @Column(name = "email")
     private String email;
