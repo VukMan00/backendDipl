@@ -1,6 +1,5 @@
 package rs.ac.bg.fon.pracenjepolaganja.service;
 
-import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 
 import java.util.List;
