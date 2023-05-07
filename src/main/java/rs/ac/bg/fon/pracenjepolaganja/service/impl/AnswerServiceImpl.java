@@ -16,11 +16,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Represents implementation of service interface with Answer entity.
+ * T parameter is provided with AnswerDTO.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
 
+    /**
+     * Reference variable of AnswerRepository class.
+     */
     private AnswerRepository answerRepository;
 
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
     @Autowired
     private ModelMapper modelMapper;
 
@@ -76,6 +89,14 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         answerRepository.deleteById(answerPK);
     }
 
+    /**
+     * Retrieves all answers that question has.
+     * Method is called from QuestionController.
+     *
+     * @param id id of question whose answers are needed.
+     * @return list of answers in DTO form.
+     * @throws NotFoundException if question of the given id does not have answers.
+     */
     public List<AnswerDTO> getAnswers(Integer id) throws NotFoundException {
         if(id<0){
             throw new IllegalArgumentException("Id starts from zero");

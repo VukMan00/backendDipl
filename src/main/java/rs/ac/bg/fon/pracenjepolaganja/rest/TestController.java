@@ -113,11 +113,11 @@ public class TestController {
      *
      * @param id of test whose questions and points are needed
      * @return list of QuestionTestDTO objects
-     * @throws NotFoundException if QuestionTest entities with given test id does not exist in database.
+     * @throws NotFoundException if QuestionTest entities with given test id does not exist in database
      */
     @GetMapping("/{id}/questions")
     public List<QuestionTestDTO> getQuestions(@PathVariable("id") Integer id) throws NotFoundException {
-        return testService.getQuestions(id);
+        return questionService.getQuestions(id);
     }
 
     /**
@@ -148,7 +148,7 @@ public class TestController {
     /**
      * Deletes question from test, questionTest entity.
      *
-     * @param testId id of test whose question is going to be deleted.
+     * @param testId id of test whose question is going to be deleted
      * @param questionId id of question that is going to be deleted
      * @return object of ResponseEntity that contains String if deleting is successfully
      * @throws NotFoundException if QuestionTest with given ids does not exist in database

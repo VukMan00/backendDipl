@@ -13,11 +13,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Represents implementation of service interface with Professor entity.
+ * T parameter is provided with ProfessorDTO.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
 
+    /**
+     * Reference variable of ProfessorRepository class.
+     */
     private ProfessorRepository professorRepository;
 
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
     @Autowired
     private ModelMapper modelMapper;
 

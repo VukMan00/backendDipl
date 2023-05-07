@@ -117,7 +117,7 @@ public class StudentController {
      */
     @GetMapping("/{id}/exams")
     public List<ResultExamDTO> getResults(@PathVariable Integer id) throws NotFoundException {
-        return studentService.getExams(id);
+        return studentService.getResults(id);
     }
 
     /**

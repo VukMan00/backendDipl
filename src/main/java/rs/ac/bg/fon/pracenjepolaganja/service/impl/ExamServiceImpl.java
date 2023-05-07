@@ -16,13 +16,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents implementation of service interface with Exam entity.
+ * T parameter is provided with ExamDTO.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
 
+    /**
+     * Reference variable of ExamRepository class.
+     */
     private ExamRepository examRepository;
 
+    /**
+     * Reference variable of ResultExamRepository class.
+     */
     private ResultExamRepository resultExamRepository;
 
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
     @Autowired
     private ModelMapper modelMapper;
 
@@ -81,6 +97,14 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         examRepository.deleteById((Integer) id);
     }
 
+    /**
+     * Retrieves results of exam.
+     * Results are sent back in DTO form.
+     *
+     * @param id of exam whose results are needed
+     * @return list of ResultExamDTO objects
+     * @throws NotFoundException if ResultExam entities with given exam id does not exist in database
+     */
     public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByExamId(id);
         if(resultsExam.isEmpty()){
@@ -103,6 +127,15 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         return resultsExamDTO;
     }
 
+    /**
+     * Saves result of exam.
+     * ResultExam that is going to be saved is in DTO form.
+     * Connects one exam with another student.
+     *
+     * @param resultExamDTO resultExam in DTO form that needs to be saved
+     * @return saved resultExam entity in DTO form
+     * @throws NullPointerException if provided resultExamDTO is null
+     */
     public ResultExamDTO saveResultExam(ResultExamDTO resultExamDTO) {
         if(resultExamDTO == null){
             throw new NullPointerException("ResultExam can't be null");
@@ -111,6 +144,13 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         return modelMapper.map(resultExam,ResultExamDTO.class);
     }
 
+    /**
+     * Deletes result of exam.
+     *
+     * @param studentId id of student whose result is going to be deleted.
+     * @param examId id of exam whose result is going to be deleted.
+     * @throws NotFoundException if resultExam with given ids does not exist in database
+     */
     public void deleteResultExam(Integer studentId, Integer examId) throws NotFoundException {
         if(!resultExamRepository.findById(new ResultExamPK(examId,studentId)).isPresent()){
             throw new NotFoundException("Did not find ResultExam with id: " + new ResultExamPK(examId,studentId));

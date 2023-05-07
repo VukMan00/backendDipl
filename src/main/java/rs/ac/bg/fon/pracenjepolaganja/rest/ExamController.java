@@ -112,7 +112,7 @@ public class ExamController {
      *
      * @param id of exam whose results are needed
      * @return list of ResultExamDTO objects
-     * @throws NotFoundException if ResultExam entities with given exam id does not exist in database.
+     * @throws NotFoundException if ResultExam entities with given exam id does not exist in database
      */
     @GetMapping("/{id}/students")
     public List<ResultExamDTO> getResults(@PathVariable Integer id) throws NotFoundException {

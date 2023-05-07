@@ -138,7 +138,7 @@ public class QuestionController {
      */
     @GetMapping("/{id}/tests")
     public List<QuestionTestDTO> getTests(@PathVariable("id")Integer id) throws NotFoundException {
-        return questionService.getTests(id);
+        return testService.getTestsFromQuestion(id);
     }
 
     /**

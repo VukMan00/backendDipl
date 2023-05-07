@@ -16,13 +16,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Represents implementation of service interface with Student entity.
+ * T parameter is provided with StudentDTO.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
+    /**
+     * Reference variable of StudentRepository class.
+     */
     private StudentRepository studentRepository;
 
+    /**
+     * Reference variable of ResultExamRepository class.
+     */
     private ResultExamRepository resultExamRepository;
 
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
     @Autowired
     private ModelMapper modelMapper;
 
@@ -68,7 +84,15 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         studentRepository.deleteById((Integer)id);
     }
 
-    public List<ResultExamDTO> getExams(Integer id) throws NotFoundException {
+    /**
+     * Retrieves results of exam.
+     * Results of exam are in DTO form of ResultExam entity.
+     *
+     * @param id of student whose results are needed
+     * @return list of ResultExamDTO objects
+     * @throws NotFoundException if ResultExam entities with given student id does not exist in database.
+     */
+    public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(id);
         if(resultsExam.isEmpty()){
             throw new NotFoundException("Did not find ResultExam with studentId: " +id);

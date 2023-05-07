@@ -17,13 +17,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Represents implementation of service interface with Test entity.
+ * T parameter is provided with TestDTO.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class TestServiceImpl implements ServiceInterface<TestDTO> {
 
+    /**
+     * Reference variable of TestRepository class.
+     */
     private TestRepository testRepository;
 
+    /**
+     * Reference variable of QuestionTestRepository class.
+     */
     private QuestionTestRepository questionTestRepository;
 
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
     @Autowired
     private ModelMapper modelMapper;
 
@@ -87,6 +103,15 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         return tests;
     }
 
+    /**
+     * Saves the questionTest entity in database.
+     * QuestionTest entity is mapped in DTO form.
+     * Connects one test to another question.
+     *
+     * @param questionTestDTO questionTest in DTO form that needs to be saved
+     * @return saved questionTest entity in DTO form
+     * @throws NullPointerException if provided questionTestDTO is null
+     */
     public QuestionTestDTO saveQuestionTest(QuestionTestDTO questionTestDTO) {
         if(questionTestDTO==null){
             throw new NullPointerException("QuestionTest can't be null");
@@ -95,6 +120,13 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         return modelMapper.map(questionTest,QuestionTestDTO.class);
     }
 
+    /**
+     * Deletes question from test, questionTest entity.
+     *
+     * @param testId id of test whose question is going to be deleted
+     * @param questionId id of question that is going to be deleted
+     * @throws NotFoundException if QuestionTest with given ids does not exist in database
+     */
     public void deleteQuestionTest(Integer testId, Integer questionId) throws NotFoundException {
         if(!questionTestRepository.findById(new QuestionTestPK(questionId,testId)).isPresent()){
             throw new NotFoundException("Did not find QuestionTest with id: " + new QuestionTestPK(questionId,testId));
@@ -102,11 +134,22 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         questionTestRepository.deleteById(new QuestionTestPK(questionId,testId));
     }
 
-    public List<QuestionTestDTO> getQuestions(Integer questionId) throws NotFoundException {
+    /**
+     * Retrieves all tests where question belongs and points
+     * that question has in each test as list of QuestionTest objects.
+     * QuestionTest objects are mapped in DTO form.
+     * Method is called from QuestionController.
+     *
+     * @param questionId id of question whose points and tests are needed
+     * @return list of QuestionTestDTO objects
+     * @throws NotFoundException if QuestionTest entities with given question id does not exist in database.
+     */
+    public List<QuestionTestDTO> getTestsFromQuestion(Integer questionId) throws NotFoundException {
         List<QuestionTest> questionTests = questionTestRepository.findByQuestionId(questionId);
         if(questionTests.isEmpty()){
-            throw new NotFoundException("Did not find QuestionsTest with questionId: " + questionId);
+            throw new NotFoundException("Did not find QuestionTest with testId: " + questionId);
         }
+
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for(QuestionTest questionTest:questionTests){
             QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);

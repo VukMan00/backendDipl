@@ -18,13 +18,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Represents implementation of service interface with Question entity.
+ * T parameter is provided with QuestionDTO.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
 
+    /**
+     * Reference variable of QuestionRepository class.
+     */
     private QuestionRepository questionRepository;
 
+    /**
+     * Reference variable of QuestionTestRepository class.
+     */
     private QuestionTestRepository questionTestRepository;
 
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
     @Autowired
     private ModelMapper modelMapper;
 
@@ -70,12 +86,21 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         questionRepository.deleteById((Integer)id);
     }
 
-    public List<QuestionTestDTO> getTests(Integer testId) throws NotFoundException {
+    /**
+     * Retrieves all questions that test have and points
+     * for each question as list of QuestionTest objects.
+     * QuestionTest objects are mapped in DTO form.
+     * Method is called from TestController.
+     *
+     * @param testId of test whose questions and points are needed
+     * @return list of QuestionTestDTO objects
+     * @throws NotFoundException if QuestionTest entities with given test id does not exist in database
+     */
+    public List<QuestionTestDTO> getQuestions(Integer testId) throws NotFoundException {
         List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
         if(questionTests.isEmpty()){
-            throw new NotFoundException("Did not find QuestionTest with testId: " + testId);
+            throw new NotFoundException("Did not find QuestionsTest with testId: " + testId);
         }
-
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for(QuestionTest questionTest:questionTests){
             QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
