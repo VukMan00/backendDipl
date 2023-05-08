@@ -1,13 +1,11 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * Represent the student that solve test in one of the exams.
@@ -60,7 +58,7 @@ public class Student implements Serializable {
      */
     @Column(name = "birth")
     @Temporal(TemporalType.DATE)
-    private Date birth;
+    private LocalDate birth;
 
     /**
      * Faculty email of student.
@@ -73,6 +71,8 @@ public class Student implements Serializable {
      * References to the multiple exams that student can take.
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<ResultExam> resultExamCollectionCollection;
 
 }

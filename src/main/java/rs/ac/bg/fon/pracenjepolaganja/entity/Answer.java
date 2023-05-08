@@ -2,9 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
 
 import java.io.Serializable;
@@ -49,6 +47,8 @@ public class Answer implements Serializable {
     @JoinColumn(name="questionId",insertable = false, updatable = false)
     @ManyToOne(optional = false)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Question question;
 
     public Answer(AnswerPK answerPK){

@@ -1,9 +1,7 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
 
 import java.io.Serializable;
@@ -46,6 +44,8 @@ public class ResultExam implements Serializable {
      */
     @JoinColumn(name = "examId", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Exam exam;
 
     /**
@@ -53,6 +53,8 @@ public class ResultExam implements Serializable {
      */
     @JoinColumn(name = "studentId", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Student student;
 
 }

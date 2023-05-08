@@ -2,9 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -44,12 +42,16 @@ public class Test implements Serializable {
      */
     @JoinColumn(name="author",referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Professor author;
 
     /**
      * References to the multiple questions.
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "test")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<QuestionTest> questionTestCollection;
 
     /**
@@ -57,6 +59,8 @@ public class Test implements Serializable {
      */
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "test")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<Exam> examCollection;
 
 

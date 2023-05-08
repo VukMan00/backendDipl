@@ -2,9 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -57,6 +55,8 @@ public class Professor implements Serializable {
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<Test> tests;
 
 }

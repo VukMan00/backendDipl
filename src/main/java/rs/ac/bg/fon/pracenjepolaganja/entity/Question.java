@@ -2,9 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -42,6 +40,8 @@ public class Question implements Serializable {
      * References to multiple answers that question can have.
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<Answer> answers;
 
     /**
@@ -50,6 +50,8 @@ public class Question implements Serializable {
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<QuestionTest> questionTestsCollection;
 }
 

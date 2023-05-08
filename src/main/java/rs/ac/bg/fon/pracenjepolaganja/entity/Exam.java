@@ -2,12 +2,11 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * Represent exam where students take the test.
@@ -44,7 +43,7 @@ public class Exam implements Serializable {
      * Date can't be null
      */
     @Column(name="date")
-    private Date date;
+    private LocalDate date;
 
     /**
      * Amphitheater where exam is placed.
@@ -58,6 +57,8 @@ public class Exam implements Serializable {
      */
     @JoinColumn(name="testId",referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Test test;
 
     /**
@@ -65,5 +66,7 @@ public class Exam implements Serializable {
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "exam")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Collection<ResultExam> resultExamCollection;
 }
