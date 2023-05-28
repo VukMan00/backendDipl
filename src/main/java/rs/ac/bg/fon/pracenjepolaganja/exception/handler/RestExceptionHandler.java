@@ -2,6 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import rs.ac.bg.fon.pracenjepolaganja.exception.ErrorResponse;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,8 +53,40 @@ public class RestExceptionHandler {
         List<String> errors = ex.getBindingResult().getFieldErrors()
                 .stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
         ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors,System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+                new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(), errors,System.currentTimeMillis());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    /**
+     * Method that process all exceptions that are type of UsernameNotFoundException, provided by SpringSecurity.
+     * UsernameNotFoundException is caused when member, with given username, doesn't exist in database.
+     *
+     * @param ex UsernameNotFoundException that was thrown.
+     * @return object of ErrorResponse, JSON format of error that is sent to client.
+     */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(UsernameNotFoundException ex){
+        List<String> errors = new ArrayList<>();
+        errors.add(ex.getMessage());
+        ErrorResponse errorResponse =
+                new ErrorResponse(HttpStatus.NOT_FOUND.value(),errors,System.currentTimeMillis());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Method that process all exceptions that are type of SQLException.
+     * SQLException is caused by wrong sql query, when constraints of database are not satisfied.
+     *
+     * @param ex SQLException that was thrown.
+     * @return object of ErrorResponse, JSON format of error that is sent to client.
+     */
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<ErrorResponse> handleException(SQLException ex){
+        List<String> errors = new ArrayList<>();
+        errors.add(ex.getMessage());
+        ErrorResponse errorResponse =
+                new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(),errors,System.currentTimeMillis());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_ACCEPTABLE);
     }
 
     /**
@@ -67,8 +101,8 @@ public class RestExceptionHandler {
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
         ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(),errors,System.currentTimeMillis());
+                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),errors,System.currentTimeMillis());
 
-        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

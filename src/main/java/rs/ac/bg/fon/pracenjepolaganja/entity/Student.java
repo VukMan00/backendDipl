@@ -1,11 +1,13 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 
@@ -51,7 +53,7 @@ public class Student implements Serializable {
      * first four digits is first year of study and last four digits
      * are number of index.
      */
-    @Column(name = "index")
+    @Column(name = "numberIndex",unique = true)
     private String index;
 
     /**
@@ -60,13 +62,13 @@ public class Student implements Serializable {
      */
     @Column(name = "birth")
     @Temporal(TemporalType.DATE)
-    private Date birth;
+    private LocalDate birth;
 
     /**
      * Faculty email of student.
      * Email must be in valid form.
      */
-    @Column(name = "email")
+    @Column(name = "email",unique=true)
     private String email;
 
     /**
@@ -74,5 +76,13 @@ public class Student implements Serializable {
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student")
     private Collection<ResultExam> resultExamCollectionCollection;
+
+    /**
+     * References to the credentials of student
+     */
+    @JoinColumn(name="memberId",referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    @JsonIgnore
+    private Member memberStudent;
 
 }

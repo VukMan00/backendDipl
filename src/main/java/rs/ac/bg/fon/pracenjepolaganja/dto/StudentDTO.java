@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -50,7 +51,7 @@ public class StudentDTO{
      * Date can't be null or be ahead of current date.
      */
     @PastOrPresent(message = "Date can't be ahead of the current date")
-    private Date birth;
+    private LocalDate birth;
 
     /**
      * Faculty email of student.

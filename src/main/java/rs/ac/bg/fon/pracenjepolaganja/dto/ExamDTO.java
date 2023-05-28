@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -37,7 +38,7 @@ public class ExamDTO{
      */
     @NotNull(message = "Date is mandatory")
     @FutureOrPresent(message = "Date of exam must be at current date or in the future")
-    private Date date;
+    private LocalDate date;
 
     /**
      * Amphitheater where exam is placed.

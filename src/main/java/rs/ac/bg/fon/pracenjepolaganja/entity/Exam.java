@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 
@@ -44,7 +45,7 @@ public class Exam implements Serializable {
      * Date can't be null
      */
     @Column(name="date")
-    private Date date;
+    private LocalDate date;
 
     /**
      * Amphitheater where exam is placed.
