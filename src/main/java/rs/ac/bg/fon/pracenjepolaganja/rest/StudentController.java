@@ -91,7 +91,7 @@ public class StudentController {
      */
     @PutMapping
     public ResponseEntity<StudentDTO> update(@Valid @RequestBody StudentDTO studentDTO){
-        return new ResponseEntity<>(studentService.save(studentDTO), HttpStatus.OK);
+        return new ResponseEntity<>(studentService.update(studentDTO), HttpStatus.OK);
     }
 
     /**

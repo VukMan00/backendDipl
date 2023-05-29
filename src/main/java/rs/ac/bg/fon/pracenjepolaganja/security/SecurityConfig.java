@@ -5,13 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
@@ -21,13 +17,13 @@ public class SecurityConfig {
         http.csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests)->requests
                         .requestMatchers(HttpMethod.POST,"/answers/**","/questions/**",
-                                "/exams/**","/professors/**","/students/**","/tests/**").authenticated()
+                                "/exams/**","/professors/**","/students/**","/tests/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/answers/**","/questions/**",
-                                "/exams/**","/professors/**","/students/**","/tests/**").authenticated()
+                                "/exams/**","/professors/**","/students/**","/tests/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/answers/**","/questions/**",
-                                "/exams/**","/professors/**","/students/**","/tests/**").authenticated()
+                                "/exams/**","/professors/**","/students/**","/tests/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/answers/**","/questions/**",
-                                "/exams/**","/professors/**","/students/**","/tests/**").permitAll()
+                                "/exams/**","/professors/**","/students/**","/tests/**").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.POST,"/register").permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());

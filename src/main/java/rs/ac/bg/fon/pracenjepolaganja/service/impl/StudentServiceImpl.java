@@ -5,19 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.MemberRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Authority;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +45,11 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     private MemberRepository memberRepository;
 
     /**
+     * Reference variable of AuthorityRepository class.
+     */
+    private AuthorityRepository authorityRepository;
+
+    /**
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
@@ -58,10 +63,11 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository){
+    public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,AuthorityRepository authorityRepository){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
+        this.authorityRepository = authorityRepository;
     }
 
     @Override
@@ -91,21 +97,45 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         if(studentDTO.getEmail().contains("fon.bg.ac.rs")) {
             throw new UsernameNotFoundException("Member can't register with that email format");
         }
+
         Member member = new Member();
+        Authority authority = new Authority();
+        Set<Authority> authorities = new HashSet<>();
         Student student = modelMapper.map(studentDTO,Student.class);
-        if(student.getId()==null || !studentRepository.findById(student.getId()).isPresent()){
-            member.setUsername(student.getEmail());
-            member.setRole("ROLE_USER");
-            member.setPassword(passwordEncoder.encode(student.getIndex()));
+
+        member.setUsername(student.getEmail());
+        member.setPassword(passwordEncoder.encode(student.getIndex()));
+        Member savedMember = memberRepository.save(member);
+
+        authority.setName("ROLE_USER");
+        authority.setMember(savedMember);
+        authorities.add(authorityRepository.save(authority));
+
+        savedMember.setAuthorities(authorities);
+        student.setMemberStudent(savedMember);
+        return modelMapper.map(studentRepository.save(student),StudentDTO.class);
+    }
+
+    public StudentDTO update(StudentDTO studentDTO){
+        if(studentDTO==null){
+            throw new NullPointerException("Student can't be null");
         }
-        else if(studentRepository.findById(student.getId()).isPresent()){
-            Student dbStudent = studentRepository.findById(student.getId()).get();
-            Optional<Member> dbMember = memberRepository.findById(dbStudent.getMemberStudent().getId());
-            member = dbMember.get();
-            member.setUsername(student.getEmail());
+        if(studentDTO.getEmail().contains("fon.bg.ac.rs")) {
+            throw new UsernameNotFoundException("Member can't register with that email format");
+        }
+        Student student = modelMapper.map(studentDTO,Student.class);
+        Member member;
+
+        Optional<Student> optionalStudent = studentRepository.findById(student.getId());
+        if(optionalStudent.isPresent()){
+            Student dbStudent = optionalStudent.get();
+            member = dbStudent.getMemberStudent();
+            member.setUsername(dbStudent.getEmail());
+
+            Member savedMember = memberRepository.save(member);
+            student.setMemberStudent(savedMember);
         }
 
-        student.setMemberStudent(memberRepository.save(member));
         return modelMapper.map(studentRepository.save(student),StudentDTO.class);
     }
 
