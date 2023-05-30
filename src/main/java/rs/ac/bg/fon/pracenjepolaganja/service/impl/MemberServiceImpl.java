@@ -3,6 +3,7 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
@@ -14,6 +15,8 @@ import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -37,8 +40,8 @@ public class MemberServiceImpl {
 
     public ResponseEntity<String> registerMember(RegistrationDTO registrationDTO){
         String username = registrationDTO.getEmail();
-        if(username.contains("fon.bg.ac.rs")){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member can't register with that email format");
+        if(!username.toLowerCase().contains("@student.fon.bg.ac.rs")){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member can't register with given email. We need your faculty email!");
         }
         if(!memberRepository.findByUsername(username).isEmpty()){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member with given username already exists");
@@ -67,5 +70,15 @@ public class MemberServiceImpl {
         student.setMemberStudent(savedMember);
         studentRepository.save(student);
         return ResponseEntity.status(HttpStatus.CREATED).body("Member is successfully registered");
+    }
+
+    public Member getUserDetailsAfterLogin(Authentication authentication) {
+        List<Member> members = memberRepository.findByUsername(authentication.getName());
+        if (members.size() > 0) {
+            return members.get(0);
+        } else {
+            return null;
+        }
+
     }
 }

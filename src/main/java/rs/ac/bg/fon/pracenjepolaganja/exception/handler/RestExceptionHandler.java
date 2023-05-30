@@ -2,6 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -87,6 +88,22 @@ public class RestExceptionHandler {
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(),errors,System.currentTimeMillis());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    /**
+     * Method that process all exceptions that are type of BadCredentialsException.
+     * BadCredentialsException is caused by wrong credentials provided by user.
+     *
+     * @param ex BadCredentialsException that was thrown.
+     * @return object of ErrorResponse, JSON format of error that is sent to client.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleException(BadCredentialsException ex){
+        List<String> errors = new ArrayList<>();
+        errors.add(ex.getMessage());
+        ErrorResponse errorResponse =
+                new ErrorResponse(HttpStatus.BAD_REQUEST.value(),errors,System.currentTimeMillis());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
 
     /**
