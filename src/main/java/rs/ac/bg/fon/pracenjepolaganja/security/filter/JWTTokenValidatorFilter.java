@@ -19,6 +19,12 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Represent JWTToken validator filter.
+ * Provides validation of JWTToken that is passed in certain operation.
+ *
+ * @author Vuk Manojlovic
+ */
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

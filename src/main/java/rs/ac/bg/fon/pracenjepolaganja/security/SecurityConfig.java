@@ -11,9 +11,25 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import rs.ac.bg.fon.pracenjepolaganja.security.filter.*;
 
+/**
+ * Represent configuration of security.
+ * Contains bean of SecurityFilterChain that provides list of
+ * configuration for authorization and authentication purposes.
+ *
+ * @author Vuk Manojlovic
+ */
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Represent the Bean of SecurityFilterChain.
+     * Provides configuration for accessing routes according to user authorization.
+     * Configures schedule of filters inside spring security.
+     *
+     * @param http object of HttpSecurity
+     * @return Bean of SpringSecurityFilterChain
+     * @throws Exception to authorization or authentication errors
+     */
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
         http.csrf((csrf) -> csrf.disable())
@@ -38,6 +54,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Represent Bean for PasswordEncoder.
+     * PasswordEncoder provides encryption of passwords.
+     * @return Bean of ByCryptPasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

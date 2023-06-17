@@ -7,7 +7,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+/**
+ * Represent security filter that implements Filter class of Spring Security.
+ * Provides verification that user has authorities for the given operation.
+ *
+ * @author Vuk Manojlovic
+ */
 public class AuthoritiesLoggingAfterFilter implements Filter {
+    /**
+     * Represent Log of class activities.
+     */
     private final Logger LOG =
             Logger.getLogger(AuthoritiesLoggingAfterFilter.class.getName());
 

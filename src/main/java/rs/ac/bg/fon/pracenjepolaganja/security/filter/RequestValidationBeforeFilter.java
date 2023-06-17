@@ -13,6 +13,13 @@ import java.util.Base64;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * Represent filter for validation of request that user is sending.
+ * If username of user doesn't contain 'fon.bg.ac.rs' then
+ * filter for JWTToken validation won't be called.
+ *
+ * @author Vuk Manojlovic
+ */
 public class RequestValidationBeforeFilter implements Filter {
     public static final String AUTHENTICATION_SCHEME_BASIC = "Basic";
     private Charset credentialsCharset = StandardCharsets.UTF_8;

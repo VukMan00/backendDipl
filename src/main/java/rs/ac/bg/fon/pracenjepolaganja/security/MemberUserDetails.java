@@ -18,12 +18,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represent implementation of UserDetailsService class.
+ * Contains method loadUserByUsername.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class MemberUserDetails implements UserDetailsService{
 
+    /**
+     * Reference variable of MemberRepository class.
+     */
     @Autowired
     private MemberRepository memberRepository;
 
+    /**
+     * Reference variable of AuthorityRepository class.
+     */
     @Autowired
     private AuthorityRepository authorityRepository;
 

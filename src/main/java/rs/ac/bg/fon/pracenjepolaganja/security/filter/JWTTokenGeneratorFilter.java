@@ -20,7 +20,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/**
+ * Represent JWTToken generator filter.
+ * Inside this filter JWT token is generated.
+ *
+ * @author Vuk Manojlovic
+ */
 public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,6 +51,12 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
         return !request.getServletPath().equals("/user");
     }
 
+    /**
+     * Create Set of authorities that JWT token will use for authorization purposes.
+     *
+     * @param collection collection of authorities that user has.
+     * @return String of authorities
+     */
     private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
         Set<String> authoritiesSet = new HashSet<>();
         for (GrantedAuthority authority : collection) {
