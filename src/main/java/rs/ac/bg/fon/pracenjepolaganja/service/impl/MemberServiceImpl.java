@@ -19,15 +19,34 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+/**
+ * Represents service implementation of endpoints for MemberController.
+ * Contains implementation of methods registerMember, getUserDetailsAfterLogIn.
+ *
+ * @author Vuk Manojlovic
+ */
 @Service
 public class MemberServiceImpl {
 
+    /**
+     * Reference variable of MemberRepository class.
+     */
     private MemberRepository memberRepository;
 
+    /**
+     * Reference variable of StudentRepository class.
+     */
     private StudentRepository studentRepository;
 
+    /**
+     * Reference variable of AuthorityRepository class.
+     */
     private AuthorityRepository authorityRepository;
 
+    /**
+     * Reference to PasswordEncoder.
+     * PasswordEncoder is used for encryption of passwords.
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -38,6 +57,14 @@ public class MemberServiceImpl {
         this.authorityRepository = authorityRepository;
     }
 
+    /**
+     * Registration of member.
+     * Member can't have username of emails other than their student(faculty) email. Also,
+     * student must have 'student' in username that represent User status of his account.
+     *
+     * @param registrationDTO object of registration that contains student details.
+     * @return String message of successful(or not successful) registration.
+     */
     public ResponseEntity<String> registerMember(RegistrationDTO registrationDTO){
         String username = registrationDTO.getEmail();
         if(!username.toLowerCase().contains("@student.fon.bg.ac.rs")){
@@ -72,6 +99,12 @@ public class MemberServiceImpl {
         return ResponseEntity.status(HttpStatus.CREATED).body("Member is successfully registered");
     }
 
+    /**
+     * Returns details of log in member.
+     *
+     * @param authentication authentication object of member
+     * @return Member details of member.
+     */
     public Member getUserDetailsAfterLogin(Authentication authentication) {
         List<Member> members = memberRepository.findByUsername(authentication.getName());
         if (members.size() > 0) {
