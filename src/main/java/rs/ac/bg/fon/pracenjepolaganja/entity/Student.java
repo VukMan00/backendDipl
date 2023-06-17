@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,7 +50,7 @@ public class Student implements Serializable {
      * first four digits is first year of study and last four digits
      * are number of index.
      */
-    @Column(name = "index")
+    @Column(name = "numberIndex",unique = true)
     private String index;
 
     /**
@@ -64,7 +65,7 @@ public class Student implements Serializable {
      * Faculty email of student.
      * Email must be in valid form.
      */
-    @Column(name = "email")
+    @Column(name = "email",unique=true)
     private String email;
 
     /**
@@ -74,5 +75,13 @@ public class Student implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Collection<ResultExam> resultExamCollectionCollection;
+
+    /**
+     * References to the credentials of student
+     */
+    @JoinColumn(name="memberId",referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    @JsonIgnore
+    private Member memberStudent;
 
 }

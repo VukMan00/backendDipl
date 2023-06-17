@@ -1,27 +1,24 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
- * Represent Data Transfer Object of Student entity.
- * Contains firstname,lastname, index, date of birth and faculty email.
+ * Represent Data Transfer Object for registration purposes.
+ * Contains name, lastname, email, password, index and date of birth.
+ * Registration is used only for students with role of User.
+ * Administrators already have accounts.
  *
  * @author Vuk Manojlovic
  */
 @Data
-public class StudentDTO{
-
-    /**
-     * Primary key of student entity.
-     */
-    private Integer id;
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegistrationDTO {
 
     /**
      * Firstname of student.
@@ -36,6 +33,22 @@ public class StudentDTO{
      */
     @NotBlank(message = "Lastname is mandatory")
     private String lastname;
+
+    /**
+     * Faculty email of student.
+     * Email must be in valid form.
+     * Email is also username for student.
+     */
+    @Email(message = "Email must be valid")
+    private String email;
+
+    /**
+     * Password of student account.
+     * Password is mandatory and must be at least 2 characters length.
+     */
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 2, message = "Content must have at least 2 characters")
+    private String password;
 
     /**
      * Index of student.
@@ -53,10 +66,4 @@ public class StudentDTO{
     @PastOrPresent(message = "Date can't be ahead of the current date")
     private LocalDate birth;
 
-    /**
-     * Faculty email of student.
-     * Email must be in valid form.
-     */
-    @Email(message = "Email must be valid")
-    private String email;
 }

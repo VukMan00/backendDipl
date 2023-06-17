@@ -59,4 +59,12 @@ public class Professor implements Serializable {
     @EqualsAndHashCode.Exclude
     private Collection<Test> tests;
 
+    /**
+     * References to the credentials of professor
+     */
+    @JoinColumn(name="memberId",referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    @JsonIgnore
+    private Member memberProfessor;
+
 }
