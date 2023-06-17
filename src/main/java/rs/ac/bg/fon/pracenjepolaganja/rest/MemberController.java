@@ -19,6 +19,11 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @GetMapping("/")
+    public String home(){
+        return "Welcome home!";
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> registerMember(@Valid @RequestBody RegistrationDTO registrationDTO){
         return memberService.registerMember(registrationDTO);
