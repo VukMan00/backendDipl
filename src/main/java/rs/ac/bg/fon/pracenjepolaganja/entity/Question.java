@@ -19,6 +19,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Question implements Serializable {
 
     /**

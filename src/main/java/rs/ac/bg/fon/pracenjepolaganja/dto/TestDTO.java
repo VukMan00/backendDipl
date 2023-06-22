@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class TestDTO{
     /**
      * References to Data Transfer Object of Professor entity.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private ProfessorDTO professor;
 }

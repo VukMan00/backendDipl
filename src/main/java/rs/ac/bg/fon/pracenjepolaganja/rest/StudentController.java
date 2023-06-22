@@ -90,7 +90,7 @@ public class StudentController {
      * @return object of ResponseEntity class that contains updated student in DTO form
      */
     @PutMapping
-    public ResponseEntity<StudentDTO> update(@Valid @RequestBody StudentDTO studentDTO){
+    public ResponseEntity<StudentDTO> update(@Valid @RequestBody StudentDTO studentDTO) throws NotFoundException {
         return new ResponseEntity<>(studentService.update(studentDTO), HttpStatus.OK);
     }
 

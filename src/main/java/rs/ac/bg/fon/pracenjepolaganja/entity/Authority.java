@@ -19,6 +19,7 @@ import java.io.Serializable;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @ToString
 public class Authority implements Serializable {
 

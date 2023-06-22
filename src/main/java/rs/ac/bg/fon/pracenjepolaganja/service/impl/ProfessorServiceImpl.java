@@ -31,12 +31,12 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
-    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    public ProfessorServiceImpl(ProfessorRepository professorRepository){
+    public ProfessorServiceImpl(ProfessorRepository professorRepository, ModelMapper modelMapper){
         this.professorRepository = professorRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override

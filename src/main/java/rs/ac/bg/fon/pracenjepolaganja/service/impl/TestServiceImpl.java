@@ -3,6 +3,7 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
@@ -40,13 +41,13 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
-    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository){
+    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository, ModelMapper modelMapper){
         this.testRepository = testRepository;
         this.questionTestRepository = questionTestRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override

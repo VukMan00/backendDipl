@@ -47,14 +47,14 @@ public class MemberServiceImpl {
      * Reference to PasswordEncoder.
      * PasswordEncoder is used for encryption of passwords.
      */
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MemberServiceImpl(MemberRepository memberRepository,StudentRepository studentRepository,AuthorityRepository authorityRepository){
+    public MemberServiceImpl(MemberRepository memberRepository,StudentRepository studentRepository,AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder){
         this.memberRepository = memberRepository;
         this.studentRepository = studentRepository;
         this.authorityRepository = authorityRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -73,29 +73,32 @@ public class MemberServiceImpl {
         if(!memberRepository.findByUsername(username).isEmpty()){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member with given username already exists");
         }
-        Member member = new Member();
-        Student student = new Student();
         Set<Authority> authorities = new HashSet<>();
+        Student student = Student.builder()
+                .name(registrationDTO.getName())
+                .lastname(registrationDTO.getLastname())
+                .birth(registrationDTO.getBirth())
+                .email(registrationDTO.getEmail())
+                .index(registrationDTO.getIndex())
+                .build();
 
-        student.setName(registrationDTO.getName());
-        student.setLastname(registrationDTO.getLastname());
-        student.setBirth(registrationDTO.getBirth());
-        student.setEmail(username);
-        student.setIndex(registrationDTO.getIndex());
+        Member member = Member.builder()
+                .username(username)
+                .password(passwordEncoder.encode(registrationDTO.getPassword()))
+                .build();
 
-        String hashPassword = passwordEncoder.encode(registrationDTO.getPassword());
-        member.setPassword(hashPassword);
-        member.setUsername(username);
         Member savedMember = memberRepository.save(member);
 
-        Authority authority = new Authority();
-        authority.setMember(member);
-        authority.setName("ROLE_USER");
-        authorities.add(authorityRepository.save(authority));
+        Authority authority = Authority.builder()
+                .name("ROLE_USER")
+                .member(savedMember)
+                .build();
 
+        authorities.add(authorityRepository.save(authority));
         savedMember.setAuthorities(authorities);
         student.setMemberStudent(savedMember);
         studentRepository.save(student);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Member is successfully registered");
     }
 

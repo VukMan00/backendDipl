@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +52,7 @@ public class ExamDTO{
     /**
      * References to the Data Transfer Object of test.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private TestDTO test;
 
 }

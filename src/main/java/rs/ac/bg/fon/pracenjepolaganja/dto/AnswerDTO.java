@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class AnswerDTO {
     /**
      * References to the Data Transfer Object of question that answer belongs to.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private QuestionDTO question;
 
 }

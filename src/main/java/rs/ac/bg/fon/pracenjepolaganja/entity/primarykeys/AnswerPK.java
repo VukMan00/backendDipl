@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,12 +22,14 @@ public class AnswerPK implements Serializable {
     /**
      * Primary key of entity answer.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Basic(optional = false)
     private Integer answerId;
 
     /**
      * Primary key of entity answer and foreign key that reference to question.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Basic(optional = false)
     private Integer questionId;
 }

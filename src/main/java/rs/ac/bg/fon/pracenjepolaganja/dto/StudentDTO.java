@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -59,4 +60,9 @@ public class StudentDTO{
      */
     @Email(message = "Email must be valid")
     private String email;
+
+    /**
+     * Credentials of student
+     */
+    private Member member;
 }

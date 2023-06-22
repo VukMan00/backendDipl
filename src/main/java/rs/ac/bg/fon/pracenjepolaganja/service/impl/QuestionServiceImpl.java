@@ -41,13 +41,13 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
-    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository,QuestionTestRepository questionTestRepository){
+    public QuestionServiceImpl(QuestionRepository questionRepository,QuestionTestRepository questionTestRepository,ModelMapper modelMapper){
         this.questionRepository = questionRepository;
         this.questionTestRepository = questionTestRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -62,11 +62,11 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         QuestionDTO questionDTO;
         if(question.isPresent()){
             questionDTO = modelMapper.map(question.get(),QuestionDTO.class);
+            return questionDTO;
         }
         else {
             throw new NotFoundException("Did not find Question with id: " + id);
         }
-        return questionDTO;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if(!questionRepository.findById((Integer)id).isPresent()){
+        if(!(questionRepository.findById((Integer)id).isPresent())){
             throw new NotFoundException("Did not find Question with id: " + id);
         }
         questionRepository.deleteById((Integer)id);

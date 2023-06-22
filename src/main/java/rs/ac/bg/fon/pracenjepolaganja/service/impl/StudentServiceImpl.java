@@ -53,21 +53,22 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
-    @Autowired
     private ModelMapper modelMapper;
 
     /**
      * Hashing of password for student
      */
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,AuthorityRepository authorityRepository){
+    public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,
+                              AuthorityRepository authorityRepository, ModelMapper modelMapper,PasswordEncoder passwordEncoder){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
         this.authorityRepository = authorityRepository;
+        this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -94,18 +95,24 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        if(studentDTO.getEmail().contains("fon.bg.ac.rs")) {
+        if(!studentDTO.getEmail().contains("student.fon.bg.ac.rs")) {
             throw new UsernameNotFoundException("Member can't register with that email format");
         }
 
-        Member member = new Member();
-        Authority authority = new Authority();
         Set<Authority> authorities = new HashSet<>();
         Student student = modelMapper.map(studentDTO,Student.class);
 
-        member.setUsername(student.getEmail());
-        member.setPassword(passwordEncoder.encode(student.getIndex()));
+        Member member = Member.builder()
+                .username(student.getEmail())
+                .password(passwordEncoder.encode(student.getIndex()))
+                .build();
+
         Member savedMember = memberRepository.save(member);
+
+        Authority authority = Authority.builder()
+                .name("ROLE_USER")
+                .member(savedMember)
+                .build();
 
         authority.setName("ROLE_USER");
         authority.setMember(savedMember);
@@ -116,24 +123,26 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         return modelMapper.map(studentRepository.save(student),StudentDTO.class);
     }
 
-    public StudentDTO update(StudentDTO studentDTO){
+    public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        if(studentDTO.getEmail().contains("fon.bg.ac.rs")) {
+        if(!studentDTO.getEmail().contains("student.fon.bg.ac.rs")) {
             throw new UsernameNotFoundException("Member can't register with that email format");
         }
         Student student = modelMapper.map(studentDTO,Student.class);
         Member member;
-
         Optional<Student> optionalStudent = studentRepository.findById(student.getId());
         if(optionalStudent.isPresent()){
             Student dbStudent = optionalStudent.get();
             member = dbStudent.getMemberStudent();
-            member.setUsername(dbStudent.getEmail());
+            member.setUsername(student.getEmail());
 
             Member savedMember = memberRepository.save(member);
             student.setMemberStudent(savedMember);
+        }
+        else{
+            throw new NotFoundException("Did not find Student with id: " + student.getId());
         }
 
         return modelMapper.map(studentRepository.save(student),StudentDTO.class);

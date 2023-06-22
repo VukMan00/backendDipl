@@ -34,12 +34,12 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
-    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    public AnswerServiceImpl(AnswerRepository answerRepository){
+    public AnswerServiceImpl(AnswerRepository answerRepository, ModelMapper modelMapper){
         this.answerRepository = answerRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -98,9 +98,6 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
      * @throws NotFoundException if question of the given id does not have answers.
      */
     public List<AnswerDTO> getAnswers(Integer id) throws NotFoundException {
-        if(id<0){
-            throw new IllegalArgumentException("Id starts from zero");
-        }
         List<AnswerDTO> answers = answerRepository.findByQuestionId(id).stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
                 .collect(Collectors.toList());
         if(answers.isEmpty()){

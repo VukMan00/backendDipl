@@ -17,6 +17,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class QuestionTest implements Serializable {
 
     /**

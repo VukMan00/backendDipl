@@ -20,6 +20,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Test implements Serializable {
 
     /**

@@ -21,6 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class Member implements Serializable {
 
     /**
