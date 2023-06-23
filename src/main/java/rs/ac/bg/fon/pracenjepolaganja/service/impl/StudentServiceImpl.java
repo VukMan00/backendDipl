@@ -63,15 +63,21 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      */
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * References to MemberServiceImpl class
+     */
+    private MemberServiceImpl memberService;
+
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,
-                              AuthorityRepository authorityRepository, ModelMapper modelMapper,PasswordEncoder passwordEncoder){
+                              AuthorityRepository authorityRepository, ModelMapper modelMapper,PasswordEncoder passwordEncoder, MemberServiceImpl memberService){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
         this.authorityRepository = authorityRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+        this.memberService = memberService;
     }
 
     @Override
@@ -98,8 +104,9 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        if(!studentDTO.getEmail().contains("student.fon.bg.ac.rs")) {
-            throw new UsernameNotFoundException("Member can't register with that email format");
+        ResponseEntity<String> message = memberService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
+        if(!message.getBody().equals("Email is valid")){
+            throw new BadCredentialsException(message.getBody());
         }
         if(studentRepository.findByEmail(studentDTO.getEmail())!=null){
             throw new BadCredentialsException("Member with given username already exists");
@@ -112,20 +119,18 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
                 .username(student.getEmail())
                 .password(passwordEncoder.encode(student.getIndex()))
                 .build();
-
         Member savedMember = memberRepository.save(member);
 
         Authority authority = Authority.builder()
                 .name("ROLE_USER")
                 .member(savedMember)
                 .build();
-
         Authority savedAuthority = authorityRepository.save(authority);
 
         authorities.add(savedAuthority);
         savedMember.setAuthorities(authorities);
-
         student.setMemberStudent(savedMember);
+
         Student dbStudent = studentRepository.save(student);
 
         AuthorityDTO authorityDTO = modelMapper.map(dbStudent.getMemberStudent().getAuthorities().stream().findFirst(),AuthorityDTO.class);
@@ -133,9 +138,9 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         Set<AuthorityDTO> authoritiesDTO = new HashSet<>();
         authoritiesDTO.add(authorityDTO);
         memberDTO.setAuthorities(authoritiesDTO);
-
         studentDTO = modelMapper.map(dbStudent,StudentDTO.class);
         studentDTO.setMember(memberDTO);
+
         return studentDTO;
     }
 
@@ -143,8 +148,9 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        if(!studentDTO.getEmail().contains("student.fon.bg.ac.rs")) {
-            throw new UsernameNotFoundException("Member can't register with that email format");
+        ResponseEntity<String> message = memberService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
+        if(!message.getBody().equals("Email is valid")){
+            throw new BadCredentialsException(message.getBody());
         }
         Student student = modelMapper.map(studentDTO,Student.class);
         Member member;

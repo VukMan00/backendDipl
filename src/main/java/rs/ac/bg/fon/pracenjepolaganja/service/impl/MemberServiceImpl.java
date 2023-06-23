@@ -3,6 +3,7 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,8 +68,9 @@ public class MemberServiceImpl {
      */
     public ResponseEntity<String> registerMember(RegistrationDTO registrationDTO){
         String username = registrationDTO.getEmail();
-        if(!username.toLowerCase().contains("@student.fon.bg.ac.rs")){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member can't register with given email. We need your faculty email!");
+        ResponseEntity<String> message = validateEmail(username,registrationDTO.getIndex(),registrationDTO.getName(),registrationDTO.getLastname());
+        if(!message.getBody().equals("Email is valid")){
+            return message;
         }
         if(!memberRepository.findByUsername(username).isEmpty()){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member with given username already exists");
@@ -101,6 +103,31 @@ public class MemberServiceImpl {
         studentRepository.save(student);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Member is successfully registered");
+    }
+
+    /**
+     * Provides validation of email that user put.
+     * Email must be in form of student faculty account.
+     * First two characters must be initial of users name and lastname.
+     * Also, must contain number of index in form of yearNumber and with that
+     * type of email must be @student.fon.bg.ac.rs.
+     * If email exist in database, validation of Email is not successful.
+     *
+     * @param email email of registration object (student)
+     * @param index index of student
+     * @param firstName firstname of Student
+     * @param lastName lastname of Student
+     * @return ResponseEntity message if validation is successful or not.
+     */
+    public ResponseEntity<String> validateEmail(String email,String index,String firstName,String lastName) {
+        String initials = (firstName.charAt(0) + "" + lastName.charAt(0)).toLowerCase(Locale.ROOT);
+        String[] splitIndex = index.split("-");
+        String year = splitIndex[0];
+        String number = splitIndex[1];
+        if(!email.equals(initials+""+year+""+number+"@student.fon.bg.ac.rs")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member can't register with given email. We need your faculty email!");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Email is valid");
     }
 
     /**
