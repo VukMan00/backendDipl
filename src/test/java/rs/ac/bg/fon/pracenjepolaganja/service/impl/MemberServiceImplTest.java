@@ -19,13 +19,11 @@ import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,24 +63,25 @@ class MemberServiceImplTest {
                 .birth(LocalDate.of(1997,10,7))
                 .build();
 
+        member = Member.builder()
+                .username(registrationDTO.getEmail())
+                .password(passwordEncoder.encode(registrationDTO.getPassword()))
+                .authorities(new HashSet<>())
+                .build();
+
         student = Student.builder()
                 .name(registrationDTO.getName())
                 .lastname(registrationDTO.getLastname())
                 .birth(registrationDTO.getBirth())
                 .email(registrationDTO.getEmail())
                 .index(registrationDTO.getIndex())
-                .build();
-
-        member = Member.builder()
-                .username(registrationDTO.getEmail())
-                .password(passwordEncoder.encode(registrationDTO.getPassword()))
+                .memberStudent(member)
                 .build();
 
         authority = Authority.builder()
                 .name("ROLE_USER")
                 .member(member)
                 .build();
-
     }
 
     @Test

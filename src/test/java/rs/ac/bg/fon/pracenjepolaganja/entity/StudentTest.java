@@ -78,6 +78,16 @@ class StudentTest {
         assertEquals(results,student.getResultExamCollectionCollection());
     }
 
+    @Test
+    void testSetMember(){
+        Member member = new Member();
+        member.setUsername("vm20190048@student.fon.bg.ac.rs");
+        member.setPassword("vukman00");
+
+        student.setMemberStudent(member);
+        assertEquals(member,student.getMemberStudent());
+    }
+
     @ParameterizedTest
     @CsvSource({
             "1,1,John,John,Green,Green,2019-0048,2019-0048,2000-02-20,2000-02-20,john@gmail.com,john@gmail.com,true",

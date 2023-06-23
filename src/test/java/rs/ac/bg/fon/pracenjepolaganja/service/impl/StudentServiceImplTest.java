@@ -7,7 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
@@ -54,6 +58,7 @@ class StudentServiceImplTest {
     private ResultExam resultExam;
     private Member member;
     private Authority authority;
+    private Set<Authority> authorities = new HashSet<>();
     private rs.ac.bg.fon.pracenjepolaganja.entity.Test test;
 
     @BeforeEach
@@ -76,6 +81,8 @@ class StudentServiceImplTest {
                 .name("ROLE_USER")
                 .member(member)
                 .build();
+
+        authorities.add(authority);
 
         Professor author = Professor.builder()
                 .id(1)
@@ -150,14 +157,36 @@ class StudentServiceImplTest {
 
     @Test
     void testSave() {
-        /*given(memberRepository.save(member)).willReturn(member);
+        Member savedMember = Member.builder()
+                .username(student.getEmail())
+                .password(passwordEncoder.encode(student.getIndex()))
+                .authorities(authorities)
+                .build();
+
+        Student savedStudent = Student.builder()
+                .id(1)
+                .name("Vuk")
+                .lastname("Manojlovic")
+                .index("2019-0048")
+                .birth(LocalDate.of(2000,6,21))
+                .email("vm20190048@student.fon.bg.ac.rs")
+                .memberStudent(savedMember)
+                .build();
+
+        given(memberRepository.save(member)).willReturn(member);
         given(authorityRepository.save(authority)).willReturn(authority);
-        given(studentRepository.save(student)).willReturn(student);
+        given(studentRepository.save(savedStudent)).willReturn(savedStudent);
 
         StudentDTO savedStudentDTO = studentService.save(modelMapper.map(student,StudentDTO.class));
 
+        //Test return objects
         assertThat(savedStudentDTO).isNotNull();
-        verify(studentRepository,times(1)).save(student);*/
+        assertThat(savedStudentDTO.getMember()).isNotNull();
+        assertThat(savedStudentDTO.getMember().getAuthorities()).isNotNull();
+        assertThat(savedStudentDTO.getMember().getAuthorities()).isNotEmpty();
+        verify(studentRepository,times(1)).save(savedStudent);
+        verify(authorityRepository,times(1)).save(authority);
+        verify(memberRepository,times(1)).save(member);
     }
 
     @Test
@@ -173,6 +202,17 @@ class StudentServiceImplTest {
         org.junit.jupiter.api.Assertions.assertThrows(UsernameNotFoundException.class, () -> {
             studentService.save(modelMapper.map(student,StudentDTO.class));
         });
+    }
+
+    @Test
+    void testSaveEmailExists(){
+        given(studentRepository.findByEmail(student.getEmail())).willReturn(student);
+
+        org.junit.jupiter.api.Assertions.assertThrows(BadCredentialsException.class, () -> {
+            studentService.save(modelMapper.map(student,StudentDTO.class));
+        });
+
+        verify(studentRepository,times(1)).findByEmail(student.getEmail());
     }
 
     @Test

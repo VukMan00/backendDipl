@@ -17,12 +17,12 @@ class ExamTest {
     Exam exam;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp(){
         exam = new Exam();
     }
 
     @AfterEach
-    void tearDown() throws Exception {
+    void tearDown(){
         exam = null;
     }
 

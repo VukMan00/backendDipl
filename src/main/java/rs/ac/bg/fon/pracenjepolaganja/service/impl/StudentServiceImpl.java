@@ -2,6 +2,9 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -98,6 +101,9 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         if(!studentDTO.getEmail().contains("student.fon.bg.ac.rs")) {
             throw new UsernameNotFoundException("Member can't register with that email format");
         }
+        if(studentRepository.findByEmail(studentDTO.getEmail())!=null){
+            throw new BadCredentialsException("Member with given username already exists");
+        }
 
         Set<Authority> authorities = new HashSet<>();
         Student student = modelMapper.map(studentDTO,Student.class);
@@ -114,13 +120,23 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
                 .member(savedMember)
                 .build();
 
-        authority.setName("ROLE_USER");
-        authority.setMember(savedMember);
-        authorities.add(authorityRepository.save(authority));
+        Authority savedAuthority = authorityRepository.save(authority);
 
+        authorities.add(savedAuthority);
         savedMember.setAuthorities(authorities);
+
         student.setMemberStudent(savedMember);
-        return modelMapper.map(studentRepository.save(student),StudentDTO.class);
+        Student dbStudent = studentRepository.save(student);
+
+        AuthorityDTO authorityDTO = modelMapper.map(dbStudent.getMemberStudent().getAuthorities().stream().findFirst(),AuthorityDTO.class);
+        MemberDTO memberDTO = modelMapper.map(dbStudent.getMemberStudent(),MemberDTO.class);
+        Set<AuthorityDTO> authoritiesDTO = new HashSet<>();
+        authoritiesDTO.add(authorityDTO);
+        memberDTO.setAuthorities(authoritiesDTO);
+
+        studentDTO = modelMapper.map(dbStudent,StudentDTO.class);
+        studentDTO.setMember(memberDTO);
+        return studentDTO;
     }
 
     public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
@@ -144,7 +160,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         else{
             throw new NotFoundException("Did not find Student with id: " + student.getId());
         }
-
         return modelMapper.map(studentRepository.save(student),StudentDTO.class);
     }
 

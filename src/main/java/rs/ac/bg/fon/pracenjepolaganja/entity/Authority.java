@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represent authorities of users.
@@ -20,7 +21,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class Authority implements Serializable {
 
     /**
@@ -45,4 +45,26 @@ public class Authority implements Serializable {
     @JoinColumn(name = "memberId",referencedColumnName = "id")
     @JsonIgnore
     private Member member;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Authority)) return false;
+        Authority authority = (Authority) o;
+        return Objects.equals(getId(), authority.getId()) && Objects.equals(getName(), authority.getName()) && Objects.equals(getMember(), authority.getMember());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getMember());
+    }
+
+    @Override
+    public String toString() {
+        return "Authority{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", member=" + member +
+                '}';
+    }
 }

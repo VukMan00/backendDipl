@@ -26,6 +26,12 @@ class ProfessorTest {
     }
 
     @Test
+    void setId(){
+        professor.setId(1);
+        assertEquals(1,professor.getId());
+    }
+
+    @Test
     void setName() {
         professor.setName("John");
         assertEquals("John",professor.getName());
@@ -53,6 +59,16 @@ class ProfessorTest {
         tests.add(test);
         professor.setTests(tests);
         assertEquals(tests,professor.getTests());
+    }
+
+    @Test
+    void setMember(){
+        Member member = new Member();
+        member.setUsername("dusan.savic@student.fon.bg.ac.rs");
+        member.setPassword("dusan");
+
+        professor.setMemberProfessor(member);
+        assertEquals(member,professor.getMemberProfessor());
     }
 
     @ParameterizedTest

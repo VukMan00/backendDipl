@@ -7,6 +7,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represent the student that solve test in one of the exams.
@@ -85,4 +86,16 @@ public class Student implements Serializable {
     @JsonIgnore
     private Member memberStudent;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Student)) return false;
+        Student student = (Student) o;
+        return Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName()) && Objects.equals(getLastname(), student.getLastname()) && Objects.equals(getIndex(), student.getIndex()) && Objects.equals(getBirth(), student.getBirth()) && Objects.equals(getEmail(), student.getEmail()) && Objects.equals(getMemberStudent(), student.getMemberStudent());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getLastname(), getIndex(), getBirth(), getEmail(), getMemberStudent());
+    }
 }

@@ -85,6 +85,7 @@ public class MemberServiceImpl {
         Member member = Member.builder()
                 .username(username)
                 .password(passwordEncoder.encode(registrationDTO.getPassword()))
+                .authorities(authorities)
                 .build();
 
         Member savedMember = memberRepository.save(member);
