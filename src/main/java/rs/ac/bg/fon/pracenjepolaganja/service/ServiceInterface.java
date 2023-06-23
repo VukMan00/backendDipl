@@ -29,6 +29,7 @@ public interface ServiceInterface<T> {
      * @param id id of entity that is needed. It's the Integer or object that represent complex primary key of some entities.
      * @return entity of the provided id in DTO form.
      * @throws NotFoundException if entity with given id does not exist in database
+     *
      */
     T findById(Object id) throws NotFoundException;
 
@@ -38,6 +39,8 @@ public interface ServiceInterface<T> {
      * @param t entity that needs to be saved
      * @return entity that is saved in DTO form
      * @throws NullPointerException if provided entity is null
+     * @throws org.springframework.security.authentication.BadCredentialsException Only occur when email for Student entity
+     * is not in valid form.
      */
     T save(T t);
 

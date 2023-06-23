@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.bg.fon.pracenjepolaganja.dto.MemberDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.RegistrationDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.MemberServiceImpl;
@@ -56,7 +57,7 @@ public class MemberController {
      * @return Member object of log in user.
      */
     @GetMapping("/user")
-    public Member getUserDetailsAfterLogin(Authentication authentication){
+    public MemberDTO getUserDetailsAfterLogin(Authentication authentication){
         return memberService.getUserDetailsAfterLogin(authentication);
     }
 }

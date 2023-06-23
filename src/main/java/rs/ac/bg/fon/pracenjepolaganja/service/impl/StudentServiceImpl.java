@@ -144,6 +144,18 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         return studentDTO;
     }
 
+    /**
+     * Updates student entity.
+     * When provided id, save method of studentRepository updates entity with given id, in other cases it saves
+     * as new entity in database.
+     * Email of updated Student must be in valid form.
+     * Id of updated student must be in database.
+     *
+     * @param studentDTO Data Transfer Object of updated Student.
+     * @return updated student in form of DTO
+     * @throws NotFoundException when student with given id doesn't exist in database
+     * @throws BadCredentialsException when email of updated student is not in valid form
+     */
     public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");

@@ -1,24 +1,23 @@
 package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.MemberRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dto.AuthorityDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.MemberDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.RegistrationDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Authority;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents service implementation of endpoints for MemberController.
@@ -49,6 +48,13 @@ public class MemberServiceImpl {
      * PasswordEncoder is used for encryption of passwords.
      */
     private PasswordEncoder passwordEncoder;
+
+    /**
+     * References to the ModelMapper.
+     * Maps DTO objects to entity objects and vice versa.
+     */
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     public MemberServiceImpl(MemberRepository memberRepository,StudentRepository studentRepository,AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder){
@@ -136,13 +142,22 @@ public class MemberServiceImpl {
      * @param authentication authentication object of member
      * @return Member details of member.
      */
-    public Member getUserDetailsAfterLogin(Authentication authentication) {
+    public MemberDTO getUserDetailsAfterLogin(Authentication authentication) {
         List<Member> members = memberRepository.findByUsername(authentication.getName());
-        if (members.size() > 0) {
-            return members.get(0);
-        } else {
+        if(members.get(0)==null){
             return null;
         }
+        Optional<Authority> authority = members.get(0).getAuthorities().stream().findFirst();
+        MemberDTO memberDTO = modelMapper.map(members.get(0),MemberDTO.class);
+
+        if(authority.isPresent()){
+            AuthorityDTO authorityDTO = modelMapper.map(authority.get(),AuthorityDTO.class);
+            Set<AuthorityDTO> authoritiesDTO = new HashSet<>();
+            authoritiesDTO.add(authorityDTO);
+            memberDTO.setAuthorities(authoritiesDTO);
+        }
+
+        return memberDTO;
 
     }
 }
