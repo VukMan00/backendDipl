@@ -16,6 +16,7 @@ import rs.ac.bg.fon.pracenjepolaganja.dto.RegistrationDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Authority;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 
 import java.util.*;
 
@@ -158,6 +159,34 @@ public class MemberServiceImpl {
         }
 
         return memberDTO;
+    }
 
+    /**
+     * Provides changes to the password of the member.
+     *
+     * @param id of member whose password is going to change
+     * @param memberDTO object with contains new password
+     * @return ResponseEntity object with message
+     * @throws NotFoundException when member with given id doesn't exist in database
+     * @throws NullPointerException if given object is null
+     */
+    public ResponseEntity<String> changePassword(Integer id, MemberDTO memberDTO) throws NotFoundException {
+        if(memberDTO==null){
+            throw new NullPointerException("MemberDTO object can't be null");
+        }
+        Optional<Member> member = memberRepository.findById(id);
+        if(member.isPresent()){
+            Member dbMember = member.get();
+            String hashPassword = passwordEncoder.encode(memberDTO.getPassword());
+            System.out.println(hashPassword);
+
+            dbMember.setPassword(hashPassword);
+            memberRepository.save(dbMember);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Member has successfully changed the password");
+        }
+        else{
+            throw new NotFoundException("Did not find member with this id: " + id);
+        }
     }
 }

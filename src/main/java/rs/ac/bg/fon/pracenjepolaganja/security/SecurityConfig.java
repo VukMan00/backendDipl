@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/exams/**","/professors/**","/students/**","/tests/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/answers/**","/questions/**",
                                 "/exams/**","/professors/**","/students/**","/tests/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.POST,"/password/*").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.GET,"/").authenticated()
                         .requestMatchers(HttpMethod.GET,"/user").authenticated()
                         .requestMatchers(HttpMethod.POST,"/register").permitAll())

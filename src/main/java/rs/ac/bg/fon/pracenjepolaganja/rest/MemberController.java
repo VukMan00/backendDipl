@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.MemberDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.RegistrationDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.MemberServiceImpl;
 
 /**
@@ -51,7 +52,7 @@ public class MemberController {
     }
 
     /**
-     * Retrieves credentials(username) of user.
+     * Retrieves credentials and authorities of user.
      *
      * @param authentication object of user that is trying to log in.
      * @return Member object of log in user.
@@ -59,5 +60,18 @@ public class MemberController {
     @GetMapping("/user")
     public MemberDTO getUserDetailsAfterLogin(Authentication authentication){
         return memberService.getUserDetailsAfterLogin(authentication);
+    }
+
+    /**
+     * Changes the password of the member
+     *
+     * @param id of member whose password is going to change
+     * @param memberDTO object with contains new password
+     * @return ResponseEntity object with message
+     * @throws NotFoundException when member with given id doesn't exist in database
+     */
+    @PostMapping("/password/{id}")
+    public ResponseEntity<String> changePassword(@PathVariable Integer id, @RequestBody MemberDTO memberDTO) throws NotFoundException {
+        return memberService.changePassword(id,memberDTO);
     }
 }
