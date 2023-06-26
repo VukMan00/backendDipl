@@ -64,9 +64,10 @@ public class AnswerController {
      *
      * @param answerDTO answer in DTO form that needs to be saved
      * @return object of ResponseEntity class that contains saved answer in DTO form
+     * @throws NotFoundException when Question of answer doesn't exist
      */
     @PostMapping
-    public ResponseEntity<AnswerDTO> save(@Valid @RequestBody AnswerDTO answerDTO){
+    public ResponseEntity<AnswerDTO> save(@Valid @RequestBody AnswerDTO answerDTO) throws NotFoundException {
         return new ResponseEntity<>(answerService.save(answerDTO), HttpStatus.CREATED);
     }
 
@@ -79,9 +80,10 @@ public class AnswerController {
      *
      * @param answerDTO answer in DTO form that needs to be updated
      * @return object of ResponseEntity class that contains updated answer in DTO form
+     * @throws NotFoundException when Question of answer doesn't exist
      */
     @PutMapping
-    public ResponseEntity<AnswerDTO> update(@Valid @RequestBody AnswerDTO answerDTO){
+    public ResponseEntity<AnswerDTO> update(@Valid @RequestBody AnswerDTO answerDTO) throws NotFoundException {
         return new ResponseEntity<>(answerService.save(answerDTO), HttpStatus.OK);
     }
 

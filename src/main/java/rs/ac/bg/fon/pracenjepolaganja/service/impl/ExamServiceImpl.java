@@ -36,16 +36,22 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     private ResultExamRepository resultExamRepository;
 
     /**
+     * Reference variable of TestServiceImpl class.
+     */
+    private TestServiceImpl testService;
+
+    /**
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
     private ModelMapper modelMapper;
 
     @Autowired
-    public ExamServiceImpl(ExamRepository examRepository,ResultExamRepository resultExamRepository, ModelMapper modelMapper){
+    public ExamServiceImpl(ExamRepository examRepository,ResultExamRepository resultExamRepository,TestServiceImpl testService, ModelMapper modelMapper){
         this.examRepository = examRepository;
         this.resultExamRepository = resultExamRepository;
         this.modelMapper = modelMapper;
+        this.testService = testService;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
             TestDTO testDTO = modelMapper.map(exam.getTest(),TestDTO.class);
             ExamDTO examDTO = modelMapper.map(exam,ExamDTO.class);
             ProfessorDTO professorDTO = modelMapper.map(exam.getTest().getAuthor(),ProfessorDTO.class);
-            testDTO.setProfessor(professorDTO);
+            testDTO.setAuthor(professorDTO);
             examDTO.setTest(testDTO);
             examsDTO.add(examDTO);
         }
@@ -71,7 +77,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
             TestDTO testDTO = modelMapper.map(exam.get().getTest(),TestDTO.class);
             examDTO = modelMapper.map(exam.get(),ExamDTO.class);
             ProfessorDTO professorDTO = modelMapper.map(exam.get().getTest().getAuthor(),ProfessorDTO.class);
-            testDTO.setProfessor(professorDTO);
+            testDTO.setAuthor(professorDTO);
             examDTO.setTest(testDTO);
         }
         else{
@@ -81,12 +87,17 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     }
 
     @Override
-    public ExamDTO save(ExamDTO examDTO) {
+    public ExamDTO save(ExamDTO examDTO) throws NotFoundException {
         if(examDTO==null){
             throw new NullPointerException("Exam can't be null");
         }
-        Exam exam = examRepository.save(modelMapper.map(examDTO,Exam.class));
-        return modelMapper.map(exam,ExamDTO.class);
+        if(testService.findById(examDTO.getTest().getId())!=null) {
+            Exam exam = examRepository.save(modelMapper.map(examDTO, Exam.class));
+            return modelMapper.map(exam, ExamDTO.class);
+        }
+        else{
+            throw new NotFoundException("Did not find Test with id: " + examDTO.getTest().getId());
+        }
     }
 
     @Override

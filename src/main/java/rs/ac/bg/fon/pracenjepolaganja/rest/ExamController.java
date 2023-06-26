@@ -72,9 +72,10 @@ public class ExamController {
      *
      * @param examDTO exam in DTO form that needs to be saved
      * @return object of ResponseEntity class that contains saved exam in DTO form
+     * @throws NotFoundException when test object doesn't exist
      */
     @PostMapping
-    public ResponseEntity<ExamDTO> save(@Valid @RequestBody ExamDTO examDTO){
+    public ResponseEntity<ExamDTO> save(@Valid @RequestBody ExamDTO examDTO) throws NotFoundException {
         return new ResponseEntity<>(examService.save(examDTO), HttpStatus.CREATED);
     }
 
@@ -87,9 +88,10 @@ public class ExamController {
      *
      * @param examDTO exam in DTO form that needs to be updated
      * @return object of ResponseEntity class that contains updated exam in DTO form
+     * @throws NotFoundException when test object doesn't exist
      */
     @PutMapping
-    public ResponseEntity<ExamDTO> update(@Valid @RequestBody ExamDTO examDTO){
+    public ResponseEntity<ExamDTO> update(@Valid @RequestBody ExamDTO examDTO) throws NotFoundException {
         return new ResponseEntity<>(examService.save(examDTO), HttpStatus.OK);
     }
 

@@ -10,10 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
-import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Professor;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
@@ -43,6 +40,9 @@ class TestServiceImplTest {
 
     @Spy
     private ModelMapper modelMapper;
+
+    @Mock
+    private ProfessorServiceImpl professorService;
 
     @InjectMocks
     private TestServiceImpl testService;
@@ -122,13 +122,26 @@ class TestServiceImplTest {
     }
 
     @Test
-    void testSave() {
+    void testSave() throws NotFoundException {
         given(testRepository.save(test)).willReturn(test);
 
         TestDTO savedTestDTO = testService.save(modelMapper.map(test,TestDTO.class));
 
         assertThat(savedTestDTO).isNotNull();
         verify(testRepository,times(1)).save(test);
+    }
+
+    @Test
+    void testSaveTestNotFound() throws NotFoundException {
+        professor.setId(3);
+        test.setAuthor(professor);
+        given(professorService.findById(professor.getId())).willReturn(null);
+
+        org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
+            testService.save(modelMapper.map(test, TestDTO.class));
+        });
+
+        verify(professorService,times(1)).findById(professor.getId());
     }
 
     @Test

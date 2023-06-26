@@ -31,6 +31,9 @@ public class AnswerServiceImplTest{
     @Mock
     private AnswerRepository answerRepository;
 
+    @Mock
+    private QuestionServiceImpl questionService;
+
     @InjectMocks
     private AnswerServiceImpl answerService;
 
@@ -97,7 +100,7 @@ public class AnswerServiceImplTest{
     }
 
     @Test
-    void testSave(){
+    void testSave() throws NotFoundException {
         given(answerRepository.save(answer)).willReturn(answer);
 
         AnswerDTO savedAnswerDTO = answerService.save(modelMapper.map(answer,AnswerDTO.class));
@@ -105,6 +108,21 @@ public class AnswerServiceImplTest{
         assertThat(savedAnswerDTO).isNotNull();
         verify(answerRepository,times(1)).save(answer);
     }
+
+    @Test
+    void testSaveQuestionNotFound() throws NotFoundException {
+        AnswerPK answerPK = new AnswerPK(3,1);
+        answer.setAnswerPK(answerPK);
+        given(questionService.findById(answerPK.getQuestionId())).willReturn(null);
+
+        org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
+            answerService.save(modelMapper.map(answer,AnswerDTO.class));
+        });
+
+        verify(questionService,times(1)).findById(answerPK.getQuestionId());
+    }
+
+
 
     @Test
     void testSaveNull(){

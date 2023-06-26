@@ -31,15 +31,21 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     private AnswerRepository answerRepository;
 
     /**
+     * Reference variable of QuestionServiceImpl class.
+     */
+    private QuestionServiceImpl questionService;
+
+    /**
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
     private ModelMapper modelMapper;
 
     @Autowired
-    public AnswerServiceImpl(AnswerRepository answerRepository, ModelMapper modelMapper){
+    public AnswerServiceImpl(AnswerRepository answerRepository,QuestionServiceImpl questionService, ModelMapper modelMapper){
         this.answerRepository = answerRepository;
         this.modelMapper = modelMapper;
+        this.questionService = questionService;
     }
 
     @Override
@@ -72,12 +78,17 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     }
 
     @Override
-    public AnswerDTO save(AnswerDTO answerDTO) {
-        if(answerDTO==null){
+    public AnswerDTO save(AnswerDTO answerDTO) throws NotFoundException {
+        if (answerDTO == null) {
             throw new NullPointerException("Answer can't be null");
         }
-        Answer answer = answerRepository.save(modelMapper.map(answerDTO,Answer.class));
-        return modelMapper.map(answer,AnswerDTO.class);
+        if (questionService.findById(answerDTO.getAnswerPK().getQuestionId()) != null){
+            Answer answer = answerRepository.save(modelMapper.map(answerDTO, Answer.class));
+            return modelMapper.map(answer, AnswerDTO.class);
+        }
+        else{
+            throw new NotFoundException("Did not find question with id: " + answerDTO.getAnswerPK().getQuestionId());
+        }
     }
 
     @Override

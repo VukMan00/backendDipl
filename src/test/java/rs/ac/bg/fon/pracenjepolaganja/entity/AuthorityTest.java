@@ -1,14 +1,11 @@
 package rs.ac.bg.fon.pracenjepolaganja.entity;
 
-import org.junit.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import javax.crypto.MacSpi;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 

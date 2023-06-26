@@ -31,5 +31,5 @@ public class TestDTO{
      * References to Data Transfer Object of Professor entity.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ProfessorDTO professor;
+    private ProfessorDTO author;
 }

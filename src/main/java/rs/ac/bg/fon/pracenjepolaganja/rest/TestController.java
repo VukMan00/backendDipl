@@ -72,9 +72,10 @@ public class TestController {
      *
      * @param testDTO test in DTO form that needs to be saved
      * @return object of ResponseEntity class that contains saved test in DTO form
+     * @throws NotFoundException when professor doesn't exist in database
      */
     @PostMapping
-    public ResponseEntity<TestDTO> save(@Valid @RequestBody TestDTO testDTO){
+    public ResponseEntity<TestDTO> save(@Valid @RequestBody TestDTO testDTO) throws NotFoundException {
         return new ResponseEntity<>(testService.save(testDTO), HttpStatus.CREATED);
     }
 
@@ -87,9 +88,10 @@ public class TestController {
      *
      * @param testDTO test in DTO form that needs to be updated
      * @return object of ResponseEntity class that contains updated test in DTO form
+     * @throws NotFoundException when professor doesn't exist in database
      */
     @PutMapping
-    public ResponseEntity<TestDTO> update(@Valid @RequestBody TestDTO testDTO){
+    public ResponseEntity<TestDTO> update(@Valid @RequestBody TestDTO testDTO) throws NotFoundException {
         return new ResponseEntity<>(testService.save(testDTO), HttpStatus.OK);
     }
 

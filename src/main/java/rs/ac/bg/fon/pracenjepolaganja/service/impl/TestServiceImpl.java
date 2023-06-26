@@ -38,16 +38,22 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     private QuestionTestRepository questionTestRepository;
 
     /**
+     * Reference variable of ProfessorServiceImpl class.
+     */
+    private ProfessorServiceImpl professorService;
+
+    /**
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
     private ModelMapper modelMapper;
 
     @Autowired
-    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository, ModelMapper modelMapper){
+    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository,ProfessorServiceImpl professorService, ModelMapper modelMapper){
         this.testRepository = testRepository;
         this.questionTestRepository = questionTestRepository;
         this.modelMapper = modelMapper;
+        this.professorService = professorService;
     }
 
     @Override
@@ -57,7 +63,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         for(Test test:tests){
             ProfessorDTO professorDTO = modelMapper.map(test.getAuthor(),ProfessorDTO.class);
             TestDTO testDTO = modelMapper.map(test,TestDTO.class);
-            testDTO.setProfessor(professorDTO);
+            testDTO.setAuthor(professorDTO);
             testsDTO.add(testDTO);
         }
         return testsDTO;
@@ -70,7 +76,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         if(test.isPresent()){
             ProfessorDTO professorDTO = modelMapper.map(test.get().getAuthor(),ProfessorDTO.class);
             testDTO = modelMapper.map(test.get(),TestDTO.class);
-            testDTO.setProfessor(professorDTO);
+            testDTO.setAuthor(professorDTO);
         }
         else{
             throw new NotFoundException("Did not find Test with id: " + id);
@@ -79,12 +85,17 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     @Override
-    public TestDTO save(TestDTO testDTO) {
+    public TestDTO save(TestDTO testDTO) throws NotFoundException {
         if(testDTO==null){
             throw new NullPointerException("Test can't be null");
         }
-        Test test = testRepository.save(modelMapper.map(testDTO,Test.class));
-        return modelMapper.map(test,TestDTO.class);
+        if(professorService.findById(testDTO.getAuthor().getId())!=null) {
+            Test test = testRepository.save(modelMapper.map(testDTO, Test.class));
+            return modelMapper.map(test, TestDTO.class);
+        }
+        else{
+            throw new NotFoundException("Did not find professor with id: " + testDTO.getAuthor().getId());
+        }
     }
 
     @Override

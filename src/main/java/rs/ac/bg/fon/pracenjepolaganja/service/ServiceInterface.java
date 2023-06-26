@@ -40,9 +40,10 @@ public interface ServiceInterface<T> {
      * @return entity that is saved in DTO form
      * @throws NullPointerException if provided entity is null
      * @throws org.springframework.security.authentication.BadCredentialsException Only occur when email for Student entity
+     * @throws NotFoundException if object of foreign key doesn't exist
      * is not in valid form.
      */
-    T save(T t);
+    T save(T t) throws NotFoundException;
 
     /**
      * Deletes the entity of type that is provided in T parameter.
