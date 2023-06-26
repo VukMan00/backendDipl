@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AnswerRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
@@ -31,9 +32,9 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     private AnswerRepository answerRepository;
 
     /**
-     * Reference variable of QuestionServiceImpl class.
+     * Reference variable of QuestionRepository class.
      */
-    private QuestionServiceImpl questionService;
+    private QuestionRepository questionRepository;
 
     /**
      * References to the ModelMapper.
@@ -42,10 +43,10 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     private ModelMapper modelMapper;
 
     @Autowired
-    public AnswerServiceImpl(AnswerRepository answerRepository,QuestionServiceImpl questionService, ModelMapper modelMapper){
+    public AnswerServiceImpl(AnswerRepository answerRepository,QuestionRepository questionRepository, ModelMapper modelMapper){
         this.answerRepository = answerRepository;
         this.modelMapper = modelMapper;
-        this.questionService = questionService;
+        this.questionRepository = questionRepository;
     }
 
     @Override
@@ -82,7 +83,7 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         if (answerDTO == null) {
             throw new NullPointerException("Answer can't be null");
         }
-        if (questionService.findById(answerDTO.getAnswerPK().getQuestionId()) != null){
+        if (questionRepository.findById(answerDTO.getAnswerPK().getQuestionId()).isPresent()){
             Answer answer = answerRepository.save(modelMapper.map(answerDTO, Answer.class));
             return modelMapper.map(answer, AnswerDTO.class);
         }

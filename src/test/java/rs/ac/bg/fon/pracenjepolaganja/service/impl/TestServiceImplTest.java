@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
@@ -26,8 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TestServiceImplTest {
@@ -42,7 +42,7 @@ class TestServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private ProfessorServiceImpl professorService;
+    private ProfessorRepository professorRepository;
 
     @InjectMocks
     private TestServiceImpl testService;
@@ -124,24 +124,26 @@ class TestServiceImplTest {
     @Test
     void testSave() throws NotFoundException {
         given(testRepository.save(test)).willReturn(test);
+        given(professorRepository.findById(professor.getId())).willReturn(Optional.ofNullable(professor));
 
         TestDTO savedTestDTO = testService.save(modelMapper.map(test,TestDTO.class));
 
         assertThat(savedTestDTO).isNotNull();
         verify(testRepository,times(1)).save(test);
+        verify(professorRepository,times(1)).findById(professor.getId());
     }
 
     @Test
-    void testSaveTestNotFound() throws NotFoundException {
+    void testSaveTestNotFound(){
         professor.setId(3);
         test.setAuthor(professor);
-        given(professorService.findById(professor.getId())).willReturn(null);
+        given(professorRepository.findById(professor.getId())).willReturn(Optional.empty());
 
         org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
             testService.save(modelMapper.map(test, TestDTO.class));
         });
 
-        verify(professorService,times(1)).findById(professor.getId());
+        verify(professorRepository,times(1)).findById(professor.getId());
     }
 
     @Test

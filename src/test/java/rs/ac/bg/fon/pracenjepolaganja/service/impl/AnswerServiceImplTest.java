@@ -5,11 +5,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AnswerRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.ProfessorDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
@@ -32,7 +36,7 @@ public class AnswerServiceImplTest{
     private AnswerRepository answerRepository;
 
     @Mock
-    private QuestionServiceImpl questionService;
+    private QuestionRepository questionRepository;
 
     @InjectMocks
     private AnswerServiceImpl answerService;
@@ -102,24 +106,27 @@ public class AnswerServiceImplTest{
     @Test
     void testSave() throws NotFoundException {
         given(answerRepository.save(answer)).willReturn(answer);
+        given(questionRepository.findById(answer.getAnswerPK().getQuestionId())).willReturn(Optional.ofNullable(question));
 
         AnswerDTO savedAnswerDTO = answerService.save(modelMapper.map(answer,AnswerDTO.class));
 
         assertThat(savedAnswerDTO).isNotNull();
         verify(answerRepository,times(1)).save(answer);
+        verify(questionRepository,times(1)).findById(answer.getAnswerPK().getQuestionId());
     }
 
     @Test
     void testSaveQuestionNotFound() throws NotFoundException {
         AnswerPK answerPK = new AnswerPK(3,1);
         answer.setAnswerPK(answerPK);
-        given(questionService.findById(answerPK.getQuestionId())).willReturn(null);
+        given(questionRepository.findById(answerPK.getQuestionId())).willReturn(Optional.empty());
 
         org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
             answerService.save(modelMapper.map(answer,AnswerDTO.class));
         });
 
-        verify(questionService,times(1)).findById(answerPK.getQuestionId());
+        verify(questionRepository,times(1)).findById(answerPK.getQuestionId());
+
     }
 
 

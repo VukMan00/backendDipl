@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
@@ -36,9 +37,9 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     private ResultExamRepository resultExamRepository;
 
     /**
-     * Reference variable of TestServiceImpl class.
+     * Reference variable of TestRepository class.
      */
-    private TestServiceImpl testService;
+    private TestRepository testRepository;
 
     /**
      * References to the ModelMapper.
@@ -47,11 +48,11 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     private ModelMapper modelMapper;
 
     @Autowired
-    public ExamServiceImpl(ExamRepository examRepository,ResultExamRepository resultExamRepository,TestServiceImpl testService, ModelMapper modelMapper){
+    public ExamServiceImpl(ExamRepository examRepository,ResultExamRepository resultExamRepository,TestRepository testRepository, ModelMapper modelMapper){
         this.examRepository = examRepository;
         this.resultExamRepository = resultExamRepository;
         this.modelMapper = modelMapper;
-        this.testService = testService;
+        this.testRepository = testRepository;
     }
 
     @Override
@@ -91,7 +92,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         if(examDTO==null){
             throw new NullPointerException("Exam can't be null");
         }
-        if(testService.findById(examDTO.getTest().getId())!=null) {
+        if(testRepository.findById(examDTO.getTest().getId()).isPresent()) {
             Exam exam = examRepository.save(modelMapper.map(examDTO, Exam.class));
             return modelMapper.map(exam, ExamDTO.class);
         }

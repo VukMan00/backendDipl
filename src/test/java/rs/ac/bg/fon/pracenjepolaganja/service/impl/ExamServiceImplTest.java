@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
@@ -45,7 +46,7 @@ class ExamServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private TestServiceImpl testService;
+    private TestRepository testRepository;
 
     @InjectMocks
     private ExamServiceImpl examService;
@@ -139,24 +140,26 @@ class ExamServiceImplTest {
     @Test
     void testSave() throws NotFoundException {
         given(examRepository.save(exam)).willReturn(exam);
+        given(testRepository.findById(exam.getId())).willReturn(Optional.ofNullable(test));
 
         ExamDTO savedExamDTO = examService.save(modelMapper.map(exam,ExamDTO.class));
 
         assertThat(savedExamDTO).isNotNull();
         verify(examRepository,times(1)).save(exam);
+        verify(testRepository,times(1)).findById(exam.getId());
     }
 
     @Test
-    void testSaveTestNotFound() throws NotFoundException {
+    void testSaveTestNotFound(){
         test.setId(3);
         exam.setTest(test);
-        given(testService.findById(test.getId())).willReturn(null);
+        given(testRepository.findById(test.getId())).willReturn(Optional.empty());
 
         org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
             examService.save(modelMapper.map(exam, ExamDTO.class));
         });
 
-        verify(testService,times(1)).findById(test.getId());
+        verify(testRepository,times(1)).findById(test.getId());
     }
 
     @Test

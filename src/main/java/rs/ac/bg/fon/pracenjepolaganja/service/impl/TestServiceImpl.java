@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
@@ -38,9 +39,9 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     private QuestionTestRepository questionTestRepository;
 
     /**
-     * Reference variable of ProfessorServiceImpl class.
+     * Reference variable of ProfessorRepository class.
      */
-    private ProfessorServiceImpl professorService;
+    private ProfessorRepository professorRepository;
 
     /**
      * References to the ModelMapper.
@@ -49,11 +50,11 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     private ModelMapper modelMapper;
 
     @Autowired
-    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository,ProfessorServiceImpl professorService, ModelMapper modelMapper){
+    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository,ProfessorRepository professorRepository, ModelMapper modelMapper){
         this.testRepository = testRepository;
         this.questionTestRepository = questionTestRepository;
         this.modelMapper = modelMapper;
-        this.professorService = professorService;
+        this.professorRepository = professorRepository;
     }
 
     @Override
@@ -89,7 +90,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         if(testDTO==null){
             throw new NullPointerException("Test can't be null");
         }
-        if(professorService.findById(testDTO.getAuthor().getId())!=null) {
+        if(professorRepository.findById(testDTO.getAuthor().getId()).isPresent()) {
             Test test = testRepository.save(modelMapper.map(testDTO, Test.class));
             return modelMapper.map(test, TestDTO.class);
         }
