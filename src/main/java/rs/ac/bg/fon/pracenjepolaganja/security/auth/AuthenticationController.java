@@ -3,10 +3,8 @@ package rs.ac.bg.fon.pracenjepolaganja.security.auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 
 /**
  * Represent controller that process all authentication requests from user.
@@ -44,5 +42,15 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    /**
+     * Changes the password of member.
+     * Password must be in strong format.
+     * @throws NotFoundException when member with given username doesn't exist
+     */
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody RequestChangePassword request) throws NotFoundException {
+        return authenticationService.changePassword(request);
     }
 }

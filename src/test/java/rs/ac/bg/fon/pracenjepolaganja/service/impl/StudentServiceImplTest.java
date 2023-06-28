@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.MemberRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
@@ -20,6 +19,7 @@ import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.*;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
+import rs.ac.bg.fon.pracenjepolaganja.security.auth.AuthenticationService;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -39,14 +39,14 @@ class StudentServiceImplTest {
     @Mock
     private MemberRepository memberRepository;
 
-    @Mock
-    private AuthorityRepository authorityRepository;
-
     @Spy
     private ModelMapper modelMapper;
 
     @Spy
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AuthenticationService authenticationService;
 
     @InjectMocks
     private StudentServiceImpl studentService;
@@ -71,6 +71,7 @@ class StudentServiceImplTest {
         member = Member.builder()
                 .username(student.getEmail())
                 .password(passwordEncoder.encode(student.getIndex()))
+                .role(Role.ROLE_USER)
                 .build();
 
         Professor author = Professor.builder()
@@ -144,12 +145,12 @@ class StudentServiceImplTest {
         verify(studentRepository,times(1)).findById(studentId);
     }
 
-    /*@Test
+    @Test
     void testSave() {
         Member savedMember = Member.builder()
                 .username(student.getEmail())
                 .password(passwordEncoder.encode(student.getIndex()))
-                .authorities(authorities)
+                .role(Role.ROLE_USER)
                 .build();
 
         Student savedStudent = Student.builder()
@@ -161,9 +162,8 @@ class StudentServiceImplTest {
                 .email("vm20190048@student.fon.bg.ac.rs")
                 .memberStudent(savedMember)
                 .build();
-        given(memberService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Email is valid"));
+        given(authenticationService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Email is valid"));
         given(memberRepository.save(member)).willReturn(member);
-        given(authorityRepository.save(authority)).willReturn(authority);
         given(studentRepository.save(savedStudent)).willReturn(savedStudent);
 
         StudentDTO savedStudentDTO = studentService.save(modelMapper.map(student,StudentDTO.class));
@@ -171,13 +171,10 @@ class StudentServiceImplTest {
         //Test return objects
         assertThat(savedStudentDTO).isNotNull();
         assertThat(savedStudentDTO.getMember()).isNotNull();
-        assertThat(savedStudentDTO.getMember().getAuthorities()).isNotNull();
-        assertThat(savedStudentDTO.getMember().getAuthorities()).isNotEmpty();
         verify(studentRepository,times(1)).save(savedStudent);
-        verify(authorityRepository,times(1)).save(authority);
         verify(memberRepository,times(1)).save(member);
-        verify(memberService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());
-    }*/
+        verify(authenticationService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());
+    }
 
     @Test
     void testSaveNull(){
@@ -188,29 +185,29 @@ class StudentServiceImplTest {
 
     @Test
     void testSaveInvalidEmail(){
-        /*student.setEmail("vukman619@gmail.com");
-        given(memberService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Member can't register with given email. We need your faculty email!"));
+        student.setEmail("vukman619@gmail.com");
+        given(authenticationService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Member can't register with given email. We need your faculty email!"));
 
         org.junit.jupiter.api.Assertions.assertThrows(BadCredentialsException.class, () -> {
             studentService.save(modelMapper.map(student,StudentDTO.class));
         });
 
-        verify(memberService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());*/
+        verify(authenticationService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());
     }
 
     @Test
     void testSaveEmailExists(){
-        /*given(memberService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Member with given username already exists"));
+        given(authenticationService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Member with given username already exists"));
         org.junit.jupiter.api.Assertions.assertThrows(BadCredentialsException.class, () -> {
             studentService.save(modelMapper.map(student,StudentDTO.class));
         });
 
-        verify(memberService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());*/
+        verify(authenticationService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());
     }
 
     @Test
     void testUpdate() throws NotFoundException {
-        /*student.setMemberStudent(member);
+        student.setMemberStudent(member);
 
         Student student2 = student;
         student2.setEmail("vm20200048@student.fon.bg.ac.rs");
@@ -224,7 +221,7 @@ class StudentServiceImplTest {
         given(studentRepository.findById(student.getId())).willReturn(Optional.ofNullable(student));
         given(studentRepository.save(student2)).willReturn(student2);
         given(memberRepository.save(member2)).willReturn(member2);
-        given(memberService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Email is valid"));
+        given(authenticationService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Email is valid"));
 
         StudentDTO updatedStudentDTO = studentService.update(modelMapper.map(student2,StudentDTO.class));
 
@@ -235,7 +232,7 @@ class StudentServiceImplTest {
         verify(studentRepository,times(1)).findById(student.getId());
         verify(studentRepository,times(1)).save(student2);
         verify(memberRepository,times(1)).save(member2);
-        verify(memberService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());*/
+        verify(authenticationService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());
     }
 
     @Test
@@ -247,17 +244,17 @@ class StudentServiceImplTest {
 
     @Test
     void testUpdateInvalidEmail(){
-        /*student.setEmail("vukman619@gmail.com");
-        given(memberService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Member can't register with given email. We need your faculty email!"));
+        student.setEmail("vukman619@gmail.com");
+        given(authenticationService.validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Member can't register with given email. We need your faculty email!"));
         org.junit.jupiter.api.Assertions.assertThrows(BadCredentialsException.class, () -> {
             studentService.update(modelMapper.map(student,StudentDTO.class));
         });
-        verify(memberService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());*/
+        verify(authenticationService,times(1)).validateEmail(student.getEmail(),student.getIndex(),student.getName(),student.getLastname());
     }
 
     @Test
     void testUpdateNotFound(){
-        /*Integer studentId = 2;
+        Integer studentId = 2;
         Student student2 = Student.builder()
                 .id(studentId)
                 .name("Vuk")
@@ -268,13 +265,13 @@ class StudentServiceImplTest {
                 .build();
 
         given(studentRepository.findById(studentId)).willReturn(Optional.empty());
-        given(memberService.validateEmail(student2.getEmail(),student2.getIndex(),student2.getName(),student2.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Email is valid"));
+        given(authenticationService.validateEmail(student2.getEmail(),student2.getIndex(),student2.getName(),student2.getLastname())).willReturn(ResponseEntity.status(HttpStatus.OK).body("Email is valid"));
 
         org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
             studentService.update(modelMapper.map(student2,StudentDTO.class));
         });
 
-        verify(studentRepository,times(1)).findById(studentId);*/
+        verify(studentRepository,times(1)).findById(studentId);
     }
 
     @Test

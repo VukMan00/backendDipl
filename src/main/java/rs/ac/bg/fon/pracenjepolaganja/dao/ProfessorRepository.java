@@ -13,4 +13,5 @@ import rs.ac.bg.fon.pracenjepolaganja.entity.Professor;
  */
 @Repository
 public interface ProfessorRepository extends JpaRepository<Professor,Integer> {
+    Professor findByEmail(String email);
 }

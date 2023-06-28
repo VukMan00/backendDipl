@@ -2,17 +2,20 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.MemberRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Role;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
+import rs.ac.bg.fon.pracenjepolaganja.security.auth.AuthenticationService;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.*;
@@ -43,9 +46,9 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     private MemberRepository memberRepository;
 
     /**
-     * Reference variable of AuthorityRepository class.
+     * Reference variable of AuthenticationService class
      */
-    private AuthorityRepository authorityRepository;
+    private AuthenticationService authenticationService;
 
     /**
      * References to the ModelMapper.
@@ -60,11 +63,11 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,
-                              AuthorityRepository authorityRepository, ModelMapper modelMapper,PasswordEncoder passwordEncoder){
+                              AuthenticationService authenticationService,ModelMapper modelMapper,PasswordEncoder passwordEncoder){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
-        this.authorityRepository = authorityRepository;
+        this.authenticationService = authenticationService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -91,10 +94,10 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     @Override
     public StudentDTO save(StudentDTO studentDTO) {
-        /*if(studentDTO==null){
+        if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        ResponseEntity<String> message = memberService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
+        ResponseEntity<String> message = authenticationService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
         if(!message.getBody().equals("Email is valid")){
             throw new BadCredentialsException(message.getBody());
         }
@@ -102,37 +105,23 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
             throw new BadCredentialsException("Member with given username already exists");
         }
 
-        Set<Authority> authorities = new HashSet<>();
-        Student student = modelMapper.map(studentDTO,Student.class);
-
         Member member = Member.builder()
-                .username(student.getEmail())
-                .password(passwordEncoder.encode(student.getIndex()))
+                .username(studentDTO.getEmail())
+                .password(passwordEncoder.encode(studentDTO.getIndex()))
+                .role(Role.ROLE_USER)
                 .build();
         Member savedMember = memberRepository.save(member);
 
-        Authority authority = Authority.builder()
-                .name("ROLE_USER")
-                .member(savedMember)
-                .build();
-        Authority savedAuthority = authorityRepository.save(authority);
-
-        authorities.add(savedAuthority);
-        savedMember.setAuthorities(authorities);
+        Student student = modelMapper.map(studentDTO,Student.class);
         student.setMemberStudent(savedMember);
 
-        Student dbStudent = studentRepository.save(student);
+        Student savedStudent = studentRepository.save(student);
 
-        AuthorityDTO authorityDTO = modelMapper.map(dbStudent.getMemberStudent().getAuthorities().stream().findFirst(),AuthorityDTO.class);
-        MemberDTO memberDTO = modelMapper.map(dbStudent.getMemberStudent(),MemberDTO.class);
-        Set<AuthorityDTO> authoritiesDTO = new HashSet<>();
-        authoritiesDTO.add(authorityDTO);
-        memberDTO.setAuthorities(authoritiesDTO);
-        studentDTO = modelMapper.map(dbStudent,StudentDTO.class);
+        MemberDTO memberDTO = modelMapper.map(savedStudent.getMemberStudent(),MemberDTO.class);
+        studentDTO = modelMapper.map(savedStudent,StudentDTO.class);
         studentDTO.setMember(memberDTO);
 
-        return studentDTO;*/
-        return null;
+        return studentDTO;
     }
 
     /**
@@ -148,10 +137,10 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      * @throws BadCredentialsException when email of updated student is not in valid form
      */
     public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
-        /*if(studentDTO==null){
+        if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        ResponseEntity<String> message = memberService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
+        ResponseEntity<String> message = authenticationService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
         if(!message.getBody().equals("Email is valid")){
             throw new BadCredentialsException(message.getBody());
         }
@@ -169,8 +158,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         else{
             throw new NotFoundException("Did not find Student with id: " + student.getId());
         }
-        return modelMapper.map(studentRepository.save(student),StudentDTO.class);*/
-        return null;
+        return modelMapper.map(studentRepository.save(student),StudentDTO.class);
     }
 
     @Override

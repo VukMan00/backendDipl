@@ -31,4 +31,32 @@ public class AuthenticationResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ResponseEntity<String> message;
 
+    /**
+     * Represent firstname of member.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String firstname;
+
+    /**
+     * Represent lastname of member.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String lastname;
+
+    /**
+     * Represent email of member.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String email;
+
+    /**
+     * Represent index of member.
+     * Index only exist withing students.
+     * When authenticated member is professor, index will be null.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String index;
+
+
+
 }

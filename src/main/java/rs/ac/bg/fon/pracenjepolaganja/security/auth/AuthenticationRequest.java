@@ -32,6 +32,5 @@ public class AuthenticationRequest {
      * Password must have at least 2 characters.
      */
     @NotBlank(message = "Password is mandatory")
-    @Size(min = 2, message = "Content must have at least 2 characters")
     private String password;
 }

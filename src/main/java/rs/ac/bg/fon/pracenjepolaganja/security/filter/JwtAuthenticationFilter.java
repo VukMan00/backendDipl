@@ -1,4 +1,4 @@
-package rs.ac.bg.fon.pracenjepolaganja.security.config;
+package rs.ac.bg.fon.pracenjepolaganja.security.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import rs.ac.bg.fon.pracenjepolaganja.security.config.JwtService;
 
 import java.io.IOException;
 

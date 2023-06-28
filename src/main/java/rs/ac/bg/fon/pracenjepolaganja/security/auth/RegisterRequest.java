@@ -44,10 +44,17 @@ public class RegisterRequest {
 
     /**
      * Password of member account.
-     * Password is mandatory and must be at least 2 characters length.
+     * Password is mandatory.
+     * A digit must occur at least once
+     * A lower case letter must occur at least once
+     * An upper case letter must occur at least once
+     * A special character must occur at least once
+     * No whitespace allowed in the entire string
+     * At least 8 characters
+     *
      */
     @NotBlank(message = "Password is mandatory")
-    @Size(min = 2, message = "Content must have at least 2 characters")
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", message = "This isn't strong password")
     private String password;
 
     /**
