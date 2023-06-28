@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represent JPA repository of Member entity.
@@ -21,5 +22,7 @@ public interface MemberRepository extends JpaRepository<Member,Integer> {
      * @param username of Member whose needed.
      * @return List of Members with given username
      */
-    List<Member> findByUsername(String username);
+    //List<Member> findByUsername(String username);
+
+    Optional<Member> findByUsername(String username);
 }

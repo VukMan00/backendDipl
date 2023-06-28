@@ -2,10 +2,7 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AuthorityRepository;
@@ -13,8 +10,6 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.MemberRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.StudentRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Authority;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
@@ -63,21 +58,15 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      */
     private PasswordEncoder passwordEncoder;
 
-    /**
-     * References to MemberServiceImpl class
-     */
-    private MemberServiceImpl memberService;
-
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,
-                              AuthorityRepository authorityRepository, ModelMapper modelMapper,PasswordEncoder passwordEncoder, MemberServiceImpl memberService){
+                              AuthorityRepository authorityRepository, ModelMapper modelMapper,PasswordEncoder passwordEncoder){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
         this.authorityRepository = authorityRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
-        this.memberService = memberService;
     }
 
     @Override
@@ -99,9 +88,10 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         return studentDTO;
     }
 
+
     @Override
     public StudentDTO save(StudentDTO studentDTO) {
-        if(studentDTO==null){
+        /*if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
         ResponseEntity<String> message = memberService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
@@ -141,7 +131,8 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         studentDTO = modelMapper.map(dbStudent,StudentDTO.class);
         studentDTO.setMember(memberDTO);
 
-        return studentDTO;
+        return studentDTO;*/
+        return null;
     }
 
     /**
@@ -157,7 +148,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      * @throws BadCredentialsException when email of updated student is not in valid form
      */
     public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
-        if(studentDTO==null){
+        /*if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
         ResponseEntity<String> message = memberService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
@@ -178,7 +169,8 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         else{
             throw new NotFoundException("Did not find Student with id: " + student.getId());
         }
-        return modelMapper.map(studentRepository.save(student),StudentDTO.class);
+        return modelMapper.map(studentRepository.save(student),StudentDTO.class);*/
+        return null;
     }
 
     @Override

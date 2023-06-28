@@ -1,4 +1,4 @@
-package rs.ac.bg.fon.pracenjepolaganja.dto;
+package rs.ac.bg.fon.pracenjepolaganja.security.auth;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -9,43 +9,41 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * Represent Data Transfer Object for registration purposes.
- * Contains name, lastname, email, password, index and date of birth.
- * Registration is used only for students with role of User.
- * Administrators already have accounts.
+ * Represent object of registration that member sent.
+ * Contains firstname,lastname,email,password and index.
  *
  * @author Vuk Manojlovic
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class RegistrationDTO {
+public class RegisterRequest {
 
     /**
-     * Firstname of student.
+     * Firstname of member.
      * Can't be null or blank.
      */
     @NotBlank(message =  "Firstname is mandatory")
-    private String name;
+    private String firstname;
 
     /**
-     * Lastname of student.
+     * Lastname of member.
      * Can't be null or blank.
      */
     @NotBlank(message = "Lastname is mandatory")
     private String lastname;
 
     /**
-     * Faculty email of student.
+     * Faculty email of member.
      * Email must be in valid form.
-     * Email is also username for student.
+     * Email is also username for member.
      */
     @Email(message = "Email must be valid")
     private String email;
 
     /**
-     * Password of student account.
+     * Password of member account.
      * Password is mandatory and must be at least 2 characters length.
      */
     @NotBlank(message = "Password is mandatory")
@@ -67,5 +65,4 @@ public class RegistrationDTO {
      */
     @PastOrPresent(message = "Date can't be ahead of the current date")
     private LocalDate birth;
-
 }

@@ -1,15 +1,19 @@
 package rs.ac.bg.fon.pracenjepolaganja.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import rs.ac.bg.fon.pracenjepolaganja.security.filter.*;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import rs.ac.bg.fon.pracenjepolaganja.security.config.JwtAuthenticationFilter;
+
 
 /**
  * Represent configuration of security.
@@ -19,7 +23,19 @@ import rs.ac.bg.fon.pracenjepolaganja.security.filter.*;
  * @author Vuk Manojlovic
  */
 @Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    /**
+     * Reference variable of JwtAuthenticationFilter
+     */
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    /**
+     * Reference variable of AuthenticationProvider
+     */
+    private final AuthenticationProvider authenticationProvider;
 
     /**
      * Represent the Bean of SecurityFilterChain.
@@ -33,10 +49,6 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
         http.csrf((csrf) -> csrf.disable())
-                /*.addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)*/
                 .authorizeHttpRequests((requests)->requests
                         .requestMatchers(HttpMethod.POST,"/answers/**","/questions/**",
                                 "/exams/**","/professors/**","/students/**","/tests/**").hasRole("ADMIN")
@@ -49,19 +61,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/password/*").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.GET,"/").authenticated()
                         .requestMatchers(HttpMethod.GET,"/user").authenticated()
-                        .requestMatchers(HttpMethod.POST,"/register").permitAll())
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults());
+                        .requestMatchers(HttpMethod.POST,"/register").permitAll()
+                        .requestMatchers("/auth/**").permitAll())
+                //This assures that every request is authenticated, state is not saving
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    /**
-     * Represent Bean for PasswordEncoder.
-     * PasswordEncoder provides encryption of passwords.
-     * @return Bean of ByCryptPasswordEncoder
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,7 +27,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Member implements Serializable {
+public class Member implements Serializable,UserDetails {
 
     /**
      * Primary key of member entity
@@ -55,15 +60,18 @@ public class Member implements Serializable {
      * Admin can make changes of elements in database where
      * User can only see elements of database.
      */
-    @OneToMany(mappedBy="member",fetch=FetchType.EAGER)
+    /*@OneToMany(mappedBy="member",fetch=FetchType.EAGER)
     @JsonIgnore
-    private Set<Authority> authorities;
+    private Set<Authority> authorities;*/
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="role")
+    private Role role;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Member)) return false;
-        Member member = (Member) o;
+        if (!(o instanceof Member member)) return false;
         return Objects.equals(getId(), member.getId()) && Objects.equals(getUsername(), member.getUsername()) && Objects.equals(getPassword(), member.getPassword());
     }
 
@@ -79,5 +87,30 @@ public class Member implements Serializable {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

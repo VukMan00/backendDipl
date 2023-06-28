@@ -1,7 +1,7 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
 import lombok.Data;
-import java.util.Set;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Role;
 
 /**
  * Represent Data Transfer Object of Member entity.
@@ -30,8 +30,8 @@ public class MemberDTO {
     private String password;
 
     /**
-     * Set of authorities that member of application has.
-     * Roles that member can have is USER or ADMIN.
+     * Role that member has.
+     * Role that member can have is USER or ADMIN.
      */
-    private Set<AuthorityDTO> authorities;
+    private Role role;
 }
