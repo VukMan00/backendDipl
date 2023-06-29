@@ -73,7 +73,7 @@ public class JwtService {
      * @return String generated token
      */
     public String generateToken(Map<String,Object> extractClaims, UserDetails userDetails){
-        return buildToken(extractClaims,userDetails,60*24);
+        return buildToken(extractClaims,userDetails,1000*60*60*10);
     }
 
     /**
@@ -83,7 +83,7 @@ public class JwtService {
      * @return String of generated refresh token
      */
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, 1000*60*24);
+        return buildToken(new HashMap<>(), userDetails, 1000*60*60);
     }
 
     /**
