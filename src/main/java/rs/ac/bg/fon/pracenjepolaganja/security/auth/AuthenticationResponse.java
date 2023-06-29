@@ -20,10 +20,16 @@ import org.springframework.http.ResponseEntity;
 public class AuthenticationResponse {
 
     /**
-     * Represent JWT token of member.
+     * Represent JWT access token of member.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String token;
+    private String accessToken;
+
+    /**
+     * Represent JWT refresh token of member
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String refreshToken;
 
     /**
      * Represent message for member

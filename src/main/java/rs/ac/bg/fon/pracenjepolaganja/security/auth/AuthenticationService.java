@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.security.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,11 @@ import rs.ac.bg.fon.pracenjepolaganja.entity.Role;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.security.config.JwtService;
+import rs.ac.bg.fon.pracenjepolaganja.security.token.Token;
+import rs.ac.bg.fon.pracenjepolaganja.security.token.TokenRepository;
+import rs.ac.bg.fon.pracenjepolaganja.security.token.TokenType;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -50,6 +55,11 @@ public class AuthenticationService {
     private final ProfessorRepository professorRepository;
 
     /**
+     * Reference variable of TokenRepository
+     */
+    private final TokenRepository tokenRepository;
+
+    /**
      * Reference variable of PasswordEncoder
      */
     private final PasswordEncoder passwordEncoder;
@@ -77,7 +87,6 @@ public class AuthenticationService {
         if(!message.getBody().equals("Email is valid")) {
             return AuthenticationResponse.builder()
                     .message(message)
-                    .token(null)
                     .build();
         }
         var member = Member.builder()
@@ -85,7 +94,11 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .build();
+        var jwtToken = jwtService.generateToken(member);
+        var refreshToken = jwtService.generateRefreshToken(member);
+
         Member savedMember = memberRepository.save(member);
+        saveMemberToken(savedMember,jwtToken);
 
         var student = Student.builder()
                 .name(request.getFirstname())
@@ -97,9 +110,9 @@ public class AuthenticationService {
                 .build();
         studentRepository.save(student);
 
-        var jwtToken = jwtService.generateToken(member);
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .firstname(student.getName())
                 .lastname(student.getLastname())
                 .email(student.getEmail())
@@ -120,11 +133,16 @@ public class AuthenticationService {
         var member = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(()->new BadCredentialsException("Member with given username doesn't exist"));
 
-        String firstname=null;
-        String lastname=null;
-        String email=null;
+        var jwtToken = jwtService.generateToken(member);
+        var refreshToken = jwtService.generateRefreshToken(member);
+        revokeAllMemberTokens(member);
+        saveMemberToken(member,jwtToken);
+
+        String firstname;
+        String lastname;
+        String email;
         String index=null;
-        String role=null;
+        String role;
 
         if(member.getUsername().contains("@student.fon.bg.ac.rs")){
             Student student = studentRepository.findByEmail(member.getUsername());
@@ -142,9 +160,9 @@ public class AuthenticationService {
             role = Role.ROLE_ADMIN.name();
         }
 
-        var jwtToken = jwtService.generateToken(member);
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .firstname(firstname)
                 .lastname(lastname)
                 .email(email)
@@ -196,5 +214,71 @@ public class AuthenticationService {
             throw new NotFoundException("Did not find member with username: " + request.getUsername());
         }
         return ResponseEntity.status(HttpStatus.OK).body("Member has successfully changed password");
+    }
+
+    /**
+     * Refreshes token, generate new access token.
+     *
+     * @param request object whose contains Bearer token
+     * @param response object of response
+     * @throws IOException when generating is not valid
+     */
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String refreshToken;
+        final String memberEmail;
+        if(authHeader==null || !authHeader.startsWith("Bearer ")){
+            return;
+        }
+        refreshToken = authHeader.substring(7);
+        memberEmail = jwtService.extractUsername(refreshToken);
+        if(memberEmail!=null){
+            var member = this.memberRepository.findByUsername(memberEmail)
+                    .orElseThrow();
+            if(jwtService.isTokenValid(refreshToken,member)){
+                var accessToken = jwtService.generateToken(member);
+                revokeAllMemberTokens(member);
+                saveMemberToken(member,accessToken);
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+                new ObjectMapper().writeValue(response.getOutputStream(),authResponse);
+            }
+        }
+    }
+
+    /**
+     * Revoke all tokens of member that is valid.
+     *
+     * @param member member of all revoked tokens
+     */
+    private void revokeAllMemberTokens(Member member) {
+        var validUserTokens = tokenRepository.findAllValidTokenByMember(member.getId());
+        System.out.println(validUserTokens);
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+    }
+
+    /**
+     * Saves member token.
+     *
+     * @param member member whose token is going to be saved
+     * @param jwtToken access token whose going to be saved
+     */
+    private void saveMemberToken(Member member, String jwtToken) {
+        var token = Token.builder()
+                .member(member)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
     }
 }
