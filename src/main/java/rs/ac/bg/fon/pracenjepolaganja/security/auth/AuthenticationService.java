@@ -1,6 +1,9 @@
 package rs.ac.bg.fon.pracenjepolaganja.security.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -121,6 +124,7 @@ public class AuthenticationService {
         String lastname=null;
         String email=null;
         String index=null;
+        String role=null;
 
         if(member.getUsername().contains("@student.fon.bg.ac.rs")){
             Student student = studentRepository.findByEmail(member.getUsername());
@@ -128,12 +132,14 @@ public class AuthenticationService {
             lastname = student.getLastname();
             email = student.getEmail();
             index = student.getIndex();
+            role=Role.ROLE_USER.name();
         }
         else{
             Professor professor = professorRepository.findByEmail(member.getUsername());
             firstname = professor.getName();
             lastname = professor.getLastname();
             email = professor.getEmail();
+            role = Role.ROLE_ADMIN.name();
         }
 
         var jwtToken = jwtService.generateToken(member);
@@ -143,6 +149,7 @@ public class AuthenticationService {
                 .lastname(lastname)
                 .email(email)
                 .index(index)
+                .role(role)
                 .build();
     }
 

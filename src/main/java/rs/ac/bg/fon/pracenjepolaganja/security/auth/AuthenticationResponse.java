@@ -57,6 +57,11 @@ public class AuthenticationResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String index;
 
+    /**
+     * Represent role of member.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String role;
 
 
 }

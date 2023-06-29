@@ -12,9 +12,8 @@ import rs.ac.bg.fon.pracenjepolaganja.exception.ErrorResponse;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represent Exception handler that intercepts all errors and exceptions.
@@ -34,8 +33,8 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(NotFoundException ex){
-        List<String> errors = new ArrayList<>();
-        errors.add(ex.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error",ex.getMessage());
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.NOT_FOUND.value(),errors,System.currentTimeMillis());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
@@ -51,11 +50,16 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleExceptions(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult().getFieldErrors()
-                .stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
         ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(), errors,System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_ACCEPTABLE);
+                new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(),errors,System.currentTimeMillis());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -67,8 +71,8 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(UsernameNotFoundException ex){
-        List<String> errors = new ArrayList<>();
-        errors.add(ex.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error",ex.getMessage());
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.NOT_FOUND.value(),errors,System.currentTimeMillis());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
@@ -83,8 +87,8 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<ErrorResponse> handleException(SQLException ex){
-        List<String> errors = new ArrayList<>();
-        errors.add(ex.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error",ex.getMessage());
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(),errors,System.currentTimeMillis());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_ACCEPTABLE);
@@ -99,8 +103,8 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleException(BadCredentialsException ex){
-        List<String> errors = new ArrayList<>();
-        errors.add(ex.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error",ex.getMessage());
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.BAD_REQUEST.value(),errors,System.currentTimeMillis());
         return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
@@ -115,8 +119,8 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(Exception ex){
-        List<String> errors = new ArrayList<>();
-        errors.add(ex.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error",ex.getMessage());
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),errors,System.currentTimeMillis());
 

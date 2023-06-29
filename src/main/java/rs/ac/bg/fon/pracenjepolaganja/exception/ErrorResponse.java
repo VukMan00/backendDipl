@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represent the class that is sent in JSON form to the client when exception occurs.
@@ -24,9 +25,9 @@ public class ErrorResponse {
     private int status;
 
     /**
-     * List of messages that exception throw.
+     * Map of message that exception throw.
      */
-    private List<String> message;
+    private Map<String,String> message;
 
     /**
      * Time when exception occurred in seconds.
