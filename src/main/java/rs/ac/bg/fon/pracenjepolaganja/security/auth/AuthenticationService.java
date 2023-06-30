@@ -26,7 +26,6 @@ import rs.ac.bg.fon.pracenjepolaganja.security.token.TokenRepository;
 import rs.ac.bg.fon.pracenjepolaganja.security.token.TokenType;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -78,34 +77,38 @@ public class AuthenticationService {
      * Registration of member.
      * Provides validation of email.
      *
-     * @param request registration object of member
+     * @param registrationRequest registration object of member
      * @return object of AuthenticationResponse
      */
-    public AuthenticationResponse register(RegisterRequest request) {
-        ResponseEntity<String> message = validateEmail(request.getEmail(),request.getIndex(),request.getFirstname(),request.getLastname());
-
-        if(!message.getBody().equals("Email is valid")) {
-            return AuthenticationResponse.builder()
-                    .message(message)
-                    .build();
-        }
+    public AuthenticationResponse registration(RegistrationRequest registrationRequest) {
         var member = Member.builder()
-                .username(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .username(registrationRequest.getEmail())
+                .password(passwordEncoder.encode(registrationRequest.getPassword()))
                 .role(Role.ROLE_USER)
                 .build();
+
         var jwtToken = jwtService.generateToken(member);
         var refreshToken = jwtService.generateRefreshToken(member);
+
+        Optional<Token> dbRegistrationToken = tokenRepository.findByToken(registrationRequest.getRegistrationToken());
+        if(dbRegistrationToken.isPresent()){
+            tokenRepository.deleteById(dbRegistrationToken.get().getId());
+        }
+        else{
+            return AuthenticationResponse.builder()
+                    .message("Member didn't provide valid registrationToken")
+                    .build();
+        }
 
         Member savedMember = memberRepository.save(member);
         saveMemberToken(savedMember,jwtToken);
 
         var student = Student.builder()
-                .name(request.getFirstname())
-                .lastname(request.getLastname())
-                .email(request.getEmail())
-                .index(request.getIndex())
-                .birth(request.getBirth())
+                .name(registrationRequest.getFirstname())
+                .lastname(registrationRequest.getLastname())
+                .email(registrationRequest.getEmail())
+                .index(registrationRequest.getIndex())
+                .birth(registrationRequest.getBirth())
                 .memberStudent(savedMember)
                 .build();
         studentRepository.save(student);
@@ -144,7 +147,7 @@ public class AuthenticationService {
         String index=null;
         String role;
 
-        if(member.getUsername().contains("@student.fon.bg.ac.rs")){
+        if(!member.getUsername().contains("@fon.bg.ac.rs")){
             Student student = studentRepository.findByEmail(member.getUsername());
             firstname = student.getName();
             lastname = student.getLastname();
@@ -169,31 +172,6 @@ public class AuthenticationService {
                 .index(index)
                 .role(role)
                 .build();
-    }
-
-    /**
-     * Provides validation of email that user put.
-     * Email must be in form of student faculty account.
-     * First two characters must be initial of users name and lastname.
-     * Also, must contain number of index in form of yearNumber and with that
-     * type of email must be @student.fon.bg.ac.rs.
-     * If email exist in database, validation of Email is not successful.
-     *
-     * @param email email of registration object (student)
-     * @param index index of student
-     * @param firstName firstname of Student
-     * @param lastName lastname of Student
-     * @return ResponseEntity message if validation is successful or not.
-     */
-    public ResponseEntity<String> validateEmail(String email, String index, String firstName, String lastName) {
-        String initials = (firstName.charAt(0) + "" + lastName.charAt(0)).toLowerCase(Locale.ROOT);
-        String[] splitIndex = index.split("-");
-        String year = splitIndex[0];
-        String number = splitIndex[1];
-        if(!email.equals(initials+""+year+""+number+"@student.fon.bg.ac.rs")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Member can't register with given email. We need your faculty email!");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Email is valid");
     }
 
     /**
@@ -253,7 +231,7 @@ public class AuthenticationService {
      *
      * @param member member of all revoked tokens
      */
-    private void revokeAllMemberTokens(Member member) {
+    public void revokeAllMemberTokens(Member member) {
         var validUserTokens = tokenRepository.findAllValidTokenByMember(member.getId());
         System.out.println(validUserTokens);
         if (validUserTokens.isEmpty())
@@ -271,7 +249,7 @@ public class AuthenticationService {
      * @param member member whose token is going to be saved
      * @param jwtToken access token whose going to be saved
      */
-    private void saveMemberToken(Member member, String jwtToken) {
+    public void saveMemberToken(Member member, String jwtToken) {
         var token = Token.builder()
                 .member(member)
                 .token(jwtToken)

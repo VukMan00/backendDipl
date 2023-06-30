@@ -45,7 +45,7 @@ public class StudentDTO{
      * first four digits is first year of study and last four digits
      * are number of index.
      */
-    @Pattern(regexp = "[1-9][0-9]{3}-[0-9]{4}")
+    @Pattern(regexp = "[1-9][0-9]{3}-[0-9]{4}",message = "Index is not in valid form")
     private String index;
 
     /**
@@ -57,8 +57,9 @@ public class StudentDTO{
 
     /**
      * Faculty email of student.
-     * Email must be in valid form.
+     * EmailDetails must be in valid form.
      */
+    @NotBlank(message = "Name is mandatory")
     @Email(message = "Email must be valid")
     private String email;
 

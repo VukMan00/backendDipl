@@ -1,0 +1,44 @@
+package rs.ac.bg.fon.pracenjepolaganja.security.email;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Represent email that is sent to members.
+ *
+ * @author Vuk Manojlovic
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class EmailDetails {
+
+    /**
+     * Represent email of recipient
+     * EmailDetails must be in valid form.
+     * EmailDetails is also username for member.
+     */
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email must be valid")
+    private String recipient;
+
+    /**
+     * Body of message that email contains.
+     */
+    private String msgBody;
+
+    /**
+     * Title of email.
+     */
+    private String subject;
+
+    /**
+     * Attachment of email.
+     */
+    private String attachment;
+}

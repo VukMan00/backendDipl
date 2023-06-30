@@ -29,13 +29,14 @@ public class AuthenticationController {
     /**
      * Provides registration for members.
      *
-     * @param request represent the request for registration from member
+     * @param registrationRequest represent the request for registration from member
      * @return object of ResponseEntity when registration is completed
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request){
-        return ResponseEntity.ok(authenticationService.register(request));
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegistrationRequest registrationRequest){
+        return ResponseEntity.ok(authenticationService.registration(registrationRequest));
     }
+
 
     /**
      * Provides authentication for members.
@@ -44,7 +45,7 @@ public class AuthenticationController {
      * @return object of ResponseEntity when authentication is completed
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request){
+    public ResponseEntity<AuthenticationResponse> authentication(@Valid @RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 

@@ -35,7 +35,7 @@ public class AuthenticationResponse {
      * Represent message for member
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ResponseEntity<String> message;
+    private String message;
 
     /**
      * Represent firstname of member.

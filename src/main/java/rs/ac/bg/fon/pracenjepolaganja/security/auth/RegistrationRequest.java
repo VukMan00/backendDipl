@@ -1,24 +1,17 @@
 package rs.ac.bg.fon.pracenjepolaganja.security.auth;
 
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
-/**
- * Represent object of registration that member sent.
- * Contains firstname,lastname,email,password and index.
- *
- * @author Vuk Manojlovic
- */
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class RegisterRequest {
+@RequiredArgsConstructor
+public class RegistrationRequest {
 
     /**
      * Firstname of member.
@@ -36,10 +29,10 @@ public class RegisterRequest {
 
     /**
      * Faculty email of member.
-     * Email must be in valid form.
-     * Email is also username for member.
+     * EmailDetails must be in valid form.
+     * EmailDetails is also username for member.
      */
-    @Email(message = "Email must be valid")
+    @Email(message = "EmailDetails must be valid")
     private String email;
 
     /**
@@ -72,4 +65,10 @@ public class RegisterRequest {
      */
     @PastOrPresent(message = "Date can't be ahead of the current date")
     private LocalDate birth;
+
+    /**
+     * Represent registrationToken of member.
+     */
+    @NotBlank(message="Registration token is mandatory")
+    private String registrationToken;
 }

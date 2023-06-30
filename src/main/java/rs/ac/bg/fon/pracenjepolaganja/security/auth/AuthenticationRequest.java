@@ -24,7 +24,7 @@ public class AuthenticationRequest {
      * Represent username of member.
      * Username is in form of valid student faculty email.
      */
-    @Email(message = "Email must be valid")
+    @Email(message = "EmailDetails must be valid")
     private String username;
 
     /**

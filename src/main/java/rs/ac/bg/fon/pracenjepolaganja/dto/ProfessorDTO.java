@@ -34,8 +34,9 @@ public class ProfessorDTO {
 
     /**
      * Faculty email of professor.
-     * Email must be in valid form.
+     * EmailDetails must be in valid form.
      */
+    @NotBlank(message = "Email is mandatory")
     @Email(message = "Email must be valid")
     private String email;
 

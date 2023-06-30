@@ -97,10 +97,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
-        ResponseEntity<String> message = authenticationService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
-        if(!message.getBody().equals("Email is valid")){
-            throw new BadCredentialsException(message.getBody());
-        }
         if(studentRepository.findByEmail(studentDTO.getEmail())!=null){
             throw new BadCredentialsException("Member with given username already exists");
         }
@@ -128,7 +124,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      * Updates student entity.
      * When provided id, save method of studentRepository updates entity with given id, in other cases it saves
      * as new entity in database.
-     * Email of updated Student must be in valid form.
+     * EmailDetails of updated Student must be in valid form.
      * Id of updated student must be in database.
      *
      * @param studentDTO Data Transfer Object of updated Student.
@@ -139,10 +135,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
-        }
-        ResponseEntity<String> message = authenticationService.validateEmail(studentDTO.getEmail(),studentDTO.getIndex(),studentDTO.getName(),studentDTO.getLastname());
-        if(!message.getBody().equals("Email is valid")){
-            throw new BadCredentialsException(message.getBody());
         }
         Student student = modelMapper.map(studentDTO,Student.class);
         Member member;
