@@ -29,5 +29,26 @@ public interface TokenRepository extends JpaRepository<Token,Integer> {
       """)
     List<Token> findAllValidTokenByMember(Integer id);
 
+    /**
+     * Retrieves tokens with given member id.
+     *
+     * @param id of member whose tokens are needed
+     * @return list of token with given member id
+     */
+    List<Token> findByMemberId(Integer id);
+
+    /**
+     * Retrieves one token who matches given string of token.
+     *
+     * @param token String of token whose needed
+     * @return token found token
+     */
     Optional<Token> findByToken(String token);
+
+    /**
+     * Deletes token with given member id.
+     *
+     * @param id of member whose token is going to be deleted
+     */
+    void deleteByMemberId(Integer id);
 }

@@ -146,7 +146,7 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testSave() {
+    void testSave() throws Exception {
         Member savedMember = Member.builder()
                 .username(student.getEmail())
                 .password(passwordEncoder.encode(student.getIndex()))
@@ -176,13 +176,13 @@ class StudentServiceImplTest {
 
     @Test
     void testSaveNull(){
-        org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
+        org.junit.jupiter.api.Assertions.assertThrows(Exception.class, () -> {
             studentService.save(null);
         });
     }
 
     @Test
-    void testUpdate() throws NotFoundException {
+    void testUpdate() throws Exception {
         student.setMemberStudent(member);
 
         Student student2 = student;
@@ -211,7 +211,7 @@ class StudentServiceImplTest {
 
     @Test
     void testUpdateNull(){
-        org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
+        org.junit.jupiter.api.Assertions.assertThrows(Exception.class, () -> {
             studentService.update(null);
         });
     }
@@ -241,11 +241,14 @@ class StudentServiceImplTest {
     @Test
     void testDeleteById() throws NotFoundException {
         given(studentRepository.findById(student.getId())).willReturn(Optional.ofNullable(student));
+        given(memberRepository.findByUsername(student.getEmail())).willReturn(Optional.ofNullable(member));
         willDoNothing().given(studentRepository).deleteById(student.getId());
+        willDoNothing().given(memberRepository).deleteById(student.getMemberStudent().getId());
 
         studentService.deleteById(exam.getId());
 
         verify(studentRepository,times(1)).deleteById(student.getId());
+        verify(memberRepository,times(1)).deleteById(student.getMemberStudent().getId());
     }
 
     @Test

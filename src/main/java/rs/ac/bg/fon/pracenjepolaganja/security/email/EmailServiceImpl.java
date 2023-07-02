@@ -39,7 +39,7 @@ public class EmailServiceImpl implements EmailService{
     public String sendRegistrationEmail(EmailDetails email) {
         String registrationToken = generateRegistrationToken(email.getRecipient());
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        String message = "Poštovani," +
+        String message = "Poštovani/a," +
                 "\n " +
                 "\n U prilogu Vam šaljem link ka daljem procesu registracije: " + "localhost:3000/register" +
                 "\n Takođe u prilogu se nalazi i token koji ćete koristiti prilikom daljeg postupka registracije!" +

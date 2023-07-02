@@ -75,7 +75,7 @@ public class StudentController {
      * @return object of ResponseEntity class that contains saved student in DTO form
      */
     @PostMapping
-    public ResponseEntity<StudentDTO> save(@Valid @RequestBody StudentDTO studentDTO){
+    public ResponseEntity<StudentDTO> save(@Valid @RequestBody StudentDTO studentDTO) throws Exception {
         return new ResponseEntity<>(studentService.save(studentDTO), HttpStatus.CREATED);
     }
 
@@ -90,7 +90,7 @@ public class StudentController {
      * @return object of ResponseEntity class that contains updated student in DTO form
      */
     @PutMapping
-    public ResponseEntity<StudentDTO> update(@Valid @RequestBody StudentDTO studentDTO) throws NotFoundException {
+    public ResponseEntity<StudentDTO> update(@Valid @RequestBody StudentDTO studentDTO) throws Exception {
         return new ResponseEntity<>(studentService.update(studentDTO), HttpStatus.OK);
     }
 

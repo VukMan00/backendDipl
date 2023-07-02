@@ -42,7 +42,7 @@ public interface ServiceInterface<T> {
      * @throws NotFoundException if object of foreign key doesn't exist
      * is not in valid form.
      */
-    T save(T t) throws NotFoundException;
+    T save(T t) throws Exception;
 
     /**
      * Deletes the entity of type that is provided in T parameter.

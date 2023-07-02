@@ -2,7 +2,6 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import rs.ac.bg.fon.pracenjepolaganja.entity.Role;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.security.auth.AuthenticationService;
+import rs.ac.bg.fon.pracenjepolaganja.security.token.TokenRepository;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.*;
@@ -46,6 +46,11 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     private MemberRepository memberRepository;
 
     /**
+     * Reference variable of TokenRepository class.
+     */
+    private TokenRepository tokenRepository;
+
+    /**
      * Reference variable of AuthenticationService class
      */
     private AuthenticationService authenticationService;
@@ -62,14 +67,15 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository,ResultExamRepository resultExamRepository, MemberRepository memberRepository,
-                              AuthenticationService authenticationService,ModelMapper modelMapper,PasswordEncoder passwordEncoder){
+    public StudentServiceImpl(StudentRepository studentRepository, ResultExamRepository resultExamRepository, MemberRepository memberRepository,
+                              AuthenticationService authenticationService, ModelMapper modelMapper, PasswordEncoder passwordEncoder, TokenRepository tokenRepository){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
         this.authenticationService = authenticationService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -93,31 +99,38 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
 
     @Override
-    public StudentDTO save(StudentDTO studentDTO) {
-        if(studentDTO==null){
-            throw new NullPointerException("Student can't be null");
+    public StudentDTO save(StudentDTO studentDTO) throws Exception {
+        try {
+            if (studentDTO == null) {
+                throw new NullPointerException("Student can't be null");
+            }
+            if (studentRepository.findByEmail(studentDTO.getEmail()) != null) {
+                throw new BadCredentialsException("Member with given email already exists");
+            }
+            if(studentRepository.findByIndex(studentDTO.getIndex())!=null){
+                throw new Exception("There is a student with given index");
+            }
+
+            Member member = Member.builder()
+                    .username(studentDTO.getEmail())
+                    .password(passwordEncoder.encode(studentDTO.getIndex()))
+                    .role(Role.ROLE_USER)
+                    .build();
+            Member savedMember = memberRepository.save(member);
+
+            Student student = modelMapper.map(studentDTO, Student.class);
+            student.setMemberStudent(savedMember);
+
+            Student savedStudent = studentRepository.save(student);
+
+            MemberDTO memberDTO = modelMapper.map(savedStudent.getMemberStudent(), MemberDTO.class);
+            studentDTO = modelMapper.map(savedStudent, StudentDTO.class);
+            studentDTO.setMember(memberDTO);
+
+            return studentDTO;
+        }catch(Exception ex){
+            throw new Exception(ex.getMessage());
         }
-        if(studentRepository.findByEmail(studentDTO.getEmail())!=null){
-            throw new BadCredentialsException("Member with given username already exists");
-        }
-
-        Member member = Member.builder()
-                .username(studentDTO.getEmail())
-                .password(passwordEncoder.encode(studentDTO.getIndex()))
-                .role(Role.ROLE_USER)
-                .build();
-        Member savedMember = memberRepository.save(member);
-
-        Student student = modelMapper.map(studentDTO,Student.class);
-        student.setMemberStudent(savedMember);
-
-        Student savedStudent = studentRepository.save(student);
-
-        MemberDTO memberDTO = modelMapper.map(savedStudent.getMemberStudent(),MemberDTO.class);
-        studentDTO = modelMapper.map(savedStudent,StudentDTO.class);
-        studentDTO.setMember(memberDTO);
-
-        return studentDTO;
     }
 
     /**
@@ -132,7 +145,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      * @throws NotFoundException when student with given id doesn't exist in database
      * @throws BadCredentialsException when email of updated student is not in valid form
      */
-    public StudentDTO update(StudentDTO studentDTO) throws NotFoundException {
+    public StudentDTO update(StudentDTO studentDTO) throws Exception {
         if(studentDTO==null){
             throw new NullPointerException("Student can't be null");
         }
@@ -155,10 +168,15 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
-        if(!studentRepository.findById((Integer)id).isPresent()){
-            throw new NotFoundException("Did not find Test with id: " + id);
+        Optional<Student> student = studentRepository.findById((Integer)id);
+        if(!student.isPresent()){
+            throw new NotFoundException("Did not find Student with id: " + id);
         }
+        Optional<Member> member = memberRepository.findByUsername(student.get().getEmail());
+        Member dbMember = member.get();
+
         studentRepository.deleteById((Integer)id);
+        memberRepository.deleteById(dbMember.getId());
     }
 
     /**
