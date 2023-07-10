@@ -96,7 +96,7 @@ public class AuthenticationService {
         }
         else{
             return AuthenticationResponse.builder()
-                    .message("Member didn't provide valid registrationToken")
+                    .message("Greska pri registraciji")
                     .build();
         }
 
@@ -111,6 +111,7 @@ public class AuthenticationService {
                 .birth(registrationRequest.getBirth())
                 .memberStudent(savedMember)
                 .build();
+
         studentRepository.save(student);
 
         return AuthenticationResponse.builder()
@@ -120,7 +121,7 @@ public class AuthenticationService {
                 .lastname(student.getLastname())
                 .email(student.getEmail())
                 .index(student.getIndex())
-                .message(null)
+                .message("Student je uspesno registrovan")
                 .build();
     }
 
@@ -134,13 +135,14 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
 
         var member = memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(()->new BadCredentialsException("Member with given username doesn't exist"));
+                .orElseThrow(()->new BadCredentialsException("Neispravno uneti podaci"));
 
         var jwtToken = jwtService.generateToken(member);
         var refreshToken = jwtService.generateRefreshToken(member);
         revokeAllMemberTokens(member);
         saveMemberToken(member,jwtToken);
 
+        Integer id;
         String firstname;
         String lastname;
         String email;
@@ -149,6 +151,7 @@ public class AuthenticationService {
 
         if(!member.getUsername().contains("@fon.bg.ac.rs")){
             Student student = studentRepository.findByEmail(member.getUsername());
+            id = student.getId();
             firstname = student.getName();
             lastname = student.getLastname();
             email = student.getEmail();
@@ -157,6 +160,7 @@ public class AuthenticationService {
         }
         else{
             Professor professor = professorRepository.findByEmail(member.getUsername());
+            id = professor.getId();
             firstname = professor.getName();
             lastname = professor.getLastname();
             email = professor.getEmail();
@@ -166,11 +170,13 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .id(id)
                 .firstname(firstname)
                 .lastname(lastname)
                 .email(email)
                 .index(index)
                 .role(role)
+                .message("Uspesno ste se ulogovali")
                 .build();
     }
 
@@ -181,11 +187,14 @@ public class AuthenticationService {
      * @return ResponseEntity object with message if operation is successful.
      * @throws NotFoundException if member with given username doesn't exist
      */
-    public ResponseEntity<String> changePassword(RequestChangePassword request) throws NotFoundException {
+    public ResponseEntity<String> changePassword(RequestChangePassword request) throws Exception {
         Optional<Member> dbMember = memberRepository.findByUsername(request.getUsername());
         if(dbMember.isPresent()){
             Member member = dbMember.get();
-            member.setPassword(passwordEncoder.encode(request.getPassword()));
+
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),request.getOldPassword()));
+
+            member.setPassword(passwordEncoder.encode(request.getNewPassword()));
             memberRepository.save(member);
         }
         else{

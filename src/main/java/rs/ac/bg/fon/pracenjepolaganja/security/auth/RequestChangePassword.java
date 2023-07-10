@@ -19,6 +19,12 @@ public class RequestChangePassword {
     private String username;
 
     /**
+     * Represent old password of member account
+     */
+    @NotBlank(message = "Old password is mandatory")
+    private String oldPassword;
+
+    /**
      * Password of member account.
      * Password is mandatory.
      * A digit must occur at least once
@@ -31,5 +37,5 @@ public class RequestChangePassword {
      */
     @NotBlank(message = "Password is mandatory")
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", message = "This isn't strong password")
-    private String password;
+    private String newPassword;
 }

@@ -1,8 +1,10 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
+import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
 
 /**
  * Represent Data Transfer Object of QuestionTest association class.
@@ -14,13 +16,20 @@ import lombok.Data;
 public class QuestionTestDTO {
 
     /**
+     * Reference to primary key of QuestionTest entity
+     */
+    private QuestionTestPK questionTestPK;
+
+    /**
      * References to Data Transfer Object of Question entity.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private QuestionDTO question;
 
     /**
      * References to Data Transfer Object of Test entity.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private TestDTO test;
 
     /**

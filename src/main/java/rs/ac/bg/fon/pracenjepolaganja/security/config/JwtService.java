@@ -66,24 +66,25 @@ public class JwtService {
 
     /**
      * Generates the JWT token.
-     * Token has expiration date of 24h + 1000*60*24
+     * Token has expiration date of 24h
      *
      * @param extractClaims claims for generated token
      * @param userDetails details for token of user
      * @return String generated token
      */
     public String generateToken(Map<String,Object> extractClaims, UserDetails userDetails){
-        return buildToken(extractClaims,userDetails,1000*60*60*10);
+        return buildToken(extractClaims,userDetails,1000*1000*60*24);
     }
 
     /**
      * Generates refresh token.
+     * 1000*60*24 expiration for 24h and 1000ms
      *
      * @param userDetails details of user that will refresh token have
      * @return String of generated refresh token
      */
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, 1000*60*60);
+        return buildToken(new HashMap<>(), userDetails, 1000*1000*60*24);
     }
 
     /**

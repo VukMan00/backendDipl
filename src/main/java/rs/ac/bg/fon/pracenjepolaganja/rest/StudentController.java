@@ -75,7 +75,7 @@ public class StudentController {
      * @return object of ResponseEntity class that contains saved student in DTO form
      */
     @PostMapping
-    public ResponseEntity<StudentDTO> save(@Valid @RequestBody StudentDTO studentDTO) throws Exception {
+    public ResponseEntity<StudentDTO> saveStudent(@Valid @RequestBody StudentDTO studentDTO) throws Exception {
         return new ResponseEntity<>(studentService.save(studentDTO), HttpStatus.CREATED);
     }
 
@@ -108,6 +108,18 @@ public class StudentController {
     }
 
     /**
+     * Retrieves exams of student.
+     *
+     * @param studentId id of student whose exams are needed
+     * @return list of student exams
+     * @throws NotFoundException if student with given id doesn't have exams
+     */
+    @GetMapping("/{studentId}/exams")
+    public List<ExamDTO> getExamsOFStudent(@PathVariable Integer studentId) throws NotFoundException {
+        return studentService.getExams(studentId);
+    }
+
+    /**
      * Retrieves results of exam.
      * Results of exam are in DTO form of ResultExam entity.
      *
@@ -115,7 +127,7 @@ public class StudentController {
      * @return list of ResultExamDTO objects
      * @throws NotFoundException if ResultExam entities with given student id does not exist in database.
      */
-    @GetMapping("/{id}/exams")
+    @GetMapping("/{id}/results")
     public List<ResultExamDTO> getResults(@PathVariable Integer id) throws NotFoundException {
         return studentService.getResults(id);
     }

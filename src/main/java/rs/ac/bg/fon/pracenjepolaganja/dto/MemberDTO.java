@@ -24,12 +24,6 @@ public class MemberDTO {
     private String username;
 
     /**
-     * Password of member.
-     * Every password is encrypted.
-     */
-    private String password;
-
-    /**
      * Role that member has.
      * Role that member can have is USER or ADMIN.
      */

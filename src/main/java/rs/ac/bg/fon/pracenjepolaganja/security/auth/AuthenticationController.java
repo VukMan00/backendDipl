@@ -55,7 +55,7 @@ public class AuthenticationController {
      * @throws NotFoundException when member with given username doesn't exist
      */
     @PostMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@Valid @RequestBody RequestChangePassword request) throws NotFoundException {
+    public ResponseEntity<String> changePassword(@Valid @RequestBody RequestChangePassword request) throws Exception {
         return authenticationService.changePassword(request);
     }
 
@@ -68,6 +68,6 @@ public class AuthenticationController {
      */
     @PostMapping("/refreshToken")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        authenticationService.refreshToken(request, response);
+       authenticationService.refreshToken(request, response);
     }
 }

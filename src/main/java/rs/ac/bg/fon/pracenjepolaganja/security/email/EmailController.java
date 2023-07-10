@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
 
 /**
  * Represent the controller that process all request for emails.
@@ -33,5 +34,10 @@ public class EmailController {
     @PostMapping("/preRegister")
     public ResponseEntity<String> preRegister(@Valid @RequestBody EmailDetails email){
         return ResponseEntity.ok(emailService.sendRegistrationEmail(email));
+    }
+
+    @PostMapping("/emailChangePassword")
+    public ResponseEntity<String> sendEmailChangePassword(@Valid @RequestBody EmailDetails email){
+        return ResponseEntity.ok(emailService.sendEmailChangePassword(email));
     }
 }

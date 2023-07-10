@@ -116,7 +116,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
                     .password(passwordEncoder.encode(studentDTO.getIndex()))
                     .role(Role.ROLE_USER)
                     .build();
-            Member savedMember = memberRepository.save(member);
+            Member savedMember =  memberRepository.save(member);
 
             Student student = modelMapper.map(studentDTO, Student.class);
             student.setMemberStudent(savedMember);
@@ -163,6 +163,12 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         else{
             throw new NotFoundException("Did not find Student with id: " + student.getId());
         }
+
+        if(studentDTO.getResults()!=null) {
+            Collection<ResultExam> results = studentDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
+                    .collect(Collectors.toList());
+            student.setResultExamCollectionCollection(results);
+        }
         return modelMapper.map(studentRepository.save(student),StudentDTO.class);
     }
 
@@ -206,5 +212,29 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
             resultsExamDTO.add(resultExamDTO);
         }
         return resultsExamDTO;
+    }
+
+    /**
+     * Retrieves exams of student.
+     *
+     * @param studentId id of student whose exams are needed
+     * @return list of student exams in DTO form
+     * @throws NotFoundException if student with given id doesn't have exams
+     */
+    public List<ExamDTO> getExams(Integer studentId) throws NotFoundException {
+        List<ResultExam> resultsExam = resultExamRepository.findByStudentId(studentId);
+        if(resultsExam.isEmpty()){
+            throw new NotFoundException("Did not find Exams with studentId: " + studentId);
+        }
+
+        List<ExamDTO> exams = new ArrayList<>();
+        for(ResultExam resultExam : resultsExam){
+            ExamDTO examDTO = modelMapper.map(resultExam.getExam(),ExamDTO.class);
+            TestDTO testDTO = modelMapper.map(resultExam.getExam().getTest(),TestDTO.class);
+            examDTO.setTest(testDTO);
+
+            exams.add(examDTO);
+        }
+        return exams;
     }
 }

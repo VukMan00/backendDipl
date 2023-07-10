@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.ResponseEntity;
 
 /**
  * Response after authentication is completed.
@@ -18,6 +17,11 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
+
+    /**
+     * Primary key of entity that connects to member
+     */
+    private Integer id;
 
     /**
      * Represent JWT access token of member.
