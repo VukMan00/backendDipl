@@ -9,12 +9,14 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
+import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,8 +93,14 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
             throw new NullPointerException("Test can't be null");
         }
         if(professorRepository.findById(testDTO.getAuthor().getId()).isPresent()) {
-            Test test = testRepository.save(modelMapper.map(testDTO, Test.class));
-            return modelMapper.map(test, TestDTO.class);
+            Test test = modelMapper.map(testDTO,Test.class);
+            if(testDTO.getQuestions()!=null){
+                Collection<QuestionTest> questionsTest = testDTO.getQuestions().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
+                        .collect(Collectors.toList());
+                test.setQuestionTestCollection(questionsTest);
+            }
+            Test savedTest = testRepository.save(test);
+            return modelMapper.map(savedTest, TestDTO.class);
         }
         else{
             throw new NotFoundException("Did not find professor with id: " + testDTO.getAuthor().getId());

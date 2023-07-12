@@ -72,6 +72,9 @@ public class StudentDTO{
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private MemberDTO member;
 
+    /**
+     * Exams which student is taking
+     */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Collection<ResultExamDTO> results;
 }
