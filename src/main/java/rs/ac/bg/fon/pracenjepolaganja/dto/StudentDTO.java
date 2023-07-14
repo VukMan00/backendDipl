@@ -1,18 +1,14 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Represent Data Transfer Object of Student entity.
@@ -73,7 +69,7 @@ public class StudentDTO{
     private MemberDTO member;
 
     /**
-     * Exams which student is taking
+     * Represent exams which student is taking
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Collection<ResultExamDTO> results;

@@ -115,7 +115,7 @@ public class StudentController {
      * @throws NotFoundException if student with given id doesn't have exams
      */
     @GetMapping("/{studentId}/exams")
-    public List<ExamDTO> getExamsOFStudent(@PathVariable Integer studentId) throws NotFoundException {
+    public List<ExamDTO> getExamsOfStudent(@PathVariable Integer studentId) throws NotFoundException {
         return studentService.getExams(studentId);
     }
 

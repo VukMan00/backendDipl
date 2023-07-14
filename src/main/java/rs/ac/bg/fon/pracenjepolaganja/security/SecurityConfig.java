@@ -86,7 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/questions/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/answers/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/exams/**","/tests/**").hasAnyRole("ADMIN","USER")
-                       .requestMatchers("/auth/**").permitAll())
+                        .requestMatchers("/auth/**").permitAll())
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()

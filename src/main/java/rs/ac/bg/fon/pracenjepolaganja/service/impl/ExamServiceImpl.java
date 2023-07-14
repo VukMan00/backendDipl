@@ -9,13 +9,16 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
+import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Represents implementation of service interface with Exam entity.
@@ -92,9 +95,14 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         if(examDTO==null){
             throw new NullPointerException("Exam can't be null");
         }
+        Exam exam = modelMapper.map(examDTO,Exam.class);
         if(testRepository.findById(examDTO.getTest().getId()).isPresent()) {
-            Exam exam = examRepository.save(modelMapper.map(examDTO, Exam.class));
-            return modelMapper.map(exam, ExamDTO.class);
+            if(examDTO.getResults()!=null){
+                Collection<ResultExam> results = examDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
+                        .collect(Collectors.toList());
+                exam.setResultExamCollection(results);
+            }
+            return modelMapper.map(examRepository.save(exam), ExamDTO.class);
         }
         else{
             throw new NotFoundException("Did not find Test with id: " + examDTO.getTest().getId());
@@ -168,5 +176,26 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
             throw new NotFoundException("Did not find ResultExam with id: " + new ResultExamPK(examId,studentId));
         }
         resultExamRepository.deleteById(new ResultExamPK(examId,studentId));
+    }
+
+    /**
+     * Retrieves students of exam.
+     *
+     * @param examId id of exam whose students are needed
+     * @return list of exam students
+     * @throws NotFoundException if exam with given id doesn't have students
+     */
+    public List<StudentDTO> getStudents(Integer examId) throws NotFoundException  {
+        List<ResultExam> resultsExam = resultExamRepository.findByExamId(examId);
+        if(resultsExam.isEmpty()){
+            throw new NotFoundException("Did not find Students with examId: " + examId);
+        }
+
+        List<StudentDTO> students = new ArrayList<>();
+        for(ResultExam resultExam : resultsExam){
+            StudentDTO studentDTO = modelMapper.map(resultExam.getStudent(),StudentDTO.class);
+            students.add(studentDTO);
+        }
+        return students;
     }
 }

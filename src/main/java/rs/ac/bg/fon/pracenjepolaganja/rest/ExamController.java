@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.ExamServiceImpl;
 import rs.ac.bg.fon.pracenjepolaganja.service.impl.StudentServiceImpl;
@@ -109,6 +110,18 @@ public class ExamController {
     }
 
     /**
+     * Retrieves students of exam.
+     *
+     * @param examId id of exam whose students are needed
+     * @return list of exam students
+     * @throws NotFoundException if exam with given id doesn't have students
+     */
+    @GetMapping("/{examId}/students")
+    public List<StudentDTO> getStudentsOfExam(@PathVariable Integer examId) throws NotFoundException {
+        return examService.getStudents(examId);
+    }
+
+    /**
      * Retrieves results of exam.
      * Results of exam are in DTO form of ResultExam entity.
      *
@@ -116,7 +129,7 @@ public class ExamController {
      * @return list of ResultExamDTO objects
      * @throws NotFoundException if ResultExam entities with given exam id does not exist in database
      */
-    @GetMapping("/{id}/students")
+    @GetMapping("/{id}/results")
     public List<ResultExamDTO> getResults(@PathVariable Integer id) throws NotFoundException {
         return examService.getResults(id);
     }

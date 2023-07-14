@@ -11,15 +11,12 @@ import org.modelmapper.ModelMapper;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ResultExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
-import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ExamDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.ResultExamDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Professor;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
-import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 

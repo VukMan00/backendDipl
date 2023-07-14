@@ -1,7 +1,5 @@
 package rs.ac.bg.fon.pracenjepolaganja.security.email;
 
-import rs.ac.bg.fon.pracenjepolaganja.dto.StudentDTO;
-
 /**
  * Represent interface of email operations.
  * Contains sendSimpleEmail and sendEmailWithAttachment.

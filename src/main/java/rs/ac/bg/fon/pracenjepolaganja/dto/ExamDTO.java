@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.Collection;
 
 /**
  * Represent Data Transfer Object of Exam entity.
@@ -53,6 +53,13 @@ public class ExamDTO{
      * References to the Data Transfer Object of test.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     private TestDTO test;
+
+    /**
+     * Represent students that are taking this exam
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<ResultExamDTO> results;
 
 }

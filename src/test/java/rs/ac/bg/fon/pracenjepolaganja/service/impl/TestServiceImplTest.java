@@ -11,12 +11,12 @@ import org.modelmapper.ModelMapper;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
-import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Professor;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
+import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
-import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
