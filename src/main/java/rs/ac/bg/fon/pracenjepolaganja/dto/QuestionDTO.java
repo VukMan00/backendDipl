@@ -1,8 +1,13 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
+
+import java.util.Collection;
 
 /**
  * Represent Data Transfer Object of Question entity.
@@ -25,4 +30,36 @@ public class QuestionDTO{
     @NotBlank(message = "Content is mandatory")
     @Size(min = 2, message = "Content must have at least 2 characters")
     private String content;
+
+    /**
+     * Represent tests where question belongs.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<QuestionTestDTO> tests;
+
+    /**
+     * Represent answers of question
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<AnswerDTO> answers;
+
+    @JsonIgnore
+    public Collection<QuestionTestDTO> getTests(){
+        return tests;
+    }
+
+    @JsonProperty
+    public void setTests(Collection<QuestionTestDTO> tests){
+        this.tests = tests;
+    }
+
+    @JsonIgnore
+    public Collection<AnswerDTO> getAnswers(){
+        return answers;
+    }
+
+    @JsonProperty
+    public void setAnswers(Collection<AnswerDTO> answers){
+        this.answers = answers;
+    }
 }

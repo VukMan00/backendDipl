@@ -23,6 +23,7 @@ public class AnswerPK implements Serializable {
      * Primary key of entity answer.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     private Integer answerId;
 

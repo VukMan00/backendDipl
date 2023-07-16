@@ -1,9 +1,11 @@
 package rs.ac.bg.fon.pracenjepolaganja.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
 
 /**

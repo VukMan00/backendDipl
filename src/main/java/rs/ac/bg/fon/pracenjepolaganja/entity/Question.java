@@ -3,6 +3,7 @@ package rs.ac.bg.fon.pracenjepolaganja.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -40,9 +41,10 @@ public class Question implements Serializable {
     /**
      * References to multiple answers that question can have.
      */
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
+    @OneToMany(mappedBy = "question")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     private Collection<Answer> answers;
 
     /**

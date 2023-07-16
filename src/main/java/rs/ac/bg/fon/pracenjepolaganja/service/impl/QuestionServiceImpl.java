@@ -1,19 +1,28 @@
 package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+import org.hibernate.Session;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rs.ac.bg.fon.pracenjepolaganja.dao.AnswerRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
+import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,16 +47,28 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     private QuestionTestRepository questionTestRepository;
 
     /**
+     * Reference variable of AnswerRepository class.
+     */
+    private AnswerRepository answerRepository;
+
+    /**
+     * Reference variable of EntityManager class.
+     */
+    @Autowired
+    private EntityManager entityManager;
+
+    /**
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
     private ModelMapper modelMapper;
 
     @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository,QuestionTestRepository questionTestRepository,ModelMapper modelMapper){
+    public QuestionServiceImpl(QuestionRepository questionRepository, QuestionTestRepository questionTestRepository, ModelMapper modelMapper, AnswerRepository answerRepository){
         this.questionRepository = questionRepository;
         this.questionTestRepository = questionTestRepository;
         this.modelMapper = modelMapper;
+        this.answerRepository = answerRepository;
     }
 
     @Override
@@ -70,12 +91,34 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     }
 
     @Override
-    public QuestionDTO save(QuestionDTO questionDTO) {
+    public QuestionDTO save(QuestionDTO questionDTO) throws NotFoundException {
         if(questionDTO == null){
             throw new NullPointerException("Question can't be null");
         }
-        Question question = questionRepository.save(modelMapper.map(questionDTO,Question.class));
-        return modelMapper.map(question,QuestionDTO.class);
+        Question question = modelMapper.map(questionDTO,Question.class);
+        if(questionDTO.getTests()!=null){
+            Collection<QuestionTest> questionsTest = questionDTO.getTests().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
+                    .collect(Collectors.toList());
+            question.setQuestionTestsCollection(questionsTest);
+        }
+        if(questionDTO.getAnswers()!=null){
+            Integer answerId = 0;
+            for(AnswerDTO answerDTO:questionDTO.getAnswers()){
+                Answer answer = modelMapper.map(answerDTO,Answer.class);
+                if(answerId!=0){
+                    answerId++;
+                    answer.setAnswerPK(new AnswerPK(answerId,answer.getAnswerPK().getQuestionId()));
+                }
+                Answer dbAnswer = answerRepository.save(answer);
+
+                Query query = entityManager.createNativeQuery("SELECT answer_id FROM answer WHERE question_id = :questionId");
+                query.setParameter("questionId", answer.getAnswerPK().getQuestionId());
+                List<Integer> answersId = query.getResultList();
+
+                answerId = answersId.get(answersId.size()-1);
+            }
+        }
+        return modelMapper.map(questionRepository.save(question),QuestionDTO.class);
     }
 
     @Override

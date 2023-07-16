@@ -82,7 +82,7 @@ public class QuestionController {
      * @return object of ResponseEntity class that contains saved question in DTO form
      */
     @PostMapping
-    public ResponseEntity<QuestionDTO> save(@Valid @RequestBody QuestionDTO questionDTO){
+    public ResponseEntity<QuestionDTO> save(@Valid @RequestBody QuestionDTO questionDTO) throws NotFoundException {
         return new ResponseEntity<>(questionService.save(questionDTO),HttpStatus.CREATED);
     }
 
@@ -97,7 +97,7 @@ public class QuestionController {
      * @return object of ResponseEntity class that contains updated question in DTO form
      */
     @PutMapping
-    public ResponseEntity<QuestionDTO> update(@Valid @RequestBody QuestionDTO questionDTO){
+    public ResponseEntity<QuestionDTO> update(@Valid @RequestBody QuestionDTO questionDTO) throws NotFoundException {
         return new ResponseEntity<>(questionService.save(questionDTO), HttpStatus.OK);
     }
 
