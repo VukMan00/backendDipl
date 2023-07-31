@@ -88,6 +88,16 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
+    public String checkEmail(EmailDetails email) {
+        if(memberRepository.findByUsername(email.getRecipient()).isPresent()){
+            return "Email exist";
+        }
+        else{
+            return "Email doesn't exist";
+        }
+    }
+
+    @Override
     public String sendSimpleEmail(EmailDetails email) {
         return null;
     }

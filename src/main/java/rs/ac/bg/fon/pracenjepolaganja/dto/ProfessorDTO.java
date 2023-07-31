@@ -22,22 +22,22 @@ public class ProfessorDTO {
      * Firstname of professor.
      * Can't be blank or null.
      */
-    @NotBlank(message = "Firstname is mandatory")
+    @NotBlank(message = "Polje ime je obavezno")
     private String name;
 
     /**
      * Lastname of professor.
      * Can't be blank or null.
      */
-    @NotBlank(message = "Lastname is mandatory")
+    @NotBlank(message = "Polje prezime je obavezno")
     private String lastname;
 
     /**
      * Faculty email of professor.
      * EmailDetails must be in valid form.
      */
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email must be valid")
+    @NotBlank(message = "Polje email je obavezno")
+    @Email(message = "Email mora biti u validnom formatu")
     private String email;
 
 }

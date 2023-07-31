@@ -98,7 +98,18 @@ public class AnswerController {
     @DeleteMapping("/{answerId}/question/{questionId}")
     public ResponseEntity<String> deleteById(@PathVariable("answerId") Integer answerId, @PathVariable("questionId")Integer questionId) throws NotFoundException {
         answerService.deleteById(new AnswerPK(answerId,questionId));
-        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Odgovor je izbrisan",HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves list of answers of the given question.
+     *
+     * @param questionId id of question whose answers are needed
+     * @return list of answers
+     */
+    @GetMapping("/{questionId}")
+    public List<AnswerDTO> getAnswersFromQuestion(@PathVariable("questionId") Integer questionId) throws NotFoundException {
+        return answerService.getAnswers(questionId);
     }
 
 }

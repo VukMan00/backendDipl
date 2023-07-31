@@ -75,7 +75,7 @@ public class StudentController {
      * @return object of ResponseEntity class that contains saved student in DTO form
      */
     @PostMapping
-    public ResponseEntity<StudentDTO> saveStudent(@Valid @RequestBody StudentDTO studentDTO) throws Exception {
+    public ResponseEntity<StudentDTO> save(@Valid @RequestBody StudentDTO studentDTO) throws Exception {
         return new ResponseEntity<>(studentService.save(studentDTO), HttpStatus.CREATED);
     }
 
@@ -104,7 +104,7 @@ public class StudentController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         studentService.deleteById(id);
-        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Student je izbrisan",HttpStatus.OK);
     }
 
     /**

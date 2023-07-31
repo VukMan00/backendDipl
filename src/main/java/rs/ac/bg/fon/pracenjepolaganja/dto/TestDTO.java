@@ -26,8 +26,8 @@ public class TestDTO{
      * Content of test.
      * Can't be null, blank or less than 2 characters.
      */
-    @NotBlank(message = "Content is mandatory")
-    @Size(min = 2, message = "Content must have at least 2 characters")
+    @NotBlank(message = "Polje naziva pitanja je obavezno")
+    @Size(min = 2, message = "Naziv pitanja mora imati minimum 2 karaktera")
     private String content;
 
     /**

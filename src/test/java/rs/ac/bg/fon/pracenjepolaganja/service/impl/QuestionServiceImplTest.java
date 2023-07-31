@@ -155,7 +155,7 @@ class QuestionServiceImplTest {
 
         given(questionTestRepository.findByTestId(test.getId())).willReturn(List.of(questionTest,questionTest1));
 
-        List<QuestionTestDTO> questions = questionService.getQuestions(test.getId());
+        List<QuestionTestDTO> questions = questionService.getQuestionsTest(test.getId());
 
         assertThat(questions).isNotNull();
         assertThat(questions.size()).isEqualTo(2);
@@ -171,7 +171,7 @@ class QuestionServiceImplTest {
         given(questionTestRepository.findByTestId(testId)).willReturn(new ArrayList<>());
 
         org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> {
-            questionService.getQuestions(testId);
+            questionService.getQuestionsTest(testId);
         });
 
         verify(questionTestRepository,times(1)).findByTestId(testId);

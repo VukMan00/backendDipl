@@ -47,11 +47,6 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     private MemberRepository memberRepository;
 
     /**
-     * Reference variable of TokenRepository class.
-     */
-    private TokenRepository tokenRepository;
-
-    /**
      * Reference variable of AuthenticationService class
      */
     private AuthenticationService authenticationService;
@@ -69,14 +64,13 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository, ResultExamRepository resultExamRepository, MemberRepository memberRepository,
-                              AuthenticationService authenticationService, ModelMapper modelMapper, PasswordEncoder passwordEncoder, TokenRepository tokenRepository){
+                              AuthenticationService authenticationService, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
         this.studentRepository = studentRepository;
         this.resultExamRepository = resultExamRepository;
         this.memberRepository = memberRepository;
         this.authenticationService = authenticationService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
-        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -93,7 +87,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
             studentDTO = modelMapper.map(student.get(),StudentDTO.class);
         }
         else{
-            throw new NotFoundException("Did not find Student with id: " + id);
+            throw new NotFoundException("Student nije pronadjen");
         }
         return studentDTO;
     }
@@ -103,13 +97,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public StudentDTO save(StudentDTO studentDTO) throws Exception {
         try {
             if (studentDTO == null) {
-                throw new NullPointerException("Student can't be null");
-            }
-            if (studentRepository.findByEmail(studentDTO.getEmail()) != null) {
-                throw new BadCredentialsException("Member with given email already exists");
-            }
-            if(studentRepository.findByIndex(studentDTO.getIndex())!=null){
-                throw new Exception("There is a student with given index");
+                throw new NullPointerException("Student ne moze biti null");
             }
 
             Member member = Member.builder()
@@ -148,7 +136,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
      */
     public StudentDTO update(StudentDTO studentDTO) throws Exception {
         if(studentDTO==null){
-            throw new NullPointerException("Student can't be null");
+            throw new NullPointerException("Student ne moze biti null");
         }
         Student student = modelMapper.map(studentDTO,Student.class);
         Member member;
@@ -162,7 +150,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
             student.setMemberStudent(savedMember);
         }
         else{
-            throw new NotFoundException("Did not find Student with id: " + student.getId());
+            throw new NotFoundException("Student nije pronadjen");
         }
 
         if(studentDTO.getResults()!=null) {
@@ -177,7 +165,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public void deleteById(Object id) throws NotFoundException {
         Optional<Student> student = studentRepository.findById((Integer)id);
         if(!student.isPresent()){
-            throw new NotFoundException("Did not find Student with id: " + id);
+            throw new NotFoundException("Student nije pronadjen");
         }
         Optional<Member> member = memberRepository.findByUsername(student.get().getEmail());
         Member dbMember = member.get();
@@ -197,7 +185,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(id);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Did not find ResultExam with studentId: " +id);
+            throw new NotFoundException("Nisu pronadjeni rezultati polaganja studenta sa id-em: " + id);
         }
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
         for(ResultExam resultExam:resultsExam){
@@ -225,7 +213,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public List<ExamDTO> getExams(Integer studentId) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(studentId);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Did not find Exams with studentId: " + studentId);
+            throw new NotFoundException("Nisu pronadjeni rezultati polaganja studenta sa id-em: " + studentId);
         }
 
         List<ExamDTO> exams = new ArrayList<>();

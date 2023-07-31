@@ -79,13 +79,13 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         ExamDTO examDTO;
         if(exam.isPresent()){
             TestDTO testDTO = modelMapper.map(exam.get().getTest(),TestDTO.class);
-            examDTO = modelMapper.map(exam.get(),ExamDTO.class);
             ProfessorDTO professorDTO = modelMapper.map(exam.get().getTest().getAuthor(),ProfessorDTO.class);
             testDTO.setAuthor(professorDTO);
+            examDTO = modelMapper.map(exam.get(),ExamDTO.class);
             examDTO.setTest(testDTO);
         }
         else{
-            throw new NotFoundException("Did not find Exam with id: " + id);
+            throw new NotFoundException("Polaganje nije pronadjeno");
         }
         return examDTO;
     }
@@ -93,26 +93,27 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     @Override
     public ExamDTO save(ExamDTO examDTO) throws NotFoundException {
         if(examDTO==null){
-            throw new NullPointerException("Exam can't be null");
+            throw new NullPointerException("Polaganje ne moze biti null");
         }
-        Exam exam = modelMapper.map(examDTO,Exam.class);
         if(testRepository.findById(examDTO.getTest().getId()).isPresent()) {
+            Exam exam = modelMapper.map(examDTO,Exam.class);
             if(examDTO.getResults()!=null){
                 Collection<ResultExam> results = examDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
                         .collect(Collectors.toList());
                 exam.setResultExamCollection(results);
             }
-            return modelMapper.map(examRepository.save(exam), ExamDTO.class);
+            Exam savedExam = examRepository.save(exam);
+            return modelMapper.map(savedExam, ExamDTO.class);
         }
         else{
-            throw new NotFoundException("Did not find Test with id: " + examDTO.getTest().getId());
+            throw new NotFoundException("Polaganje nije pronadjeno");
         }
     }
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
         if(!examRepository.findById((Integer) id).isPresent()){
-            throw new NotFoundException("Did not find Exam with id: " + id);
+            throw new NotFoundException("Polaganje nije pronadjeno");
         }
         examRepository.deleteById((Integer) id);
     }
@@ -128,7 +129,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByExamId(id);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Did not find ResultExam with examId: " + id);
+            throw new NotFoundException("Rezultati polaganja studenta sa id-em: " + id + " nisu pronadjeni");
         }
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
         for(ResultExam resultExam:resultsExam){
@@ -158,7 +159,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
      */
     public ResultExamDTO saveResultExam(ResultExamDTO resultExamDTO) {
         if(resultExamDTO == null){
-            throw new NullPointerException("ResultExam can't be null");
+            throw new NullPointerException("ResultExam ne moze biti null");
         }
         ResultExam resultExam = resultExamRepository.save(modelMapper.map(resultExamDTO,ResultExam.class));
         return modelMapper.map(resultExam,ResultExamDTO.class);
@@ -173,7 +174,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
      */
     public void deleteResultExam(Integer studentId, Integer examId) throws NotFoundException {
         if(!resultExamRepository.findById(new ResultExamPK(examId,studentId)).isPresent()){
-            throw new NotFoundException("Did not find ResultExam with id: " + new ResultExamPK(examId,studentId));
+            throw new NotFoundException("Rezultat polaganja nije pronadjen");
         }
         resultExamRepository.deleteById(new ResultExamPK(examId,studentId));
     }
@@ -188,7 +189,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     public List<StudentDTO> getStudents(Integer examId) throws NotFoundException  {
         List<ResultExam> resultsExam = resultExamRepository.findByExamId(examId);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Did not find Students with examId: " + examId);
+            throw new NotFoundException("Studenti polaganja sa id-em: " + examId + " nisu pronadjeni");
         }
 
         List<StudentDTO> students = new ArrayList<>();

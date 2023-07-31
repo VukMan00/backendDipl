@@ -153,7 +153,7 @@ class TestServiceImplTest {
     }
 
     @Test
-    void testDeleteById() throws NotFoundException {
+    void testDeleteById() throws Exception {
         given(testRepository.findById(test.getId())).willReturn(Optional.ofNullable(test));
         willDoNothing().given(testRepository).deleteById(test.getId());
 

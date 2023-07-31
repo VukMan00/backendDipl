@@ -26,8 +26,8 @@ public class AnswerDTO {
      * Content of question.
      * Content can't be blank, null or have less than 2 characters
      */
-    @NotBlank(message = "Content is mandatory")
-    @Size(min = 2, message = "Content must have at least 2 characters")
+    @NotBlank(message = "Polje naziva odgovora je obavezno")
+    @Size(min = 2, message = "Naziv odgovora mora da ima najmanje dva karaktera")
     private String content;
 
     /**
@@ -40,6 +40,7 @@ public class AnswerDTO {
      * References to the Data Transfer Object of question that answer belongs to.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnore
     private QuestionDTO question;
 
 }

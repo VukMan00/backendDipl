@@ -76,6 +76,10 @@ public class SecurityConfig {
                     }
                 })).csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests)->requests
+                        .requestMatchers(HttpMethod.POST,"/students/results").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.GET,"/students/{studentId}/exams").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.DELETE,"/students/{studentId}/exams/{examId}").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.GET,"/students/{id}/results").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.POST,"/answers/**","/questions/**",
                                 "/exams/**","/professors/**","/students/**","/tests/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/answers/**","/questions/**",
@@ -85,6 +89,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/students/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/questions/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/answers/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/questions/answers/***").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/exams/**","/tests/**").hasAnyRole("ADMIN","USER")
                         .requestMatchers("/auth/**").permitAll())
                 .authenticationProvider(authenticationProvider)

@@ -24,13 +24,13 @@ public class AuthenticationRequest {
      * Represent username of member.
      * Username is in form of valid student faculty email.
      */
-    @Email(message = "EmailDetails must be valid")
+    @Email(message = "Email mora biti u validnom formatu")
     private String username;
 
     /**
      * Represent password of member.
      * Password must have at least 2 characters.
      */
-    @NotBlank(message = "Password is mandatory")
+    @NotBlank(message = "Lozinka je obavezna")
     private String password;
 }

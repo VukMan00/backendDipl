@@ -106,7 +106,7 @@ public class ExamController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         examService.deleteById(id);
-        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Polaganje je izbrisano",HttpStatus.OK);
     }
 
     /**

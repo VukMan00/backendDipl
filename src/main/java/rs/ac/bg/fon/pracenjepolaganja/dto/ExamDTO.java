@@ -28,8 +28,8 @@ public class ExamDTO{
      * Name of the exam.
      * Name can't be null, blank or be less than 2 characters.
      */
-    @NotBlank(message = "Name is mandatory")
-    @Size(min = 2, message = "Name of exam must have at least 2 characters")
+    @NotBlank(message = "Polje naziva polaganja je obavezno")
+    @Size(min = 2, message = "Naziv polaganja mora da ima najmanje dva karaktera")
     private String name;
 
     /**
@@ -37,16 +37,15 @@ public class ExamDTO{
      * Date must be in present date or in the future.
      * Date can't be null
      */
-    @NotNull(message = "Date is mandatory")
-    @FutureOrPresent(message = "Date of exam must be at current date or in the future")
+    @NotNull(message = "Datum polaganja je obavezno uneti")
+    @FutureOrPresent(message = "Datum polaganja mora biti postavljeno na trenutni datum ili u buducnosti")
     private LocalDate date;
 
     /**
      * Amphitheater where exam is placed.
      * Can't be null, blank or less than 2 characters.
      */
-    @NotBlank(message = "Amphitheater is mandatory")
-    @Size(min = 2, message = "Amphitheater must have at least 2 characters")
+    @NotBlank(message = "Polje naziva amfiteatra je obavezno uneti")
     private String amphitheater;
 
     /**

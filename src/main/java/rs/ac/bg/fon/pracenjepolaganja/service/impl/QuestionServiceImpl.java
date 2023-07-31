@@ -52,6 +52,11 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     private AnswerRepository answerRepository;
 
     /**
+     * Reference variable of AnswerServiceImpl class.
+     */
+    private AnswerServiceImpl answerService;
+
+    /**
      * Reference variable of EntityManager class.
      */
     @Autowired
@@ -64,11 +69,12 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     private ModelMapper modelMapper;
 
     @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository, QuestionTestRepository questionTestRepository, ModelMapper modelMapper, AnswerRepository answerRepository){
+    public QuestionServiceImpl(QuestionRepository questionRepository, QuestionTestRepository questionTestRepository, ModelMapper modelMapper, AnswerRepository answerRepository,AnswerServiceImpl answerService){
         this.questionRepository = questionRepository;
         this.questionTestRepository = questionTestRepository;
         this.modelMapper = modelMapper;
         this.answerRepository = answerRepository;
+        this.answerService = answerService;
     }
 
     @Override
@@ -83,17 +89,22 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         QuestionDTO questionDTO;
         if(question.isPresent()){
             questionDTO = modelMapper.map(question.get(),QuestionDTO.class);
+            Collection<AnswerDTO> answersDTO = answerService.getAnswers((Integer) id);
+            if(answersDTO.isEmpty()){
+                throw new NotFoundException("Odgovori pitanja sa id-em: " + id + " nisu pronadjeni");
+            }
+            questionDTO.setAnswers(answersDTO);
             return questionDTO;
         }
         else {
-            throw new NotFoundException("Did not find Question with id: " + id);
+            throw new NotFoundException("Pitanje nije pronadjeno");
         }
     }
 
     @Override
     public QuestionDTO save(QuestionDTO questionDTO) throws NotFoundException {
         if(questionDTO == null){
-            throw new NullPointerException("Question can't be null");
+            throw new NullPointerException("Pitanje ne moze biti null");
         }
         Question question = modelMapper.map(questionDTO,Question.class);
         if(questionDTO.getTests()!=null){
@@ -118,13 +129,14 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
                 answerId = answersId.get(answersId.size()-1);
             }
         }
-        return modelMapper.map(questionRepository.save(question),QuestionDTO.class);
+        Question savedQuestion = questionRepository.save(question);
+        return modelMapper.map(savedQuestion,QuestionDTO.class);
     }
 
     @Override
     public void deleteById(Object id) throws NotFoundException {
         if(!(questionRepository.findById((Integer)id).isPresent())){
-            throw new NotFoundException("Did not find Question with id: " + id);
+            throw new NotFoundException("Pitanje nije pronadjeno");
         }
         questionRepository.deleteById((Integer)id);
     }
@@ -139,17 +151,19 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
      * @return list of QuestionTestDTO objects
      * @throws NotFoundException if QuestionTest entities with given test id does not exist in database
      */
-    public List<QuestionTestDTO> getQuestions(Integer testId) throws NotFoundException {
+    public List<QuestionTestDTO> getQuestionsTest(Integer testId) throws NotFoundException {
         List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
         if(questionTests.isEmpty()){
-            throw new NotFoundException("Did not find QuestionsTest with testId: " + testId);
+            throw new NotFoundException("Nisu pronadjena pitanja u testu sa id-em: " + testId);
         }
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for(QuestionTest questionTest:questionTests){
             QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
             TestDTO testDTO = modelMapper.map(questionTest.getTest(),TestDTO.class);
             QuestionTestDTO questionTestDTO = modelMapper.map(questionTest,QuestionTestDTO.class);
+            List<AnswerDTO> answersDTO = answerService.getAnswers(questionTest.getQuestion().getId());
 
+            questionTestDTO.getQuestion().setAnswers(answersDTO);
             questionTestDTO.setQuestion(questionDTO);
             questionTestDTO.setTest(testDTO);
             questionTestDTOs.add(questionTestDTO);

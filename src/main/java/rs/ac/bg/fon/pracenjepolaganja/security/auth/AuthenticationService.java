@@ -81,15 +81,6 @@ public class AuthenticationService {
      * @return object of AuthenticationResponse
      */
     public AuthenticationResponse registration(RegistrationRequest registrationRequest) {
-        var member = Member.builder()
-                .username(registrationRequest.getEmail())
-                .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .role(Role.ROLE_USER)
-                .build();
-
-        var jwtToken = jwtService.generateToken(member);
-        var refreshToken = jwtService.generateRefreshToken(member);
-
         Optional<Token> dbRegistrationToken = tokenRepository.findByToken(registrationRequest.getRegistrationToken());
         if(dbRegistrationToken.isPresent()){
             tokenRepository.deleteById(dbRegistrationToken.get().getId());
@@ -99,6 +90,15 @@ public class AuthenticationService {
                     .message("Greska pri registraciji")
                     .build();
         }
+
+        var member = Member.builder()
+                .username(registrationRequest.getEmail())
+                .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                .role(Role.ROLE_USER)
+                .build();
+
+        var jwtToken = jwtService.generateToken(member);
+        var refreshToken = jwtService.generateRefreshToken(member);
 
         Member savedMember = memberRepository.save(member);
         saveMemberToken(savedMember,jwtToken);
@@ -192,7 +192,9 @@ public class AuthenticationService {
         if(dbMember.isPresent()){
             Member member = dbMember.get();
 
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),request.getOldPassword()));
+            if(request.getOldPassword()!=null) {
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword()));
+            }
 
             member.setPassword(passwordEncoder.encode(request.getNewPassword()));
             memberRepository.save(member);

@@ -28,14 +28,14 @@ public class StudentDTO{
      * Firstname of student.
      * Can't be null or blank.
      */
-    @NotBlank(message =  "Firstname is mandatory")
+    @NotBlank(message =  "Polje ime je obavezno")
     private String name;
 
     /**
      * Lastname of student.
      * Can't be null or blank.
      */
-    @NotBlank(message = "Lastname is mandatory")
+    @NotBlank(message = "Polje prezime je obavezno")
     private String lastname;
 
     /**
@@ -44,22 +44,22 @@ public class StudentDTO{
      * first four digits is first year of study and last four digits
      * are number of index.
      */
-    @Pattern(regexp = "[1-9][0-9]{3}-[0-9]{4}",message = "Index is not in valid form")
+    @Pattern(regexp = "[1-9][0-9]{3}-[0-9]{4}",message = "Broj indeksa nije u validnom formatu")
     private String index;
 
     /**
      * Date of birth.
      * Date can't be null or be ahead of current date.
      */
-    @PastOrPresent(message = "Date can't be ahead of the current date")
+    @PastOrPresent(message = "Datum rodjenja ne moze biti kasnije od trenutnog datuma")
     private LocalDate birth;
 
     /**
      * Faculty email of student.
      * EmailDetails must be in valid form.
      */
-    @NotBlank(message = "Name is mandatory")
-    @Email(message = "Email must be valid")
+    @NotBlank(message = "Polje email je obavezno")
+    @Email(message = "Email mora biti u validnom formatu")
     private String email;
 
     /**

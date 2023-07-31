@@ -40,4 +40,11 @@ public interface EmailService {
      */
     String sendEmailChangePassword(EmailDetails email);
 
+    /**
+     * Checks if email exist in database.
+     *
+     * @param email of member.
+     * @return String if email exist in database
+     */
+    String checkEmail(EmailDetails email);
 }

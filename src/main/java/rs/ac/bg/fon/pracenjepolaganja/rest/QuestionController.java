@@ -111,7 +111,7 @@ public class QuestionController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
         questionService.deleteById(id);
-        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Pitanje je izbrisano",HttpStatus.OK);
     }
 
     /**

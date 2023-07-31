@@ -23,8 +23,8 @@ public class EmailDetails {
      * EmailDetails must be in valid form.
      * EmailDetails is also username for member.
      */
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email must be valid")
+    @NotBlank(message = "Polje email je obavezno")
+    @Email(message = "Email mora biti u validnom fromatu")
     private String recipient;
 
     /**

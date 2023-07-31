@@ -27,8 +27,8 @@ public class QuestionDTO{
      * Content of question.
      * Can't be null,blank or less than 2 characters.
      */
-    @NotBlank(message = "Content is mandatory")
-    @Size(min = 2, message = "Content must have at least 2 characters")
+    @NotBlank(message = "Polje naziva pitanja je obavezno")
+    @Size(min = 2, message = "Naziv pitanja mora da ima najmanje dva karaktera")
     private String content;
 
     /**
@@ -51,11 +51,6 @@ public class QuestionDTO{
     @JsonProperty
     public void setTests(Collection<QuestionTestDTO> tests){
         this.tests = tests;
-    }
-
-    @JsonIgnore
-    public Collection<AnswerDTO> getAnswers(){
-        return answers;
     }
 
     @JsonProperty

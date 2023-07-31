@@ -1,5 +1,6 @@
 package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,12 +69,10 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         Optional<Answer> answer = answerRepository.findById(answerPK);
         AnswerDTO answerDTO;
         if(answer.isPresent()){
-            QuestionDTO questionDTO = modelMapper.map(answer.get().getQuestion(), QuestionDTO.class);
             answerDTO = modelMapper.map(answer.get(),AnswerDTO.class);
-            answerDTO.setQuestion(questionDTO);
         }
         else{
-            throw new NotFoundException("Did not find Answer with id: " + answerPK);
+            throw new NotFoundException("Odgovor nije pronadjen");
         }
         return answerDTO;
     }
@@ -81,14 +80,15 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     @Override
     public AnswerDTO save(AnswerDTO answerDTO) throws NotFoundException {
         if (answerDTO == null) {
-            throw new NullPointerException("Answer can't be null");
+            throw new NullPointerException("Odgovor ne moze biti null");
         }
         if (questionRepository.findById(answerDTO.getAnswerPK().getQuestionId()).isPresent()){
-            Answer answer = answerRepository.save(modelMapper.map(answerDTO, Answer.class));
-            return modelMapper.map(answer, AnswerDTO.class);
+            Answer answer = modelMapper.map(answerDTO,Answer.class);
+            Answer savedAnswer = answerRepository.save(answer);
+            return modelMapper.map(savedAnswer, AnswerDTO.class);
         }
         else{
-            throw new NotFoundException("Did not find question with id: " + answerDTO.getAnswerPK().getQuestionId());
+            throw new NotFoundException("Pitanje nije pronadjeno");
         }
     }
 
@@ -96,7 +96,7 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     public void deleteById(Object id) throws NotFoundException {
         AnswerPK answerPK = (AnswerPK) id;
         if(!answerRepository.findById(answerPK).isPresent()){
-            throw new NotFoundException("Did not find Answer with id: "+ answerPK);
+            throw new NotFoundException("Odgovor nije pronadjen");
         }
         answerRepository.deleteById(answerPK);
     }
@@ -110,12 +110,12 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
      * @throws NotFoundException if question of the given id does not have answers.
      */
     public List<AnswerDTO> getAnswers(Integer id) throws NotFoundException {
-        List<AnswerDTO> answers = answerRepository.findByQuestionId(id).stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
-                .collect(Collectors.toList());
+        List<Answer> answers = answerRepository.findByQuestionId(id);
         if(answers.isEmpty()){
-            throw new NotFoundException("Didn't find answers for Question with id: " + id);
+            throw new NotFoundException("Odgovori za pitanje sa id-em: " + id + " nisu pronadjeni");
         }
-
-        return answers;
+        List<AnswerDTO> answersDTO = answers.stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
+                .collect(Collectors.toList());
+        return answersDTO;
     }
 }

@@ -35,8 +35,27 @@ public class EmailController {
         return ResponseEntity.ok(emailService.sendRegistrationEmail(email));
     }
 
+    /**
+     * Sends email to remind member to change weak password.
+     *
+     * @param email of member that has week password.
+     * @return String if email is sent successfully to member.
+     */
     @PostMapping("/emailChangePassword")
     public ResponseEntity<String> sendEmailChangePassword(@Valid @RequestBody EmailDetails email){
         return ResponseEntity.ok(emailService.sendEmailChangePassword(email));
     }
+
+    /**
+     * Checks if email exist in database.
+     *
+     * @param email of member
+     * @return if email exist in database
+     */
+    @PostMapping("/checkEmail")
+    public ResponseEntity<String> checkEmail(@Valid @RequestBody EmailDetails email){
+        return ResponseEntity.ok(emailService.checkEmail(email));
+    }
+
+
 }

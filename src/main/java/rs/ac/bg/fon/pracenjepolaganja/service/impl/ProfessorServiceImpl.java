@@ -53,7 +53,7 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
             professorDTO = modelMapper.map(professor.get(),ProfessorDTO.class);
         }
         else{
-            throw new NotFoundException("Did not find professor with id: " + id);
+            throw new NotFoundException("Profesor nije pronadjen");
         }
         return professorDTO;
     }
@@ -61,7 +61,7 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
     @Override
     public ProfessorDTO save(ProfessorDTO professorDTO) {
         if(professorDTO==null){
-            throw new NullPointerException("Professor can't be null");
+            throw new NullPointerException("Profesor ne moze biti null");
         }
         Professor professor = professorRepository.save(modelMapper.map(professorDTO,Professor.class));
         return modelMapper.map(professor,ProfessorDTO.class);
@@ -70,7 +70,7 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
     @Override
     public void deleteById(Object id) throws NotFoundException {
         if(!professorRepository.findById((Integer)id).isPresent()){
-            throw new NotFoundException("Did not find Professor with id: " + id);
+            throw new NotFoundException("Profesor nije pronadjen");
         }
         professorRepository.deleteById((Integer)id);
     }

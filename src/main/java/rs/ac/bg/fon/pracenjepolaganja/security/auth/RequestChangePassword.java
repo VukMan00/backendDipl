@@ -21,7 +21,6 @@ public class RequestChangePassword {
     /**
      * Represent old password of member account
      */
-    @NotBlank(message = "Old password is mandatory")
     private String oldPassword;
 
     /**
@@ -35,7 +34,7 @@ public class RequestChangePassword {
      * At least 8 characters
      *
      */
-    @NotBlank(message = "Password is mandatory")
-    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", message = "This isn't strong password")
+    @NotBlank(message = "Lozinka je obavezna")
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", message = "Slaba lozinka")
     private String newPassword;
 }

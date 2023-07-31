@@ -36,7 +36,7 @@ public class QuestionTestDTO {
      * Points of question in test.
      * Points must be in interval of 0 to 100.
      */
-    @Min(value = 0, message = "Points should not be less than 0")
-    @Max(value=100, message = "Points should not be greater than 100")
+    @Min(value = 0, message = "Broj poena ne moze biti manji od 0")
+    @Max(value=100, message = "Broj poena ne moze biti veci od 100")
     private int points;
 }

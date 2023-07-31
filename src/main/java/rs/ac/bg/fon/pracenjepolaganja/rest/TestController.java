@@ -103,9 +103,9 @@ public class TestController {
      * @throws NotFoundException if test with given id does not exist in database
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Integer id) throws NotFoundException {
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) throws Exception {
         testService.deleteById(id);
-        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Test",HttpStatus.OK);
     }
 
     /**
@@ -118,8 +118,8 @@ public class TestController {
      * @throws NotFoundException if QuestionTest entities with given test id does not exist in database
      */
     @GetMapping("/{id}/questions")
-    public List<QuestionTestDTO> getQuestions(@PathVariable("id") Integer id) throws NotFoundException {
-        return questionService.getQuestions(id);
+    public List<QuestionTestDTO> getQuestionsTest(@PathVariable("id") Integer id) throws NotFoundException {
+        return questionService.getQuestionsTest(id);
     }
 
     /**

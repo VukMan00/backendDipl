@@ -3,6 +3,7 @@ package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
@@ -47,17 +48,29 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     private ProfessorRepository professorRepository;
 
     /**
+     * Reference variable of ExamRepository class.
+     */
+    private ExamRepository examRepository;
+
+    /**
+     * Reference variable of QuestionService class.
+     */
+    private QuestionServiceImpl questionService;
+
+    /**
      * References to the ModelMapper.
      * Maps DTO objects to entity objects and vice versa.
      */
     private ModelMapper modelMapper;
 
     @Autowired
-    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository,ProfessorRepository professorRepository, ModelMapper modelMapper){
+    public TestServiceImpl(TestRepository testRepository, QuestionTestRepository questionTestRepository,ProfessorRepository professorRepository, ModelMapper modelMapper,QuestionServiceImpl questionService, ExamRepository examRepository){
         this.testRepository = testRepository;
         this.questionTestRepository = questionTestRepository;
         this.modelMapper = modelMapper;
         this.professorRepository = professorRepository;
+        this.questionService = questionService;
+        this.examRepository = examRepository;
     }
 
     @Override
@@ -83,7 +96,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
             testDTO.setAuthor(professorDTO);
         }
         else{
-            throw new NotFoundException("Did not find Test with id: " + id);
+            throw new NotFoundException("Test nije pronadjen");
         }
         return testDTO;
     }
@@ -91,7 +104,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     @Override
     public TestDTO save(TestDTO testDTO) throws NotFoundException {
         if(testDTO==null){
-            throw new NullPointerException("Test can't be null");
+            throw new NullPointerException("Test ne moze biti null");
         }
         if(professorRepository.findById(testDTO.getAuthor().getId()).isPresent()) {
             Test test = modelMapper.map(testDTO,Test.class);
@@ -104,23 +117,36 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
             return modelMapper.map(savedTest, TestDTO.class);
         }
         else{
-            throw new NotFoundException("Did not find professor with id: " + testDTO.getAuthor().getId());
+            throw new NotFoundException("Autor testa nije pronadjen");
         }
     }
 
     @Override
-    public void deleteById(Object id) throws NotFoundException {
-        if(!testRepository.findById((Integer)id).isPresent()){
-            throw new NotFoundException("Did not find Test with id: " + id);
+    public void deleteById(Object id) throws Exception {
+        Optional<Test> test = testRepository.findById((Integer) id);
+        if(!test.isPresent()){
+            throw new NotFoundException("Test nije pronadjen");
+        }
+        if(hasAssociatedChildren(test.get())){
+            throw new IllegalStateException("Test ne moze da se izbrise");
         }
         testRepository.deleteById((Integer)id);
+    }
+
+    private boolean hasAssociatedChildren(Test test) {
+        if(examRepository.findByTestId(test.getId()).isEmpty()) {
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     public List<TestDTO> getTests(Integer professorId) throws NotFoundException {
         List<TestDTO> tests = testRepository.findByAuthor(professorId).stream().map(test->modelMapper.map(test,TestDTO.class))
                 .collect(Collectors.toList());
         if(tests.isEmpty()){
-            throw new NotFoundException("Did not find Tests with professorId: " + professorId);
+            throw new NotFoundException("Nisu pronadjeni testovi profesora sa id-em: " + professorId);
         }
         return tests;
     }
@@ -136,7 +162,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
      */
     public QuestionTestDTO saveQuestionTest(QuestionTestDTO questionTestDTO) {
         if(questionTestDTO==null){
-            throw new NullPointerException("QuestionTest can't be null");
+            throw new NullPointerException("QuestionTest ne moze biti null");
         }
         QuestionTest questionTest = questionTestRepository.save(modelMapper.map(questionTestDTO,QuestionTest.class));
         return modelMapper.map(questionTest,QuestionTestDTO.class);
@@ -151,7 +177,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
      */
     public void deleteQuestionTest(Integer testId, Integer questionId) throws NotFoundException {
         if(!questionTestRepository.findById(new QuestionTestPK(questionId,testId)).isPresent()){
-            throw new NotFoundException("Did not find QuestionTest with id: " + new QuestionTestPK(questionId,testId));
+            throw new NotFoundException("Nije pronadjeno pitanje sa id-em: " + questionId + " u testu sa id-em: " + testId);
         }
         questionTestRepository.deleteById(new QuestionTestPK(questionId,testId));
     }
@@ -169,7 +195,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     public List<QuestionTestDTO> getTestsFromQuestion(Integer questionId) throws NotFoundException {
         List<QuestionTest> questionTests = questionTestRepository.findByQuestionId(questionId);
         if(questionTests.isEmpty()){
-            throw new NotFoundException("Did not find QuestionTest with testId: " + questionId);
+            throw new NotFoundException("Nisu pronadjeni testovi pitanja sa id-em: " + questionId);
         }
 
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();

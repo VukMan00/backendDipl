@@ -13,6 +13,19 @@ import rs.ac.bg.fon.pracenjepolaganja.entity.Student;
  */
 @Repository
 public interface StudentRepository extends JpaRepository<Student,Integer> {
+    /**
+     * Retrieves student with given email.
+     *
+     * @param email of student that is needed
+     * @return student with given email
+     */
     Student findByEmail(String email);
+
+    /**
+     * Retrieves student with given index.
+     *
+     * @param index of student that is needed
+     * @return student with given index
+     */
     Student findByIndex(String index);
 }

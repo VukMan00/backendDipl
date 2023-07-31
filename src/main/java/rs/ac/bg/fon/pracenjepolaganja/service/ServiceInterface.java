@@ -50,5 +50,5 @@ public interface ServiceInterface<T> {
      * @param id id of entity that is going to be deleted. It's the Integer or object that represent complex primary key of some entities.
      * @throws NotFoundException if entity with given id does not exist in database
      */
-    void deleteById(Object id) throws NotFoundException;
+    void deleteById(Object id) throws Exception;
 }
