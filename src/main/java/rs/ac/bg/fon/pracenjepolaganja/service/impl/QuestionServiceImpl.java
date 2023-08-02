@@ -90,9 +90,6 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         if(question.isPresent()){
             questionDTO = modelMapper.map(question.get(),QuestionDTO.class);
             Collection<AnswerDTO> answersDTO = answerService.getAnswers((Integer) id);
-            if(answersDTO.isEmpty()){
-                throw new NotFoundException("Odgovori pitanja sa id-em: " + id + " nisu pronadjeni");
-            }
             questionDTO.setAnswers(answersDTO);
             return questionDTO;
         }
@@ -154,7 +151,7 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     public List<QuestionTestDTO> getQuestionsTest(Integer testId) throws NotFoundException {
         List<QuestionTest> questionTests = questionTestRepository.findByTestId(testId);
         if(questionTests.isEmpty()){
-            throw new NotFoundException("Nisu pronadjena pitanja u testu sa id-em: " + testId);
+            return new ArrayList<>();
         }
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for(QuestionTest questionTest:questionTests){

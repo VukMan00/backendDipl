@@ -83,6 +83,8 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
             testDTO.setAuthor(professorDTO);
             examDTO = modelMapper.map(exam.get(),ExamDTO.class);
             examDTO.setTest(testDTO);
+            Collection<ResultExamDTO> results = getResults((Integer) id);
+            examDTO.setResults(results);
         }
         else{
             throw new NotFoundException("Polaganje nije pronadjeno");
@@ -129,7 +131,7 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByExamId(id);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Rezultati polaganja studenta sa id-em: " + id + " nisu pronadjeni");
+            return new ArrayList<>();
         }
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
         for(ResultExam resultExam:resultsExam){
@@ -144,7 +146,6 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
 
             resultsExamDTO.add(resultExamDTO);
         }
-
         return resultsExamDTO;
     }
 

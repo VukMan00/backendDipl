@@ -7,12 +7,9 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.ExamRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
+import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
-import rs.ac.bg.fon.pracenjepolaganja.dto.ProfessorDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
@@ -94,6 +91,8 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
             ProfessorDTO professorDTO = modelMapper.map(test.get().getAuthor(),ProfessorDTO.class);
             testDTO = modelMapper.map(test.get(),TestDTO.class);
             testDTO.setAuthor(professorDTO);
+            Collection<QuestionTestDTO> questionsTestDTO = questionService.getQuestionsTest((Integer) id);
+            testDTO.setQuestions(questionsTestDTO);
         }
         else{
             throw new NotFoundException("Test nije pronadjen");
@@ -194,15 +193,15 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
      */
     public List<QuestionTestDTO> getTestsFromQuestion(Integer questionId) throws NotFoundException {
         List<QuestionTest> questionTests = questionTestRepository.findByQuestionId(questionId);
-        if(questionTests.isEmpty()){
-            throw new NotFoundException("Nisu pronadjeni testovi pitanja sa id-em: " + questionId);
+        if (questionTests.isEmpty()) {
+            return new ArrayList<>();
         }
 
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
-        for(QuestionTest questionTest:questionTests){
-            QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
-            TestDTO testDTO = modelMapper.map(questionTest.getTest(),TestDTO.class);
-            QuestionTestDTO questionTestDTO = modelMapper.map(questionTest,QuestionTestDTO.class);
+        for (QuestionTest questionTest : questionTests) {
+            QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(), QuestionDTO.class);
+            TestDTO testDTO = modelMapper.map(questionTest.getTest(), TestDTO.class);
+            QuestionTestDTO questionTestDTO = modelMapper.map(questionTest, QuestionTestDTO.class);
 
             questionTestDTO.setQuestion(questionDTO);
             questionTestDTO.setTest(testDTO);

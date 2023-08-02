@@ -112,7 +112,7 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     public List<AnswerDTO> getAnswers(Integer id) throws NotFoundException {
         List<Answer> answers = answerRepository.findByQuestionId(id);
         if(answers.isEmpty()){
-            throw new NotFoundException("Odgovori za pitanje sa id-em: " + id + " nisu pronadjeni");
+            return new ArrayList<>();
         }
         List<AnswerDTO> answersDTO = answers.stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
                 .collect(Collectors.toList());

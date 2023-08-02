@@ -85,6 +85,8 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         StudentDTO studentDTO;
         if(student.isPresent()){
             studentDTO = modelMapper.map(student.get(),StudentDTO.class);
+            Collection<ResultExamDTO> results = getResults((Integer) id);
+            studentDTO.setResults(results);
         }
         else{
             throw new NotFoundException("Student nije pronadjen");
@@ -185,7 +187,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public List<ResultExamDTO> getResults(Integer id) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(id);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Nisu pronadjeni rezultati polaganja studenta sa id-em: " + id);
+            return new ArrayList<>();
         }
         List<ResultExamDTO> resultsExamDTO = new ArrayList<>();
         for(ResultExam resultExam:resultsExam){
