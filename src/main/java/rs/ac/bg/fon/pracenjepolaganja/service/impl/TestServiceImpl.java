@@ -8,6 +8,7 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
+import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
@@ -101,13 +102,34 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
     }
 
     @Override
-    public TestDTO save(TestDTO testDTO) throws NotFoundException {
+    public TestDTO save(TestDTO testDTO) throws Exception {
         if(testDTO==null){
             throw new NullPointerException("Test ne moze biti null");
         }
-        if(professorRepository.findById(testDTO.getAuthor().getId()).isPresent()) {
+        TestDTO newTestDTO = testDTO;
+        Test test = modelMapper.map(testDTO,Test.class);
+        Test savedTest = testRepository.save(test);
+
+        if(newTestDTO.getQuestions()!=null && !newTestDTO.getQuestions().isEmpty()){
+            Collection<QuestionTest> questionsTest = newTestDTO.getQuestions().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
+                    .collect(Collectors.toList());
+            for(QuestionTest questionTest:questionsTest){
+                questionTest.getQuestionTestPK().setTestId(savedTest.getId());
+                questionTestRepository.save(questionTest);
+            }
+        }
+        return modelMapper.map(savedTest, TestDTO.class);
+    }
+
+    @Override
+    public TestDTO update(TestDTO testDTO) throws Exception {
+        if(testDTO==null){
+            throw new NullPointerException("Test ne moze biti null");
+        }
+        Optional<Test> dbTest = testRepository.findById(testDTO.getId());
+        if(dbTest.isPresent()) {
             Test test = modelMapper.map(testDTO,Test.class);
-            if(testDTO.getQuestions()!=null){
+            if(testDTO.getQuestions()!=null && !testDTO.getQuestions().isEmpty()){
                 Collection<QuestionTest> questionsTest = testDTO.getQuestions().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
                         .collect(Collectors.toList());
                 test.setQuestionTestCollection(questionsTest);
@@ -116,7 +138,7 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
             return modelMapper.map(savedTest, TestDTO.class);
         }
         else{
-            throw new NotFoundException("Autor testa nije pronadjen");
+            throw new NotFoundException("Test nije pronadjeno");
         }
     }
 
@@ -196,14 +218,11 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         if (questionTests.isEmpty()) {
             return new ArrayList<>();
         }
-
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for (QuestionTest questionTest : questionTests) {
-            QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(), QuestionDTO.class);
             TestDTO testDTO = modelMapper.map(questionTest.getTest(), TestDTO.class);
             QuestionTestDTO questionTestDTO = modelMapper.map(questionTest, QuestionTestDTO.class);
 
-            questionTestDTO.setQuestion(questionDTO);
             questionTestDTO.setTest(testDTO);
             questionTestDTOs.add(questionTestDTO);
         }

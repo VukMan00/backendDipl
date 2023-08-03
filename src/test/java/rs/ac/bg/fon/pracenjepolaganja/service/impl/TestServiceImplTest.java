@@ -121,7 +121,7 @@ class TestServiceImplTest {
     }
 
     @Test
-    void testSave() throws NotFoundException {
+    void testSave() throws Exception {
         given(testRepository.save(test)).willReturn(test);
         given(professorRepository.findById(professor.getId())).willReturn(Optional.ofNullable(professor));
 

@@ -76,7 +76,7 @@ public class ExamController {
      * @throws NotFoundException when test object doesn't exist
      */
     @PostMapping
-    public ResponseEntity<ExamDTO> save(@Valid @RequestBody ExamDTO examDTO) throws NotFoundException {
+    public ResponseEntity<ExamDTO> save(@Valid @RequestBody ExamDTO examDTO) throws Exception {
         return new ResponseEntity<>(examService.save(examDTO), HttpStatus.CREATED);
     }
 
@@ -92,8 +92,8 @@ public class ExamController {
      * @throws NotFoundException when test object doesn't exist
      */
     @PutMapping
-    public ResponseEntity<ExamDTO> update(@Valid @RequestBody ExamDTO examDTO) throws NotFoundException {
-        return new ResponseEntity<>(examService.save(examDTO), HttpStatus.OK);
+    public ResponseEntity<ExamDTO> update(@Valid @RequestBody ExamDTO examDTO) throws Exception {
+        return new ResponseEntity<>(examService.update(examDTO), HttpStatus.OK);
     }
 
     /**

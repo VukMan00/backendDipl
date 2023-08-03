@@ -52,9 +52,4 @@ public class QuestionDTO{
     public void setTests(Collection<QuestionTestDTO> tests){
         this.tests = tests;
     }
-
-    @JsonProperty
-    public void setAnswers(Collection<AnswerDTO> answers){
-        this.answers = answers;
-    }
 }

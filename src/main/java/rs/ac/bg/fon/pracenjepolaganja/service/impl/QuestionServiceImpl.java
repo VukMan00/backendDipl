@@ -10,13 +10,8 @@ import org.springframework.stereotype.Service;
 import rs.ac.bg.fon.pracenjepolaganja.dao.AnswerRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
-import rs.ac.bg.fon.pracenjepolaganja.dto.AnswerDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.QuestionTestDTO;
-import rs.ac.bg.fon.pracenjepolaganja.dto.TestDTO;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
-import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
+import rs.ac.bg.fon.pracenjepolaganja.dto.*;
+import rs.ac.bg.fon.pracenjepolaganja.entity.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.AnswerPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
@@ -99,23 +94,23 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     }
 
     @Override
-    public QuestionDTO save(QuestionDTO questionDTO) throws NotFoundException {
+    public QuestionDTO save(QuestionDTO questionDTO) throws Exception {
         if(questionDTO == null){
             throw new NullPointerException("Pitanje ne moze biti null");
         }
-        Question question = modelMapper.map(questionDTO,Question.class);
-        if(questionDTO.getTests()!=null){
-            Collection<QuestionTest> questionsTest = questionDTO.getTests().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
-                    .collect(Collectors.toList());
-            question.setQuestionTestsCollection(questionsTest);
-        }
-        if(questionDTO.getAnswers()!=null){
+        QuestionDTO newQuestionDTO = questionDTO;
+
+        //Question question = modelMapper.map(questionDTO,Question.class);
+        Question question = Question.builder().content(questionDTO.getContent()).build();
+        Question savedQuestion = questionRepository.save(question);
+
+        if(newQuestionDTO.getAnswers()!=null && !newQuestionDTO.getAnswers().isEmpty()){
             Integer answerId = 0;
-            for(AnswerDTO answerDTO:questionDTO.getAnswers()){
-                Answer answer = modelMapper.map(answerDTO,Answer.class);
+            for(AnswerDTO answerDTO:newQuestionDTO.getAnswers()){
+                Answer answer = Answer.builder().answerPK(new AnswerPK(0,savedQuestion.getId())).content(answerDTO.getContent()).solution(answerDTO.isSolution()).build();
                 if(answerId!=0){
                     answerId++;
-                    answer.setAnswerPK(new AnswerPK(answerId,answer.getAnswerPK().getQuestionId()));
+                    answer.setAnswerPK(new AnswerPK(answerId,savedQuestion.getId()));
                 }
                 Answer dbAnswer = answerRepository.save(answer);
 
@@ -126,8 +121,40 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
                 answerId = answersId.get(answersId.size()-1);
             }
         }
-        Question savedQuestion = questionRepository.save(question);
         return modelMapper.map(savedQuestion,QuestionDTO.class);
+    }
+
+    @Override
+    public QuestionDTO update(QuestionDTO questionDTO) throws Exception {
+        if(questionDTO == null){
+            throw new NullPointerException("Pitanje ne moze biti null");
+        }
+        Optional<Question> dbQuestion = questionRepository.findById(questionDTO.getId());
+        if(dbQuestion.isPresent()) {
+            Question question = modelMapper.map(questionDTO,Question.class);
+            if(questionDTO.getAnswers()!=null && !questionDTO.getAnswers().isEmpty()){
+                Integer answerId = 0;
+                for(AnswerDTO answerDTO:questionDTO.getAnswers()){
+                    Answer answer = modelMapper.map(answerDTO,Answer.class);
+                    if(answerId!=0){
+                        answerId++;
+                        answer.setAnswerPK(new AnswerPK(answerId,questionDTO.getId()));
+                    }
+                    answerRepository.save(answer);
+
+                    Query query = entityManager.createNativeQuery("SELECT answer_id FROM answer WHERE question_id = :questionId");
+                    query.setParameter("questionId", answer.getAnswerPK().getQuestionId());
+                    List<Integer> answersId = query.getResultList();
+
+                    answerId = answersId.get(answersId.size()-1);
+                }
+            }
+            Question savedQuestion = questionRepository.save(question);
+            return modelMapper.map(savedQuestion, QuestionDTO.class);
+        }
+        else{
+            throw new NotFoundException("Pitanje nije pronadjeno");
+        }
     }
 
     @Override
@@ -156,13 +183,11 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
         for(QuestionTest questionTest:questionTests){
             QuestionDTO questionDTO = modelMapper.map(questionTest.getQuestion(),QuestionDTO.class);
-            TestDTO testDTO = modelMapper.map(questionTest.getTest(),TestDTO.class);
             QuestionTestDTO questionTestDTO = modelMapper.map(questionTest,QuestionTestDTO.class);
             List<AnswerDTO> answersDTO = answerService.getAnswers(questionTest.getQuestion().getId());
 
             questionTestDTO.getQuestion().setAnswers(answersDTO);
             questionTestDTO.setQuestion(questionDTO);
-            questionTestDTO.setTest(testDTO);
             questionTestDTOs.add(questionTestDTO);
         }
         return questionTestDTOs;

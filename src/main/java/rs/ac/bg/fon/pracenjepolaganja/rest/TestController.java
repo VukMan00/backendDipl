@@ -75,7 +75,7 @@ public class TestController {
      * @throws NotFoundException when professor doesn't exist in database
      */
     @PostMapping
-    public ResponseEntity<TestDTO> save(@Valid @RequestBody TestDTO testDTO) throws NotFoundException {
+    public ResponseEntity<TestDTO> save(@Valid @RequestBody TestDTO testDTO) throws Exception {
         return new ResponseEntity<>(testService.save(testDTO), HttpStatus.CREATED);
     }
 
@@ -91,8 +91,8 @@ public class TestController {
      * @throws NotFoundException when professor doesn't exist in database
      */
     @PutMapping
-    public ResponseEntity<TestDTO> update(@Valid @RequestBody TestDTO testDTO) throws NotFoundException {
-        return new ResponseEntity<>(testService.save(testDTO), HttpStatus.OK);
+    public ResponseEntity<TestDTO> update(@Valid @RequestBody TestDTO testDTO) throws Exception {
+        return new ResponseEntity<>(testService.update(testDTO), HttpStatus.OK);
     }
 
     /**

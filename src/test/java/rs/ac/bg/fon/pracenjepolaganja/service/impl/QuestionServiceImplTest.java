@@ -91,7 +91,7 @@ class QuestionServiceImplTest {
     }
 
     @Test
-    void testSave() throws NotFoundException {
+    void testSave() throws Exception {
         given(questionRepository.save(question)).willReturn(question);
 
         QuestionDTO savedQuestionDTO = questionService.save(modelMapper.map(question,QuestionDTO.class));

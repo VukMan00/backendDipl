@@ -94,34 +94,34 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         return studentDTO;
     }
 
-
     @Override
     public StudentDTO save(StudentDTO studentDTO) throws Exception {
-        try {
-            if (studentDTO == null) {
-                throw new NullPointerException("Student ne moze biti null");
-            }
-
-            Member member = Member.builder()
-                    .username(studentDTO.getEmail())
-                    .password(passwordEncoder.encode(studentDTO.getIndex()))
-                    .role(Role.ROLE_USER)
-                    .build();
-            Member savedMember =  memberRepository.save(member);
-
-            Student student = modelMapper.map(studentDTO, Student.class);
-            student.setMemberStudent(savedMember);
-
-            Student savedStudent = studentRepository.save(student);
-
-            MemberDTO memberDTO = modelMapper.map(savedStudent.getMemberStudent(), MemberDTO.class);
-            studentDTO = modelMapper.map(savedStudent, StudentDTO.class);
-            studentDTO.setMember(memberDTO);
-
-            return studentDTO;
-        }catch(Exception ex){
-            throw new Exception(ex.getMessage());
+        if (studentDTO == null) {
+            throw new NullPointerException("Student ne moze biti null");
         }
+        StudentDTO newStudentDTO = studentDTO;
+        Member member = Member.builder()
+                .username(studentDTO.getEmail())
+                .password(passwordEncoder.encode(studentDTO.getIndex()))
+                .role(Role.ROLE_USER)
+                .build();
+        Member savedMember =  memberRepository.save(member);
+
+        Student student = modelMapper.map(studentDTO, Student.class);
+        student.setMemberStudent(savedMember);
+
+        Student savedStudent = studentRepository.save(student);
+
+        if(newStudentDTO.getResults()!=null && !newStudentDTO.getResults().isEmpty()) {
+            Collection<ResultExam> results = newStudentDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
+                    .collect(Collectors.toList());
+            for(ResultExam resultExam:results){
+                resultExam.getResultExamPK().setStudentId(savedStudent.getId());
+                resultExamRepository.save(resultExam);
+            }
+        }
+        studentDTO = modelMapper.map(savedStudent, StudentDTO.class);
+        return studentDTO;
     }
 
     /**
@@ -142,7 +142,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
         }
         Student student = modelMapper.map(studentDTO,Student.class);
         Member member;
-        Optional<Student> optionalStudent = studentRepository.findById(student.getId());
+        Optional<Student> optionalStudent = studentRepository.findById(studentDTO.getId());
         if(optionalStudent.isPresent()){
             Student dbStudent = optionalStudent.get();
             member = dbStudent.getMemberStudent();
@@ -160,7 +160,8 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
                     .collect(Collectors.toList());
             student.setResultExamCollectionCollection(results);
         }
-        return modelMapper.map(studentRepository.save(student),StudentDTO.class);
+        Student savedStudent = studentRepository.save(student);
+        return modelMapper.map(savedStudent,StudentDTO.class);
     }
 
     @Override
@@ -215,7 +216,7 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
     public List<ExamDTO> getExams(Integer studentId) throws NotFoundException {
         List<ResultExam> resultsExam = resultExamRepository.findByStudentId(studentId);
         if(resultsExam.isEmpty()){
-            throw new NotFoundException("Nisu pronadjeni rezultati polaganja studenta sa id-em: " + studentId);
+            return new ArrayList<>();
         }
 
         List<ExamDTO> exams = new ArrayList<>();

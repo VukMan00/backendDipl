@@ -68,6 +68,11 @@ public class ProfessorServiceImpl implements ServiceInterface<ProfessorDTO> {
     }
 
     @Override
+    public ProfessorDTO update(ProfessorDTO professorDTO) throws Exception {
+        return null;
+    }
+
+    @Override
     public void deleteById(Object id) throws NotFoundException {
         if(!professorRepository.findById((Integer)id).isPresent()){
             throw new NotFoundException("Profesor nije pronadjen");

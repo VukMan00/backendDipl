@@ -93,6 +93,11 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
     }
 
     @Override
+    public AnswerDTO update(AnswerDTO answerDTO) throws Exception {
+        return null;
+    }
+
+    @Override
     public void deleteById(Object id) throws NotFoundException {
         AnswerPK answerPK = (AnswerPK) id;
         if(!answerRepository.findById(answerPK).isPresent()){

@@ -45,6 +45,17 @@ public interface ServiceInterface<T> {
     T save(T t) throws Exception;
 
     /**
+     * Updates the entity of type that is provided in T parameter.
+     *
+     * @param t entity that needs to be updated
+     * @return entity that is updated in DTO form
+     * @throws NullPointerException if provided entity is null
+     * @throws NotFoundException if object of foreign key doesn't exist
+     * is not in valid form.
+     */
+    T update(T t) throws Exception;
+
+    /**
      * Deletes the entity of type that is provided in T parameter.
      *
      * @param id id of entity that is going to be deleted. It's the Integer or object that represent complex primary key of some entities.

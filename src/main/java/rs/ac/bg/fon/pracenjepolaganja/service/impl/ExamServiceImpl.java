@@ -9,7 +9,6 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Exam;
 import rs.ac.bg.fon.pracenjepolaganja.entity.ResultExam;
-import rs.ac.bg.fon.pracenjepolaganja.dto.*;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.ResultExamPK;
 import rs.ac.bg.fon.pracenjepolaganja.exception.type.NotFoundException;
 import rs.ac.bg.fon.pracenjepolaganja.service.ServiceInterface;
@@ -93,11 +92,32 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
     }
 
     @Override
-    public ExamDTO save(ExamDTO examDTO) throws NotFoundException {
+    public ExamDTO save(ExamDTO examDTO) throws Exception {
         if(examDTO==null){
             throw new NullPointerException("Polaganje ne moze biti null");
         }
-        if(testRepository.findById(examDTO.getTest().getId()).isPresent()) {
+        ExamDTO newExamDTO = examDTO;
+        Exam exam = modelMapper.map(examDTO,Exam.class);
+        Exam savedExam = examRepository.save(exam);
+
+        if(newExamDTO.getResults()!=null && !newExamDTO.getResults().isEmpty()){
+            Collection<ResultExam> results = newExamDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
+                    .collect(Collectors.toList());
+            for(ResultExam resultExam:results){
+                resultExam.getResultExamPK().setExamId(savedExam.getId());
+                resultExamRepository.save(resultExam);
+            }
+        }
+        return modelMapper.map(savedExam, ExamDTO.class);
+    }
+
+    @Override
+    public ExamDTO update(ExamDTO examDTO) throws Exception {
+        if(examDTO==null){
+            throw new NullPointerException("Polaganje ne moze biti null");
+        }
+        Optional<Exam> dbExam = examRepository.findById(examDTO.getId());
+        if(dbExam.isPresent()) {
             Exam exam = modelMapper.map(examDTO,Exam.class);
             if(examDTO.getResults()!=null){
                 Collection<ResultExam> results = examDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
