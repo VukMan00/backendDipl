@@ -89,8 +89,7 @@ public class Student implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Student)) return false;
-        Student student = (Student) o;
+        if (!(o instanceof Student student)) return false;
         return Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName()) && Objects.equals(getLastname(), student.getLastname()) && Objects.equals(getIndex(), student.getIndex()) && Objects.equals(getBirth(), student.getBirth()) && Objects.equals(getEmail(), student.getEmail()) && Objects.equals(getMemberStudent(), student.getMemberStudent());
     }
 

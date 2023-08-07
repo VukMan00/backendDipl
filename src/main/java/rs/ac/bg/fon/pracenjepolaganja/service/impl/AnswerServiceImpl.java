@@ -1,6 +1,5 @@
 package rs.ac.bg.fon.pracenjepolaganja.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,19 +81,25 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
         if (answerDTO == null) {
             throw new NullPointerException("Odgovor ne moze biti null");
         }
-        if (questionRepository.findById(answerDTO.getAnswerPK().getQuestionId()).isPresent()){
+        Answer answer = modelMapper.map(answerDTO,Answer.class);
+        Answer savedAnswer = answerRepository.save(answer);
+        return modelMapper.map(savedAnswer, AnswerDTO.class);
+    }
+
+    @Override
+    public AnswerDTO update(AnswerDTO answerDTO) throws Exception {
+        if(answerDTO==null){
+            throw new NullPointerException("Odgovor ne moze biti null");
+        }
+        Optional<Answer> dbAnswer = answerRepository.findById(answerDTO.getAnswerPK());
+        if(dbAnswer.isPresent()) {
             Answer answer = modelMapper.map(answerDTO,Answer.class);
             Answer savedAnswer = answerRepository.save(answer);
             return modelMapper.map(savedAnswer, AnswerDTO.class);
         }
         else{
-            throw new NotFoundException("Pitanje nije pronadjeno");
+            throw new NotFoundException("Odgovor nije pronadjen");
         }
-    }
-
-    @Override
-    public AnswerDTO update(AnswerDTO answerDTO) throws Exception {
-        return null;
     }
 
     @Override
@@ -112,13 +117,9 @@ public class AnswerServiceImpl implements ServiceInterface<AnswerDTO> {
      *
      * @param id id of question whose answers are needed.
      * @return list of answers in DTO form.
-     * @throws NotFoundException if question of the given id does not have answers.
      */
-    public List<AnswerDTO> getAnswers(Integer id) throws NotFoundException {
+    public List<AnswerDTO> getAnswers(Integer id){
         List<Answer> answers = answerRepository.findByQuestionId(id);
-        if(answers.isEmpty()){
-            return new ArrayList<>();
-        }
         List<AnswerDTO> answersDTO = answers.stream().map(answer->modelMapper.map(answer,AnswerDTO.class))
                 .collect(Collectors.toList());
         return answersDTO;

@@ -54,15 +54,6 @@ public class Member implements Serializable,UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    /**
-     * Set of authorities for user.
-     * User can have roles as Admin or User.
-     * Admin can make changes of elements in database where
-     * User can only see elements of database.
-     */
-    /*@OneToMany(mappedBy="member",fetch=FetchType.EAGER)
-    @JsonIgnore
-    private Set<Authority> authorities;*/
 
     @Enumerated(EnumType.STRING)
     @Column(name="role")

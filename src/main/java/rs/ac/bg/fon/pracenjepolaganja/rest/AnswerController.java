@@ -108,7 +108,7 @@ public class AnswerController {
      * @return list of answers
      */
     @GetMapping("/{questionId}")
-    public List<AnswerDTO> getAnswersFromQuestion(@PathVariable("questionId") Integer questionId) throws NotFoundException {
+    public List<AnswerDTO> getAnswersFromQuestion(@PathVariable("questionId") Integer questionId){
         return answerService.getAnswers(questionId);
     }
 

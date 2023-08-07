@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Answer;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 
 import java.util.Collection;
 

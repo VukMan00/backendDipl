@@ -79,12 +79,12 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     }
 
     @Override
-    public QuestionDTO findById(Object id) throws NotFoundException {
-        Optional<Question> question = questionRepository.findById((Integer) id);
+    public QuestionDTO findById(Object questionId) throws NotFoundException {
+        Optional<Question> question = questionRepository.findById((Integer) questionId);
         QuestionDTO questionDTO;
         if(question.isPresent()){
             questionDTO = modelMapper.map(question.get(),QuestionDTO.class);
-            Collection<AnswerDTO> answersDTO = answerService.getAnswers((Integer) id);
+            Collection<AnswerDTO> answersDTO = answerService.getAnswers((Integer) questionId);
             questionDTO.setAnswers(answersDTO);
             return questionDTO;
         }
@@ -100,7 +100,6 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         }
         QuestionDTO newQuestionDTO = questionDTO;
 
-        //Question question = modelMapper.map(questionDTO,Question.class);
         Question question = Question.builder().content(questionDTO.getContent()).build();
         Question savedQuestion = questionRepository.save(question);
 
@@ -112,7 +111,7 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
                     answerId++;
                     answer.setAnswerPK(new AnswerPK(answerId,savedQuestion.getId()));
                 }
-                Answer dbAnswer = answerRepository.save(answer);
+               answerRepository.save(answer);
 
                 Query query = entityManager.createNativeQuery("SELECT answer_id FROM answer WHERE question_id = :questionId");
                 query.setParameter("questionId", answer.getAnswerPK().getQuestionId());

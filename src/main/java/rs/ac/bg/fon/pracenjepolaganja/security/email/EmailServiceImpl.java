@@ -61,10 +61,10 @@ public class EmailServiceImpl implements EmailService{
             simpleMailMessage.setSubject("Registracija");
 
             mailSender.send(simpleMailMessage);
-            return "Email is sent successfully";
+            return "Email je uspesno poslat";
         }
         else{
-            return "Email already exist";
+            return "Email vec postoji";
         }
     }
 
@@ -84,16 +84,16 @@ public class EmailServiceImpl implements EmailService{
         simpleMailMessage.setSubject("Promena lozinke");
 
         mailSender.send(simpleMailMessage);
-        return "Email is sent successfully";
+        return "Email je uspesno poslat";
     }
 
     @Override
     public String checkEmail(EmailDetails email) {
         if(memberRepository.findByUsername(email.getRecipient()).isPresent()){
-            return "Email exist";
+            return "Email vec postoji";
         }
         else{
-            return "Email doesn't exist";
+            return "Email ne postoji";
         }
     }
 

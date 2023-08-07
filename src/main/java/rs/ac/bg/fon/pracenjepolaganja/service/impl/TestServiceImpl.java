@@ -8,7 +8,6 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.ProfessorRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.QuestionTestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dao.TestRepository;
 import rs.ac.bg.fon.pracenjepolaganja.dto.*;
-import rs.ac.bg.fon.pracenjepolaganja.entity.Question;
 import rs.ac.bg.fon.pracenjepolaganja.entity.QuestionTest;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Test;
 import rs.ac.bg.fon.pracenjepolaganja.entity.primarykeys.QuestionTestPK;
@@ -106,18 +105,8 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         if(testDTO==null){
             throw new NullPointerException("Test ne moze biti null");
         }
-        TestDTO newTestDTO = testDTO;
         Test test = modelMapper.map(testDTO,Test.class);
         Test savedTest = testRepository.save(test);
-
-        if(newTestDTO.getQuestions()!=null && !newTestDTO.getQuestions().isEmpty()){
-            Collection<QuestionTest> questionsTest = newTestDTO.getQuestions().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
-                    .collect(Collectors.toList());
-            for(QuestionTest questionTest:questionsTest){
-                questionTest.getQuestionTestPK().setTestId(savedTest.getId());
-                questionTestRepository.save(questionTest);
-            }
-        }
         return modelMapper.map(savedTest, TestDTO.class);
     }
 
@@ -129,11 +118,6 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
         Optional<Test> dbTest = testRepository.findById(testDTO.getId());
         if(dbTest.isPresent()) {
             Test test = modelMapper.map(testDTO,Test.class);
-            if(testDTO.getQuestions()!=null && !testDTO.getQuestions().isEmpty()){
-                Collection<QuestionTest> questionsTest = testDTO.getQuestions().stream().map(questionTestDTO -> modelMapper.map(questionTestDTO, QuestionTest.class))
-                        .collect(Collectors.toList());
-                test.setQuestionTestCollection(questionsTest);
-            }
             Test savedTest = testRepository.save(test);
             return modelMapper.map(savedTest, TestDTO.class);
         }
@@ -211,21 +195,17 @@ public class TestServiceImpl implements ServiceInterface<TestDTO> {
      *
      * @param questionId id of question whose points and tests are needed
      * @return list of QuestionTestDTO objects
-     * @throws NotFoundException if QuestionTest entities with given question id does not exist in database.
      */
-    public List<QuestionTestDTO> getTestsFromQuestion(Integer questionId) throws NotFoundException {
-        List<QuestionTest> questionTests = questionTestRepository.findByQuestionId(questionId);
-        if (questionTests.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<QuestionTestDTO> questionTestDTOs = new ArrayList<>();
-        for (QuestionTest questionTest : questionTests) {
+    public List<QuestionTestDTO> getTestsFromQuestion(Integer questionId){
+        List<QuestionTest> testsOfQuestion = questionTestRepository.findByQuestionId(questionId);
+        List<QuestionTestDTO> testsOfQuestionDTO = new ArrayList<>();
+        for (QuestionTest questionTest : testsOfQuestion) {
             TestDTO testDTO = modelMapper.map(questionTest.getTest(), TestDTO.class);
             QuestionTestDTO questionTestDTO = modelMapper.map(questionTest, QuestionTestDTO.class);
 
             questionTestDTO.setTest(testDTO);
-            questionTestDTOs.add(questionTestDTO);
+            testsOfQuestionDTO.add(questionTestDTO);
         }
-        return questionTestDTOs;
+        return testsOfQuestionDTO;
     }
 }

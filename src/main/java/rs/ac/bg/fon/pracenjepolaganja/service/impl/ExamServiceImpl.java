@@ -99,7 +99,6 @@ public class ExamServiceImpl implements ServiceInterface<ExamDTO> {
         ExamDTO newExamDTO = examDTO;
         Exam exam = modelMapper.map(examDTO,Exam.class);
         Exam savedExam = examRepository.save(exam);
-
         if(newExamDTO.getResults()!=null && !newExamDTO.getResults().isEmpty()){
             Collection<ResultExam> results = newExamDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
                     .collect(Collectors.toList());

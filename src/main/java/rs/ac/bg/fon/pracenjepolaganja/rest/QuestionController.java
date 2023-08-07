@@ -132,13 +132,13 @@ public class QuestionController {
      * that question has in each test as list of QuestionTest objects.
      * QuestionTest objects are mapped in DTO form.
      *
-     * @param id of question whose points and tests are needed
+     * @param questionId of question whose points and tests are needed
      * @return list of QuestionTestDTO objects
      * @throws NotFoundException if QuestionTest entities with given question id does not exist in database.
      */
     @GetMapping("/{id}/tests")
-    public List<QuestionTestDTO> getTests(@PathVariable("id")Integer id) throws NotFoundException {
-        return testService.getTestsFromQuestion(id);
+    public List<QuestionTestDTO> getTests(@PathVariable("id")Integer questionId){
+        return testService.getTestsFromQuestion(questionId);
     }
 
     /**

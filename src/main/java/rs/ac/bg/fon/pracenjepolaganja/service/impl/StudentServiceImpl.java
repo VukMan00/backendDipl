@@ -150,15 +150,14 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
 
             Member savedMember = memberRepository.save(member);
             student.setMemberStudent(savedMember);
+            if(studentDTO.getResults()!=null) {
+                Collection<ResultExam> results = studentDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
+                        .collect(Collectors.toList());
+                student.setResultExamCollectionCollection(results);
+            }
         }
         else{
             throw new NotFoundException("Student nije pronadjen");
-        }
-
-        if(studentDTO.getResults()!=null) {
-            Collection<ResultExam> results = studentDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
-                    .collect(Collectors.toList());
-            student.setResultExamCollectionCollection(results);
         }
         Student savedStudent = studentRepository.save(student);
         return modelMapper.map(savedStudent,StudentDTO.class);
