@@ -37,4 +37,10 @@ public class RequestChangePassword {
     @NotBlank(message = "Lozinka je obavezna")
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", message = "Slaba lozinka")
     private String newPassword;
+
+    /**
+     * Represent token for authentication purposes of member.
+     */
+    @NotBlank(message="Token je obavezan")
+    private String token;
 }

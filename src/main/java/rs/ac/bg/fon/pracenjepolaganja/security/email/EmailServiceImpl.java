@@ -8,7 +8,10 @@ import rs.ac.bg.fon.pracenjepolaganja.dao.MemberRepository;
 import rs.ac.bg.fon.pracenjepolaganja.entity.Member;
 import rs.ac.bg.fon.pracenjepolaganja.security.auth.AuthenticationService;
 import rs.ac.bg.fon.pracenjepolaganja.security.config.JwtService;
+import rs.ac.bg.fon.pracenjepolaganja.security.token.Token;
+import rs.ac.bg.fon.pracenjepolaganja.security.token.TokenRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,19 +43,24 @@ public class EmailServiceImpl implements EmailService{
      */
     private final MemberRepository memberRepository;
 
+    /**
+     * Reference variable of TokenRepository
+     */
+    private final TokenRepository tokenRepository;
+
     @Override
     public String sendRegistrationEmail(EmailDetails email) {
         Optional<Member> member = memberRepository.findByUsername(email.getRecipient());
         if(!member.isPresent()) {
-            String registrationToken = generateRegistrationToken(email.getRecipient());
+            String registrationToken = generateToken(email.getRecipient());
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             String message = "Poštovani/a," +
                     "\n " +
-                    "\n U prilogu Vam šaljem link ka daljem procesu registracije: " + "localhost:3000/register" +
+                    "\n U prilogu Vam šaljem link ka daljem procesu registracije: " + "http://localhost:3000/register" +
                     "\n Takođe u prilogu se nalazi i token koji ćete koristiti prilikom daljeg postupka registracije!" +
                     "\n Token: " + registrationToken +
                     "\n" +
-                    "\nSrdačan pozdrav," +
+                    "\n Srdačan pozdrav," +
                     "\n Vuk Manojlović 48/19";
 
             simpleMailMessage.setFrom("vukman619@gmail.com");
@@ -71,11 +79,22 @@ public class EmailServiceImpl implements EmailService{
     @Override
     public String sendEmailChangePassword(EmailDetails email) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        Optional<Member> member = memberRepository.findByUsername(email.getRecipient());
+        String token = null;
+        if(member.isPresent()) {
+            List<Token> tokens = tokenRepository.findByMemberId(member.get().getId());
+            token = tokens.get(0).getToken();
+        }
+        else{
+            return "Email ne postoji";
+        }
         String message = "Poštovani/a," +
                 "\n " +
-                "\n U prilogu Vam šaljem link ka daljem procesu promene lozinke: " + "localhost:3000/changePassword" +
+                "\n U prilogu Vam šaljem link ka daljem procesu promene lozinke: " + "http://localhost:3000/changePassword" +
+                "\n Koristite token za neophodnu autentifikaciju prilikom promene lozinke" +
+                "\n Token: " + token +
                 "\n" +
-                "\nSrdačan pozdrav," +
+                "\n Srdačan pozdrav," +
                 "\n Vuk Manojlović 48/19";
 
         simpleMailMessage.setFrom("vukman619@gmail.com");
@@ -88,8 +107,24 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public String checkEmail(EmailDetails email) {
+    public String sendEmailForgottenPassword(EmailDetails email) {
         if(memberRepository.findByUsername(email.getRecipient()).isPresent()){
+            String token = generateToken(email.getRecipient());
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            String message = "Poštovani/a," +
+                    "\n " +
+                    "\n U prilogu Vam šaljem link ka daljem procesu promene Vaše zaboravljene lozinke: " + "http://localhost:3000/forgottenPassword" +
+                    "\n Koristite token za neophodnu autentifikaciju prilikom promene lozinke" +
+                    "\n Token: " + token +
+                    "\n" +
+                    "\n Srdačan pozdrav," +
+                    "\n Vuk Manojlović 48/19";
+            simpleMailMessage.setFrom("vukman619@gmail.com");
+            simpleMailMessage.setTo(email.getRecipient());
+            simpleMailMessage.setText(message);
+            simpleMailMessage.setSubject("Promena zaboravljene lozinke");
+
+            mailSender.send(simpleMailMessage);
             return "Email vec postoji";
         }
         else{
@@ -107,21 +142,19 @@ public class EmailServiceImpl implements EmailService{
         return null;
     }
 
-
-
     /**
-     * Generates registration token for member.
+     * Generates token for authentication purposes of member.
      *
-     * @param recipient email of member that needs registration token
-     * @return String generated registration token
+     * @param recipient email of member that needs token
+     * @return String generated token
      */
-    private String generateRegistrationToken(String recipient) {
+    private String generateToken(String recipient) {
         Member member = new Member();
         member.setUsername(recipient);
 
-        String registerToken = jwtService.generateToken(member);
-        authenticationService.saveMemberToken(null,registerToken);
+        String token = jwtService.generateToken(member);
+        authenticationService.saveMemberToken(null,token);
 
-        return registerToken;
+        return token;
     }
 }

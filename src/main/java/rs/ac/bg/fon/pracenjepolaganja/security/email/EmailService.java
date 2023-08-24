@@ -41,10 +41,10 @@ public interface EmailService {
     String sendEmailChangePassword(EmailDetails email);
 
     /**
-     * Checks if email exist in database.
+     * Sends email for user who forgot password
      *
-     * @param email of member.
-     * @return String if email exist in database
+     * @param email of member
+     * @return if email is sent
      */
-    String checkEmail(EmailDetails email);
+    String sendEmailForgottenPassword(EmailDetails email);
 }

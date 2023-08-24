@@ -189,20 +189,19 @@ public class AuthenticationService {
      */
     public ResponseEntity<String> changePassword(RequestChangePassword request) throws Exception {
         Optional<Member> dbMember = memberRepository.findByUsername(request.getUsername());
-        if(dbMember.isPresent()){
+        Optional<Token> token = tokenRepository.findByToken(request.getToken());
+        if(dbMember.isPresent() && token.isPresent()){
             Member member = dbMember.get();
-
             if(request.getOldPassword()!=null) {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword()));
             }
-
             member.setPassword(passwordEncoder.encode(request.getNewPassword()));
             memberRepository.save(member);
         }
         else{
-            throw new NotFoundException("Did not find member with username: " + request.getUsername());
+            throw new NotFoundException("Korisnik sa datim korisnickim imenom nije pronadjen: " + request.getUsername());
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Member has successfully changed password");
+        return ResponseEntity.status(HttpStatus.OK).body("Korisnik je uspesno promenio lozinku");
     }
 
     /**

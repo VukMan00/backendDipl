@@ -47,14 +47,14 @@ public class EmailController {
     }
 
     /**
-     * Checks if email exist in database.
+     * Sends email for user who forgot password
      *
      * @param email of member
-     * @return if email exist in database
+     * @return if email is sent
      */
-    @PostMapping("/checkEmail")
-    public ResponseEntity<String> checkEmail(@Valid @RequestBody EmailDetails email){
-        return ResponseEntity.ok(emailService.checkEmail(email));
+    @PostMapping("/forgottenEmail")
+    public ResponseEntity<String> sendEmailForgottenPassword(@Valid @RequestBody EmailDetails email){
+        return ResponseEntity.ok(emailService.sendEmailForgottenPassword(email));
     }
 
 
