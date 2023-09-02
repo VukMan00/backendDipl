@@ -98,6 +98,9 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
         if(questionDTO == null){
             throw new NullPointerException("Pitanje ne moze biti null");
         }
+        if(questionDTO.getAnswers().isEmpty()){
+            throw new IllegalArgumentException("Pitanje mora imati odgovore");
+        }
         QuestionDTO newQuestionDTO = questionDTO;
 
         Question question = Question.builder().content(questionDTO.getContent()).build();
@@ -127,6 +130,9 @@ public class QuestionServiceImpl implements ServiceInterface<QuestionDTO> {
     public QuestionDTO update(QuestionDTO questionDTO) throws Exception {
         if(questionDTO == null){
             throw new NullPointerException("Pitanje ne moze biti null");
+        }
+        if(questionDTO.getAnswers().isEmpty()){
+            throw new IllegalArgumentException("Pitanje mora imati odgovore");
         }
         Optional<Question> dbQuestion = questionRepository.findById(questionDTO.getId());
         if(dbQuestion.isPresent()) {
