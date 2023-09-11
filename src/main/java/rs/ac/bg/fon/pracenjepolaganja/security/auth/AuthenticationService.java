@@ -82,10 +82,7 @@ public class AuthenticationService {
      */
     public AuthenticationResponse registration(RegistrationRequest registrationRequest) {
         Optional<Token> dbRegistrationToken = tokenRepository.findByToken(registrationRequest.getRegistrationToken());
-        if(dbRegistrationToken.isPresent()){
-            tokenRepository.deleteById(dbRegistrationToken.get().getId());
-        }
-        else{
+        if(!dbRegistrationToken.isPresent()){
             return AuthenticationResponse.builder()
                     .message("Greska pri registraciji")
                     .build();
@@ -100,19 +97,27 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(member);
         var refreshToken = jwtService.generateRefreshToken(member);
 
-        Member savedMember = memberRepository.save(member);
-        saveMemberToken(savedMember,jwtToken);
+        var student = new Student();
+        Member savedMember = new Member();
+        try {
+            savedMember = memberRepository.save(member);
+            saveMemberToken(savedMember, jwtToken);
 
-        var student = Student.builder()
-                .name(registrationRequest.getFirstname())
-                .lastname(registrationRequest.getLastname())
-                .email(registrationRequest.getEmail())
-                .index(registrationRequest.getIndex())
-                .birth(registrationRequest.getBirth())
-                .memberStudent(savedMember)
-                .build();
+            student = Student.builder()
+                    .name(registrationRequest.getFirstname())
+                    .lastname(registrationRequest.getLastname())
+                    .email(registrationRequest.getEmail())
+                    .index(registrationRequest.getIndex())
+                    .birth(registrationRequest.getBirth())
+                    .memberStudent(savedMember)
+                    .build();
 
-        studentRepository.save(student);
+            studentRepository.save(student);
+        }
+        catch (Exception ex){
+            memberRepository.deleteById(savedMember.getId());
+            throw ex;
+        }
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)

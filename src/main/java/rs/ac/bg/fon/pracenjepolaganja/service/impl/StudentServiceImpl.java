@@ -105,12 +105,19 @@ public class StudentServiceImpl implements ServiceInterface<StudentDTO> {
                 .password(passwordEncoder.encode(studentDTO.getIndex()))
                 .role(Role.ROLE_USER)
                 .build();
-        Member savedMember =  memberRepository.save(member);
-
+        Member savedMember = new Member();
         Student student = modelMapper.map(studentDTO, Student.class);
-        student.setMemberStudent(savedMember);
+        Student savedStudent = new Student();
 
-        Student savedStudent = studentRepository.save(student);
+        try {
+            savedMember = memberRepository.save(member);
+
+            student.setMemberStudent(savedMember);
+            savedStudent = studentRepository.save(student);
+        }catch (Exception ex){
+            memberRepository.deleteById(savedMember.getId());
+            throw ex;
+        }
 
         if(newStudentDTO.getResults()!=null && !newStudentDTO.getResults().isEmpty()) {
             Collection<ResultExam> results = newStudentDTO.getResults().stream().map(resultExamDTO -> modelMapper.map(resultExamDTO, ResultExam.class))
